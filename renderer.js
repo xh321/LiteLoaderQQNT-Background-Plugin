@@ -142,6 +142,10 @@
         z-index:unset!important;
       }
 
+      .sticker-panel {
+        background: rgba(0, 0, 0, 0.7)!important;
+      }
+
       #app::before {
         content: "";
         width: 100%;
@@ -255,11 +259,15 @@
       }
 
       .msg-content-container , .forward-msg{
-        background-color: rgb(0 0 0 / 30%)!important;
+        background-color: rgb(255 255 255 / 30%)!important;
       }
       
       .chat-msg-area__vlist{
         z-index:unset!important;
+      }
+
+      .sticker-panel {
+        background: rgba(255, 255, 255, 0.7)!important;
       }
 
 
@@ -288,7 +296,7 @@
       }
 
       .list-item:hover {
-        background-color: rgba(0, 0, 0, 0.1) !important;
+        background-color: rgba(255, 255, 255, 0.1) !important;
       }
 
       /* 添加模糊 */
