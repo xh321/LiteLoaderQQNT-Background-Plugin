@@ -1,0 +1,15 @@
+{
+    "manifest_version": 1,
+    "type": "extension",
+    "name": "background_plugin",
+    "slug": "background_plugin",
+    "description": "窗口背景图片",
+    "version": "0.1.0",
+    "author": [
+        {
+            "name": "XiaoHe321",
+            "link": "https://github.com/xh321"
+        }
+    ],
+    "inject": "./main.js"
+}
