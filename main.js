@@ -7,7 +7,7 @@ const allowedExt = [".JPG", ".BMP", ".PNG", ".WEBP", ".JPEG"];
 const configFilePath = path.join(__dirname, "config.json");
 const sampleConfig = {
   imgDir: path.join(__dirname, "imgs").replaceAll("\\", "/"),
-  refreshTime: 10,
+  refreshTime: 600,
 };
 var nowConfig = loadConfig();
 
