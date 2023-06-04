@@ -138,6 +138,9 @@
         background-color: rgb(0 0 0 / 30%)!important;
       }
 
+      .chat-msg-area__vlist{
+        z-index:unset!important;
+      }
 
       #app::before {
         content: "";
@@ -254,7 +257,10 @@
       .msg-content-container , .forward-msg{
         background-color: rgb(0 0 0 / 30%)!important;
       }
-
+      
+      .chat-msg-area__vlist{
+        z-index:unset!important;
+      }
 
 
       #app::before {
