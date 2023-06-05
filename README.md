@@ -1,7 +1,7 @@
 # background-plugin
 
-BetterQQNT（JS版）插件，用于自动切换QQ的背景图片，并自带一些CSS优化（参考自[BetterQQNT-Test-Theme](https://github.com/mo-jinran/BetterQQNT-test-theme)）
-
+BetterQQNT（JS版）插件，用于自动切换QQNt的背景图片，并自带一些CSS优化（参考自[BetterQQNT-Test-Theme](https://github.com/mo-jinran/BetterQQNT-test-theme)）
+使用前需要安装[BetterQQNT](https://github.com/mo-jinran/BetterQQNT)，并在QQNt新版上使用。
 
 ## 使用方法
 
@@ -18,10 +18,12 @@ clone或下载zip文件解压，将文件夹移动至`BetterQQNT数据目录/plu
 
 目前还很简陋，代码也比较粗糙，但能用！
 
-
-
-配置文件介绍：
+## 配置文件介绍
 
 imgDir：从哪个文件夹自动读取图片文件，仅会读取一级的图片，并不会递归读取子文件夹的哦~默认：插件目录下面的imgs文件夹。
 
 refreshTime：多久随机更新一次图片，单位秒。默认：600（10分钟）。
+
+## 协议
+
+MIT
