@@ -177,10 +177,6 @@ function onLoad(plugin) {
 }
 
 function onBrowserWindowCreated(window) {
-  var nowPreloads = window.webContents.session.getPreloads();
-  if (!nowPreloads) nowPreloads = [];
-  nowPreloads.push(path.join(plugin.path, "preload.js"));
-  window.webContents.session.setPreloads(nowPreloads);
   watchConfigChange();
   window.on("ready-to-show", () => {
     injectJS(window.webContents);
