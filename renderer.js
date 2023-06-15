@@ -110,7 +110,7 @@ export function onLoad() {
         }
 
         .msg-content-container , .forward-msg{
-          background-color: rgb(0 0 0 / 30%)!important;
+          background-color: rgb(0 0 0 / 40%)!important;
         }
 
         .chat-msg-area__vlist{
@@ -118,8 +118,18 @@ export function onLoad() {
         }
 
         .sticker-panel {
-          background: rgba(0, 0, 0, 0.7)!important;
+          background: rgba(0, 0, 0, 0.9)!important;
         }
+
+  
+        .ark-view-message_not-support{
+          background: rgba(0,0,0,0.2)!important;
+        }
+
+        .q-dialog-main {
+          background: rgba(0,0,0,0.8)!important;
+        }
+  
 
         #app::before {
           content: "";
@@ -182,7 +192,7 @@ export function onLoad() {
 
         .q-context-sub-menu__container , .q-context-menu{
           background: unset!important;
-          background-color: rgb(0 0 0  / 80%)!important;
+          background-color: rgb(0 0 0  / 90%)!important;
         }
 
         .chat-msg-area{
@@ -234,7 +244,7 @@ export function onLoad() {
   
         .msg-content-container , .forward-msg{
           color: black!important;
-          background-color: rgb(255 255 255 / 30%)!important;
+          background-color: rgb(255 255 255 / 40%)!important;
         }
         
         .chat-msg-area__vlist{
@@ -242,7 +252,7 @@ export function onLoad() {
         }
   
         .sticker-panel {
-          background: rgba(255, 255, 255, 0.7)!important;
+          background: rgba(255, 255, 255, 0.9)!important;
         }
   
   
@@ -287,7 +297,13 @@ export function onLoad() {
           backdrop-filter: brightness(90%) saturate(120%) blur(8px);
         }
   
+        .q-dialog-main {
+          background: rgba(255,255,255,0.8)!important;
+        }
   
+        .ark-view-message_not-support{
+          background: rgba(255,255,255,0.2)!important;
+        }
   
         .viewport-list__inner{
           background-color: rgb( 255 255 255  / 70%)!important;
@@ -307,11 +323,11 @@ export function onLoad() {
   
         .q-context-sub-menu__container , .q-context-menu{
           background: unset!important;
-          background-color: rgb(255 255 255  / 80%)!important;
+          background-color: rgb(255 255 255  / 90%)!important;
         }
   
         .chat-msg-area{
-          background-color: rgb(255 255 255  / 50%)!important;
+          background-color: rgb(255 255 255  / 30%)!important;
         }
   
         .group-member{

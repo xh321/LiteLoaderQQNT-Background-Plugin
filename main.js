@@ -3,7 +3,7 @@ const path = require("path");
 const { BrowserWindow, ipcMain } = require("electron");
 const { dialog } = require("electron");
 
-const allowedExt = [".JPG", ".BMP", ".PNG", ".WEBP", ".JPEG"];  
+const allowedExt = [".JPG", ".BMP", ".PNG", ".WEBP", ".JPEG"];
 const configFilePath = path.join(__dirname, "config.json");
 const sampleConfig = {
   imgDir: path.join(__dirname, "imgs").replaceAll("\\", "/"),
@@ -96,7 +96,11 @@ function debounce(fn, time) {
 // 监听配置文件修改
 function watchConfigChange() {
   if (!fs.existsSync(configFilePath)) {
-    fs.writeFileSync(configFilePath, JSON.stringify(sampleConfig, null, 2), "utf-8");
+    fs.writeFileSync(
+      configFilePath,
+      JSON.stringify(sampleConfig, null, 2),
+      "utf-8"
+    );
   }
   fs.watch(
     configFilePath,
@@ -109,14 +113,18 @@ function watchConfigChange() {
 
 function loadConfig() {
   if (!fs.existsSync(configFilePath)) {
-    fs.writeFileSync(configFilePath, JSON.stringify(sampleConfig, null, 2), "utf-8");
+    fs.writeFileSync(
+      configFilePath,
+      JSON.stringify(sampleConfig, null, 2),
+      "utf-8"
+    );
     return sampleConfig;
   } else {
     return JSON.parse(fs.readFileSync(configFilePath, "utf-8"));
   }
 }
 
-function writeConfig(){
+function writeConfig() {
   fs.writeFileSync(configFilePath, JSON.stringify(nowConfig, null, 2), "utf-8");
 }
 
@@ -129,6 +137,7 @@ function injectJS(webContents) {
 
 function onLoad(plugin) {
   global.plugin = plugin;
+
   ipcMain.handle(
     "betterQQNT.background_plugin.showFolderSelect",
     (event, message) => {
@@ -137,7 +146,7 @@ function onLoad(plugin) {
         title: "请选择背景图存放的文件夹",
         properties: ["openDirectory"], // 选择文件夹
       });
-      nowConfig.imgDir=filePath.toString().replaceAll('\\','/');
+      nowConfig.imgDir = filePath.toString().replaceAll("\\", "/");
       writeConfig();
       return filePath;
     }
@@ -177,6 +186,12 @@ function onLoad(plugin) {
 }
 
 function onBrowserWindowCreated(window) {
+  const original_send = window.webContents.send;
+  window.webContents.send = function (channel, ...args) {
+    if (JSON.stringify(args).includes("http://") || JSON.stringify(args).includes("https://")) console.log(channel, ...args);
+    return original_send.call(window.webContents, channel, ...args);
+  };
+
   watchConfigChange();
   window.on("ready-to-show", () => {
     injectJS(window.webContents);
