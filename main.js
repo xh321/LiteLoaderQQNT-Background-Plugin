@@ -128,16 +128,7 @@ function writeConfig() {
   fs.writeFileSync(configFilePath, JSON.stringify(nowConfig, null, 2), "utf-8");
 }
 
-// 注入js
-function injectJS(webContents) {
-  const filepath = path.join(__dirname, "renderer.js");
-  const filetext = fs.readFileSync(filepath, "utf-8");
-  webContents.executeJavaScript(filetext, true);
-}
-
 function onLoad(plugin) {
-  global.plugin = plugin;
-
   ipcMain.handle(
     "betterQQNT.background_plugin.showFolderSelect",
     (event, message) => {
@@ -186,16 +177,7 @@ function onLoad(plugin) {
 }
 
 function onBrowserWindowCreated(window) {
-  const original_send = window.webContents.send;
-  window.webContents.send = function (channel, ...args) {
-    if (JSON.stringify(args).includes("http://") || JSON.stringify(args).includes("https://")) console.log(channel, ...args);
-    return original_send.call(window.webContents, channel, ...args);
-  };
-
   watchConfigChange();
-  window.on("ready-to-show", () => {
-    injectJS(window.webContents);
-  });
 }
 
 module.exports = {
