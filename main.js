@@ -144,9 +144,24 @@ function onLoad(plugin) {
   );
 
   ipcMain.handle(
+    "betterQQNT.background_plugin.changeRefreshTime",
+    (event, refreshTime) => {
+      nowConfig.refreshTime = refreshTime;
+      writeConfig();
+    }
+  );
+
+  ipcMain.handle(
     "betterQQNT.background_plugin.randomSelect",
     async (event, message) => {
       return await rdpic();
+    }
+  );
+
+  ipcMain.handle(
+    "betterQQNT.background_plugin.getNowConfig",
+    async (event, message) => {
+      return nowConfig;
     }
   );
 

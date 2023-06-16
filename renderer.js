@@ -1,63 +1,109 @@
-export function onLoad() {
+export async function onConfigView(view) {
+  var nowConfig = await window.background_plugin.getNowConfig();
+  var nowImgDir = nowConfig.imgDir;
+  let tmpIndex = nowImgDir.lastIndexOf("/");
+  let nowDirName = nowImgDir.substr(tmpIndex + 1);
   const new_navbar_item = `
-    <div class="nav-item" data-v-53503cce="">
-      <i class="q-icon icon icon_color" data-v-f2a2e0a3="" data-v-53503cce="" style="--64bccad3: inherit; --3111caac:16px;">
-        <svg t="1685888727779" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3380" width="200" height="200">
-          <defs>
-            <style><![CDATA[
-              @media (prefers-color-scheme: light) {
-              .path {
-                stroke: black;
-                fill: black;
-                }
-              }
-              @media (prefers-color-scheme: dark) {
-                .path {
-                  stroke: white;
-                  fill: white;
-                }
-              }
-            ]]></style>
-          </defs>
-          <path class="path" d="M841.71335 65.290005 182.285626 65.290005c-64.511269 0-116.995621 52.484352-116.995621 116.995621L65.290005 841.71335c0 64.511269 52.484352 116.995621 116.995621 116.995621l659.427724 0c64.511269 0 116.995621-52.484352 116.995621-116.995621L958.708971 182.285626C958.708971 117.774357 906.225643 65.290005 841.71335 65.290005zM182.285626 107.833961l659.427724 0c41.051975 0 74.451666 33.398668 74.451666 74.451666l0 136.557142c-150.09446 5.26184-290.370297 66.084091-396.978337 172.692131-49.960879 49.961902-89.841168 107.331517-118.694309 169.625282-83.496669-70.835302-204.372667-75.376735-292.65841-13.617136L107.833961 182.285626C107.833961 141.232628 141.232628 107.833961 182.285626 107.833961zM107.833961 841.71335 107.833961 702.627618c76.54228-74.311473 198.833511-74.234725 275.272437 0.24457-24.303522 65.298192-37.026288 135.112234-37.026288 206.91149 0 2.223644 0.343831 4.366448 0.977257 6.381337L182.285626 916.165016C141.232628 916.165016 107.833961 882.766348 107.833961 841.71335zM841.71335 916.165016 387.646807 916.165016c0.633427-2.01489 0.977257-4.157693 0.977257-6.381337 0-146.71755 57.053414-284.572244 160.647817-388.166647 98.570993-98.570993 228.166583-154.963351 366.894158-160.204725L916.166039 841.71335C916.165016 882.766348 882.766348 916.165016 841.71335 916.165016z" fill="#fff" p-id="3381"></path>
-          <path class="path" d="M312.397986 413.458683c60.8376 0 110.332874-49.494251 110.332874-110.332874s-49.494251-110.332874-110.332874-110.332874-110.332874 49.494251-110.332874 110.332874S251.559363 413.458683 312.397986 413.458683zM312.397986 235.337913c37.378306 0 67.788919 30.40959 67.788919 67.788919s-30.40959 67.788919-67.788919 67.788919-67.788919-30.40959-67.788919-67.788919S275.018657 235.337913 312.397986 235.337913z" fill="#fff" p-id="3382"></path>
-        </svg>
-      </i>
-      <div class="name" data-v-53503cce="">背景路径选择</div>
-      <!--v-if-->
+  <div class="q-scroll-view scroll-view--show-scrollbar" data-v-c15b275e="" style="display: block;">
+  <div class="common-tab" data-v-dd43c29c="" data-v-c15b275e="">
+    <div class="setting-item-title" data-v-526bdad1="" data-v-6c241f5a="">背景图</div>
+    <div class="chat-page" data-v-6c241f5a="">
+      <div class="chat-page__send-msg" data-v-6c241f5a="">
+        <span class="label" data-v-6c241f5a="">背景图片文件夹</span>
+        <div class="q-pulldown-menu small-size pulldown-menu" aria-disabled="false" data-v-6c241f5a="" style="width: 150px; pointer-events: auto;">
+          <div class="q-pulldown-menu-button">
+            <!---->
+            <input style="cursor:pointer;" id="selectImageDir" type="text" class="content" spellcheck="false" readonly="" placeholder="请选择图片文件夹" value="${nowDirName}" aria-controls="qContextMenu" aria-expanded="false" aria-haspopup="menu" aria-owns="qContextMenu" role="combobox">
+            <span id="selectImageDirBtn" style="top:0!important;cursor:pointer;" class="icon">
+              <i class="q-icon" data-v-f2a2e0a3="" style="--64bccad3: inherit; --3111caac:16px;">
+                <svg t="1686929070383" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2418" width="200" height="200">
+                  <defs>
+                  <style><![CDATA[
+                    @media (prefers-color-scheme: light) {
+                    .path {
+                      stroke: black;
+                      fill: black;
+                      }
+                    }
+                    @media (prefers-color-scheme: dark) {
+                      .path {
+                        stroke: grey;
+                        fill: grey;
+                      }
+                    }
+                  ]]></style>
+                </defs>
+                  <path class="path" d="M850.3296 374.9888v-45.2096c0-47.4624-38.4-100.5568-89.2416-100.5568h-224.8704l-6.7584-12.4416a62.976 62.976 0 0 0-56.32-33.8944H226.6624A84.6336 84.6336 0 0 0 143.0528 268.8v467.7632a84.6336 84.6336 0 0 0 83.6096 85.8624h578.56a84.6336 84.6336 0 0 0 83.6096-85.8624V449.5872c0-27.136-14.6944-54.2208-38.4-74.5472z m-64.4096-22.5792h-184.32l-30.72-58.7776h190.976c10.24 0 24.8832 19.2 24.8832 36.1472v22.5792z m38.4 96v286.976a21.0944 21.0944 0 0 1-19.2 21.4528h-578.56a20.48 20.48 0 0 1-19.2-21.4528V267.6736a21.0944 21.0944 0 0 1 19.2-21.4528h245.248l81.3568 153.6a33.28 33.28 0 0 0 28.2624 16.9472h209.92c12.4928 0.0512 32.9728 20.3776 32.9728 31.6416z" p-id="2419">
+                  </path>
+                </svg>
+              </i>
+            </span>
+          </div>
+          <!---->
+        </div>
       </div>
     </div>
-    `;
-
-  // 解析HTML
+    <style>
+      @media (prefers-color-scheme: light) {
+        .text_color {
+          color:black;
+        }
+      }
+      @media (prefers-color-scheme: dark) {
+        .text_color {
+          color:white;
+        }
+      }
+      </style>
+    <div class="setting-item-title" data-v-526bdad1="" data-v-dfbdec9c="">更新时间</div>
+    <div class="panel-main" data-v-dfbdec9c="">
+      <div data-v-dfbdec9c="">
+        <span class="label" data-v-6c241f5a="">请输入背景图更新时间（秒）</span>
+        <div class="tips" data-v-dfbdec9c="">修改会自动保存</div>
+      </div>
+      <div style="width:80px;" class="q-pulldown-menu small-size pulldown-menu" aria-disabled="false" data-v-6c241f5a="" style="width: 150px; pointer-events: auto;">
+        <div style="width:80px;" class="q-pulldown-menu-button">
+          <input id="refreshTimeInput" min="1" max="999" maxlength="3" class="text_color" style="width:80px;" type="number" placeholder="单位：秒" value="${nowConfig.refreshTime}"/>
+        </div>
+      </div>
+    </div>
+    <!--<div class="ops" data-v-7fb79317="">
+      <div class="ops-btns" data-v-7fb79317="">
+        <button class="q-button q-button--secondary q-button--small" aria-disabled="false" aria-busy="false" data-v-7fb79317="">
+          <span class="q-button__slot-warp">应用</span>
+        </button>
+      </div>
+    </div>-->
+  </div>
+  <div class="loadmore-placeholder" style="display: none;">
+  </div>
+</div>
+  `;
   const parser = new DOMParser();
 
   const doc2 = parser.parseFromString(new_navbar_item, "text/html");
   const node2 = doc2.querySelector("body > div");
 
-  node2.addEventListener("click", async () => {
+  var selectDir = async () => {
     var path = await window.background_plugin.showFolderSelect();
     alert("成功修改路径为：" + path);
-  });
+    var realPath = path[0].replaceAll("\\", "/");
+    let index = realPath.lastIndexOf("/");
+    let dirName = realPath.substr(index + 1);
+    node2.querySelector("#selectImageDir").value = dirName;
+  };
 
+  node2.querySelector("#selectImageDir").onclick = selectDir;
+  node2.querySelector("#selectImageDirBtn").onclick = selectDir;
+
+  node2.querySelector("#refreshTimeInput").onblur=async()=>{
+    await window.background_plugin.changeRefreshTime(parseInt(node2.querySelector("#refreshTimeInput").value));
+  };
+
+  view.appendChild(node2);
+}
+export function onLoad() {
   console.log("[Background]", "开始检测页面路径", new Date());
-  //是设置页面，注入设置菜单
-  const interval2 = setInterval(() => {
-    console.log(window.location.href);
-    if (window.location.href.indexOf("#/setting/settings/common") != -1) {
-      console.log("[Background]", "检测到设置页面，注入设置菜单", new Date());
-      var nodes = document.querySelector(".nav-bar");
-
-      if (nodes) {
-        clearInterval(interval2);
-      }
-      // 插入
-      nodes.appendChild(node2);
-    } else if (window.location.href.indexOf("#/blank") == -1) {
-      console.log("[Background]", "非设置页面，停止注入", new Date());
-      clearInterval(interval2);
-    }
-  }, 100);
 
   const interval3 = setInterval(async () => {
     console.log(window.location.href);
@@ -132,6 +178,10 @@ export function onLoad() {
         }
   
 
+        .self-avatar-mini-card{
+          background: rgba(0,0,0,0.7)!important;
+        }
+
         #app::before {
           content: "";
           width: 100%;
@@ -161,6 +211,7 @@ export function onLoad() {
         }
 
         /* 添加模糊 */
+        .self-avatar-mini-card,
         .sidebar,
         .msg-content-container,
         .forward-msg,
@@ -257,6 +308,10 @@ export function onLoad() {
         }
   
   
+        .self-avatar-mini-card{
+          background: rgba(255,255,255,0.7)!important;
+        }
+
         #app::before {
           content: "";
           width: 100%;
@@ -286,6 +341,7 @@ export function onLoad() {
         }
   
         /* 添加模糊 */
+        .self-avatar-mini-card,
         .sidebar,
         .msg-content-container,
         .forward-msg,
