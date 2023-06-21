@@ -59,7 +59,7 @@ export async function onConfigView(view) {
     <div class="panel-main" data-v-dfbdec9c="">
       <div data-v-dfbdec9c="">
         <span class="label" data-v-6c241f5a="">请输入背景图更新时间（秒）</span>
-        <div class="tips" data-v-dfbdec9c="">修改会自动保存</div>
+        <div class="tips" data-v-dfbdec9c="">修改会自动保存，重启NTQQ生效</div>
       </div>
       <div style="width:80px;" class="q-pulldown-menu small-size pulldown-menu" aria-disabled="false" data-v-6c241f5a="" style="width: 150px; pointer-events: auto;">
         <div style="width:80px;" class="q-pulldown-menu-button">
@@ -96,8 +96,10 @@ export async function onConfigView(view) {
   node2.querySelector("#selectImageDir").onclick = selectDir;
   node2.querySelector("#selectImageDirBtn").onclick = selectDir;
 
-  node2.querySelector("#refreshTimeInput").onblur=async()=>{
-    await window.background_plugin.changeRefreshTime(parseInt(node2.querySelector("#refreshTimeInput").value));
+  node2.querySelector("#refreshTimeInput").onblur = async () => {
+    await window.background_plugin.changeRefreshTime(
+      parseInt(node2.querySelector("#refreshTimeInput").value)
+    );
   };
 
   view.appendChild(node2);
@@ -105,9 +107,17 @@ export async function onConfigView(view) {
 export function onLoad() {
   console.log("[Background]", "开始检测页面路径", new Date());
 
+  var isMainPage = false;
+
   const interval3 = setInterval(async () => {
     console.log(window.location.href);
     if (window.location.href.indexOf("#/main/message") != -1) {
+      //如果之前已经进过这里，说明是重复进入，直接清除计时器退出即可
+      if (isMainPage) {
+        clearInterval(interval3);
+        return;
+      }
+      isMainPage = true;
       console.log(
         "[Background]",
         "检测到主页页面，注入背景更新函数",
@@ -191,6 +201,8 @@ export function onLoad() {
           background-size: cover!important;
           background-position: center;
           background-repeat: no-repeat;
+          background-attachment: fixed;
+          transition: background-image 1.5s ease-in-out;
           z-index: -1;
         }
 
@@ -321,6 +333,8 @@ export function onLoad() {
           background-size: cover!important;
           background-position: center;
           background-repeat: no-repeat;
+          background-attachment: fixed;
+          transition: background-image 1.5s ease-in-out;
           z-index: -1;
         }
   
