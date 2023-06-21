@@ -1,7 +1,7 @@
 # background-plugin
 
-BetterQQNT（JS版）插件，用于自动切换QQNt的背景图片，并自带一些CSS优化（参考自[BetterQQNT-Test-Theme](https://github.com/mo-jinran/BetterQQNT-test-theme)）
-使用前需要安装[BetterQQNT](https://github.com/mo-jinran/BetterQQNT)，并在QQNt新版上使用。
+BetterQQNT（JS版）插件，用于自动切换QQNT的背景图片，并自带一些CSS优化（参考自[BetterQQNT-Test-Theme](https://github.com/mo-jinran/BetterQQNT-test-theme)）。
+使用前需要安装[BetterQQNT](https://github.com/mo-jinran/BetterQQNT)，并在QQNT新版上使用。
 
 ## 使用方法
 
@@ -14,7 +14,7 @@ clone或下载zip文件解压，将文件夹移动至`BetterQQNT数据目录/plu
 
 图片默认是居中适应，所以如果比例不对可能会不好看，尽量选择横着的图片吧~
 
-浅色/深色模式1s检测一次，所以如果QQ变更颜色模式，会有1s的反应时间。
+~~浅色/深色模式1s检测一次，所以如果QQ变更颜色模式，会有1s的反应时间。~~现在根据`@media`媒体选择器自适应啦~
 
 目前还很简陋，代码也比较粗糙，但能用！
 
