@@ -403,7 +403,7 @@ export function onLoad() {
         }
   
         .recent-contact{
-          background-color: rgb(255 255 255  / 40%)!important;
+          background-color: rgb(255 255 255  / 20%)!important;
         }
   
         .ad-wrapper{
@@ -420,7 +420,7 @@ export function onLoad() {
         }
   
         .chat-msg-area{
-          background-color: rgb(255 255 255  / 30%)!important;
+          background-color: rgb(255 255 255  / 0%)!important;
         }
   
         .group-member{
@@ -428,7 +428,7 @@ export function onLoad() {
         }
   
         .contact-top-bar{
-          background-color: rgb(255 255 255  / 60%)!important;
+          background-color: rgb(255 255 255  / 70%)!important;
         }
   
         .group-notice{
@@ -436,15 +436,15 @@ export function onLoad() {
         }
   
         .msg-input{
-          background-color: rgb(255 255 255  / 60%)!important;
+          background-color: rgb(255 255 255  / 40%)!important;
         }
   
         .operation{
-          background-color: rgb(255 255 255  / 60%)!important;
+          background-color: rgb(255 255 255  / 40%)!important;
         }
   
         .chat-func-bar{
-          background-color: rgb(255 255 255 / 60%)!important;
+          background-color: rgb(255 255 255 / 40%)!important;
           padding-bottom: 8px!important;
         }
   
@@ -453,7 +453,7 @@ export function onLoad() {
         }
   
         .aio{
-          background-color: rgb(255 255 255  / 70%)!important;
+          background-color: rgb(255 255 255  / 50%)!important;
         }
       }
       `;
