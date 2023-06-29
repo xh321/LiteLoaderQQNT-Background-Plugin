@@ -176,7 +176,7 @@ export function onLoad() {
         var sHtml = `
       @media (prefers-color-scheme: dark) {
         .chat-header {
-          background: rgba(0, 0, 0, 0.5)!important;
+          background: rgba(0, 0, 0, 0.2)!important;
         }
 
         .group-user__name.text-ellipsis,
