@@ -175,6 +175,10 @@ export function onLoad() {
         stylee.id = "background-plugin-css";
         var sHtml = `
       @media (prefers-color-scheme: dark) {
+        .av-call-status {
+          background: rgba(0, 0, 0, 0.5)!important;
+        }
+
         .tab-container{
           background-color: unset!important;
         }
@@ -236,6 +240,7 @@ export function onLoad() {
         }
 
         /* 添加模糊 */
+        .av-call-status,
         .self-avatar-mini-card,
         .sidebar,
         .msg-content-container,
@@ -309,6 +314,11 @@ export function onLoad() {
       }
 
       @media (prefers-color-scheme: light) {
+
+        .av-call-status {
+          background: rgba(255, 255, 255, 0.5)!important;
+        }
+
         .tab-container{
           background-color: unset!important;
         }
@@ -366,6 +376,7 @@ export function onLoad() {
         }
   
         /* 添加模糊 */
+        .av-call-status,
         .self-avatar-mini-card,
         .sidebar,
         .msg-content-container,
