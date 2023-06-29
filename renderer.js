@@ -176,13 +176,13 @@ export function onLoad() {
         var sHtml = `
       @media (prefers-color-scheme: dark) {
         .group-user__name.text-ellipsis,
-        .user-name {
+        .user-name > span {
           color: #fff!important;
           mix-blend-mode: difference!important;
         }
 
         .member-role-tag {
-          background: rgba(0, 0, 0, 0.2)!important;
+          background: rgba(80,80, 80)!important;
         }
 
         .av-call-status {
@@ -328,13 +328,13 @@ export function onLoad() {
 
       @media (prefers-color-scheme: light) {
         .group-user__name.text-ellipsis,
-        .user-name {
+        .user-name > span {
           color: #fff!important;
           mix-blend-mode: difference!important;
         }
 
         .member-role-tag {
-          background: rgba(255, 255, 255, 0.2)!important;
+          background: rgba(248, 248, 248,0.6)!important;
         }
 
         .av-call-status {
