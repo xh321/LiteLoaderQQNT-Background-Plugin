@@ -175,6 +175,10 @@ export function onLoad() {
         stylee.id = "background-plugin-css";
         var sHtml = `
       @media (prefers-color-scheme: dark) {
+        .chat-header {
+          background: rgba(0, 0, 0, 0.5)!important;
+        }
+
         .group-user__name.text-ellipsis,
         .user-name > span {
           color: #fff!important;
@@ -327,6 +331,11 @@ export function onLoad() {
       }
 
       @media (prefers-color-scheme: light) {
+        .chat-header {
+          background: rgba(255, 255, 255, 0.5)!important;
+        }
+
+
         .group-user__name.text-ellipsis,
         .user-name > span {
           color: #fff!important;
