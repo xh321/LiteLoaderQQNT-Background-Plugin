@@ -175,6 +175,10 @@ export function onLoad() {
         stylee.id = "background-plugin-css";
         var sHtml = `
       @media (prefers-color-scheme: dark) {
+        .member-role-tag {
+          background: rgba(0, 0, 0, 0.2)!important;
+        }
+
         .av-call-status {
           background: rgba(0, 0, 0, 0.5)!important;
         }
@@ -267,7 +271,7 @@ export function onLoad() {
         }
 
         .group-assistent-list__top{
-          background-color: rgb(0 0 0  / 60%)!important;
+          background-color: rgb(0 0 0  / 70%)!important;
         }
 
         .q-context-sub-menu__container , .q-context-menu{
@@ -320,6 +324,10 @@ export function onLoad() {
         .group-user__name.text-ellipsis,
         .user-name.text-ellipsis > span {
           color: black!important;
+        }
+
+        .member-role-tag {
+          background: rgba(255, 255, 255, 0.2)!important;
         }
 
         .av-call-status {
@@ -418,7 +426,7 @@ export function onLoad() {
         }
   
         .group-assistent-list__top{
-          background-color: rgb(255 255 255  / 60%)!important;
+          background-color: rgb(255 255 255  / 70%)!important;
         }
   
         .q-context-sub-menu__container , .q-context-menu{
