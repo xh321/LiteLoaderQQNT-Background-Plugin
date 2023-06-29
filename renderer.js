@@ -1,9 +1,9 @@
 export async function onConfigView(view) {
-  var nowConfig = await window.background_plugin.getNowConfig();
-  var nowImgDir = nowConfig.imgDir;
-  let tmpIndex = nowImgDir.lastIndexOf("/");
-  let nowDirName = nowImgDir.substr(tmpIndex + 1);
-  const new_navbar_item = `
+    var nowConfig = await window.background_plugin.getNowConfig();
+    var nowImgDir = nowConfig.imgDir;
+    let tmpIndex = nowImgDir.lastIndexOf("/");
+    let nowDirName = nowImgDir.substr(tmpIndex + 1);
+    const new_navbar_item = `
   <div class="q-scroll-view scroll-view--show-scrollbar" data-v-c15b275e="" style="display: block;">
   <div class="common-tab" data-v-dd43c29c="" data-v-c15b275e="">
     <div class="setting-item-title" data-v-526bdad1="" data-v-6c241f5a="">背景图</div>
@@ -54,6 +54,19 @@ export async function onConfigView(view) {
           color:white;
         }
       }
+
+      .path-input {
+        align-self: normal;
+        flex: 1;
+        border-radius: 4px;
+        margin-right: 16px;
+        transition: all 100ms ease-out;
+      }
+    
+      .path-input:focus {
+        padding-left: 4px;
+      }
+      
       </style>
     <div class="setting-item-title" data-v-526bdad1="" data-v-dfbdec9c="">更新时间</div>
     <div class="panel-main" data-v-dfbdec9c="">
@@ -63,7 +76,7 @@ export async function onConfigView(view) {
       </div>
       <div style="width:80px;" class="q-pulldown-menu small-size pulldown-menu" aria-disabled="false" data-v-6c241f5a="" style="width: 150px; pointer-events: auto;">
         <div style="width:80px;" class="q-pulldown-menu-button">
-          <input id="refreshTimeInput" min="1" max="999" maxlength="3" class="text_color" style="width:80px;" type="number" placeholder="单位：秒" value="${nowConfig.refreshTime}"/>
+          <input id="refreshTimeInput" min="1" max="999" maxlength="3" class="text_color path-input" style="width:80px;" type="number" placeholder="单位：秒" value="${nowConfig.refreshTime}"/>
         </div>
       </div>
     </div>
@@ -79,88 +92,88 @@ export async function onConfigView(view) {
   </div>
 </div>
   `;
-  const parser = new DOMParser();
+    const parser = new DOMParser();
 
-  const doc2 = parser.parseFromString(new_navbar_item, "text/html");
-  const node2 = doc2.querySelector("body > div");
+    const doc2 = parser.parseFromString(new_navbar_item, "text/html");
+    const node2 = doc2.querySelector("body > div");
 
-  var selectDir = async () => {
-    var path = await window.background_plugin.showFolderSelect();
-    alert("成功修改路径为：" + path);
-    var realPath = path[0].replaceAll("\\", "/");
-    let index = realPath.lastIndexOf("/");
-    let dirName = realPath.substr(index + 1);
-    node2.querySelector("#selectImageDir").value = dirName;
-  };
+    var selectDir = async () => {
+        var path = await window.background_plugin.showFolderSelect();
+        alert("成功修改路径为：" + path);
+        var realPath = path[0].replaceAll("\\", "/");
+        let index = realPath.lastIndexOf("/");
+        let dirName = realPath.substr(index + 1);
+        node2.querySelector("#selectImageDir").value = dirName;
+    };
 
-  node2.querySelector("#selectImageDir").onclick = selectDir;
-  node2.querySelector("#selectImageDirBtn").onclick = selectDir;
+    node2.querySelector("#selectImageDir").onclick = selectDir;
+    node2.querySelector("#selectImageDirBtn").onclick = selectDir;
 
-  node2.querySelector("#refreshTimeInput").onblur = async () => {
-    await window.background_plugin.changeRefreshTime(
-      parseInt(node2.querySelector("#refreshTimeInput").value)
-    );
-  };
+    node2.querySelector("#refreshTimeInput").onblur = async () => {
+        await window.background_plugin.changeRefreshTime(
+            parseInt(node2.querySelector("#refreshTimeInput").value)
+        );
+    };
 
-  view.appendChild(node2);
+    view.appendChild(node2);
 }
 export function onLoad() {
-  console.log("[Background]", "开始检测页面路径", new Date());
+    console.log("[Background]", "开始检测页面路径", new Date());
 
-  var isMainPage = false;
+    var isMainPage = false;
 
-  const interval3 = setInterval(async () => {
-    console.log(window.location.href);
-    if (window.location.href.indexOf("#/main/message") != -1) {
-      //如果之前已经进过这里，说明是重复进入，直接清除计时器退出即可
-      if (isMainPage) {
-        clearInterval(interval3);
-        return;
-      }
-      isMainPage = true;
-      console.log(
-        "[Background]",
-        "检测到主页页面，注入背景更新函数",
-        new Date()
-      );
+    const interval3 = setInterval(async () => {
+        console.log(window.location.href);
+        if (window.location.href.indexOf("#/main/message") != -1) {
+            //如果之前已经进过这里，说明是重复进入，直接清除计时器退出即可
+            if (isMainPage) {
+                clearInterval(interval3);
+                return;
+            }
+            isMainPage = true;
+            console.log(
+                "[Background]",
+                "检测到主页页面，注入背景更新函数",
+                new Date()
+            );
 
-      reloadBg(await window.background_plugin.randomSelect());
-      patchCss();
+            reloadBg(await window.background_plugin.randomSelect());
+            patchCss();
 
-      setInterval(async () => {
-        console.log("[Background]", "更新背景", new Date());
-        reloadBg(await window.background_plugin.randomSelect());
-      }, (await window.background_plugin.getRefreshTime()) * 1000);
+            setInterval(async () => {
+                console.log("[Background]", "更新背景", new Date());
+                reloadBg(await window.background_plugin.randomSelect());
+            }, (await window.background_plugin.getRefreshTime()) * 1000);
 
-      clearInterval(interval3);
-    } else if (window.location.href.indexOf("#/blank") == -1) {
-      console.log("[Background]", "非主页，停止注入", new Date());
-      clearInterval(interval3);
-    }
-  }, 100);
+            clearInterval(interval3);
+        } else if (window.location.href.indexOf("#/blank") == -1) {
+            console.log("[Background]", "非主页，停止注入", new Date());
+            clearInterval(interval3);
+        }
+    }, 100);
 
-  function reloadBg(imgUrl) {
-    const element = document.createElement("style");
-    document.head.appendChild(element);
+    function reloadBg(imgUrl) {
+        const element = document.createElement("style");
+        document.head.appendChild(element);
 
-    document.documentElement.style.setProperty(
-      "--background-image-url",
-      `url("appimg://${imgUrl}")`
-    );
-  }
-
-  function patchCss() {
-    var thisNode = document
-      .evaluate("/html/head/style[@id='background-plugin-css']", document)
-      .iterateNext();
-    if (thisNode) {
-      thisNode.parentElement.removeChild(thisNode);
+        document.documentElement.style.setProperty(
+            "--background-image-url",
+            `url("appimg://${imgUrl}")`
+        );
     }
 
-    var stylee = document.createElement("style");
-    stylee.type = "text/css";
-    stylee.id = "background-plugin-css";
-    var sHtml = `
+    function patchCss() {
+        var thisNode = document
+            .evaluate("/html/head/style[@id='background-plugin-css']", document)
+            .iterateNext();
+        if (thisNode) {
+            thisNode.parentElement.removeChild(thisNode);
+        }
+
+        var stylee = document.createElement("style");
+        stylee.type = "text/css";
+        stylee.id = "background-plugin-css";
+        var sHtml = `
       @media (prefers-color-scheme: dark) {
         .tab-container{
           background-color: unset!important;
@@ -236,8 +249,6 @@ export function onLoad() {
           backdrop-filter: brightness(110%) saturate(120%) blur(8px);
         }
 
-
-
         .viewport-list__inner{
           background-color: rgb( 0 0 0  / 70%)!important;
         }
@@ -260,7 +271,7 @@ export function onLoad() {
         }
 
         .chat-msg-area{
-          background-color: rgb(0 0 0  / 30%)!important;
+          background-color: rgb(0 0 0  / 0%)!important;
         }
 
         .group-member{
@@ -276,15 +287,15 @@ export function onLoad() {
         }
 
         .msg-input{
-          background-color: rgb(0 0 0  / 60%)!important;
+          background-color: rgb(0 0 0  / 40%)!important;
         }
 
         .operation{
-          background-color: rgb(0 0 0  / 60%)!important;
+          background-color: rgb(0 0 0  / 40%)!important;
         }
 
         .chat-func-bar{
-          background-color: rgb(0 0 0 / 60%)!important;
+          background-color: rgb(0 0 0 / 40%)!important;
           padding-bottom: 8px!important;
         }
 
@@ -435,7 +446,7 @@ export function onLoad() {
         }
       }
       `;
-    stylee.innerHTML = sHtml;
-    document.getElementsByTagName("head").item(0).appendChild(stylee);
-  }
+        stylee.innerHTML = sHtml;
+        document.getElementsByTagName("head").item(0).appendChild(stylee);
+    }
 }
