@@ -332,7 +332,7 @@ export function onLoad() {
 
       @media (prefers-color-scheme: light) {
         .chat-header {
-          background: rgba(255, 255, 255, 0.5)!important;
+          background: rgba(255, 255, 255, 0.35)!important;
         }
 
 
