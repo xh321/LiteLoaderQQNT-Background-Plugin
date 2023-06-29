@@ -307,7 +307,7 @@ export function onLoad() {
         }
 
         .contact-top-bar{
-          background-color: rgb(0 0 0  / 60%)!important;
+          background-color: rgb(0 0 0  / 70%)!important;
         }
 
         .group-notice{
