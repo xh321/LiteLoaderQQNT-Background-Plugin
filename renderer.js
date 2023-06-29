@@ -175,6 +175,10 @@ export function onLoad() {
         stylee.id = "background-plugin-css";
         var sHtml = `
       @media (prefers-color-scheme: dark) {
+        .search-result {
+          background: rgba(30, 30, 30, 0.85)!important;
+        }
+
         .chat-header {
           background: rgba(0, 0, 0, 0.2)!important;
         }
@@ -254,6 +258,7 @@ export function onLoad() {
         }
 
         /* 添加模糊 */
+        .search-result,
         .av-call-status,
         .self-avatar-mini-card,
         .sidebar,
@@ -331,10 +336,13 @@ export function onLoad() {
       }
 
       @media (prefers-color-scheme: light) {
+        .search-result {
+          background: rgba(230, 230, 230, 0.85)!important;
+        }
+
         .chat-header {
           background: rgba(255, 255, 255, 0.35)!important;
         }
-
 
         .group-user__name.text-ellipsis,
         .user-name > span {
@@ -407,6 +415,7 @@ export function onLoad() {
         }
   
         /* 添加模糊 */
+        .search-result,
         .av-call-status,
         .self-avatar-mini-card,
         .sidebar,
