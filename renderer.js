@@ -175,6 +175,12 @@ export function onLoad() {
         stylee.id = "background-plugin-css";
         var sHtml = `
       @media (prefers-color-scheme: dark) {
+        .group-user__name.text-ellipsis,
+        .user-name {
+          color: #fff!important;
+          mix-blend-mode: difference!important;
+        }
+
         .member-role-tag {
           background: rgba(0, 0, 0, 0.2)!important;
         }
@@ -322,8 +328,9 @@ export function onLoad() {
 
       @media (prefers-color-scheme: light) {
         .group-user__name.text-ellipsis,
-        .user-name.text-ellipsis > span {
-          color: black!important;
+        .user-name {
+          color: #fff!important;
+          mix-blend-mode: difference!important;
         }
 
         .member-role-tag {
