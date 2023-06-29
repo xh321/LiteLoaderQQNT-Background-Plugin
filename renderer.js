@@ -280,7 +280,7 @@ export function onLoad() {
         }
 
         .group-member{
-          background-color: rgb(0 0 0  / 70%)!important;
+          background-color: rgb(0 0 0  / 40%)!important;
         }
 
         .contact-top-bar{
@@ -288,7 +288,7 @@ export function onLoad() {
         }
 
         .group-notice{
-          background-color: rgb(0 0 0  / 60%)!important;
+          background-color: rgb(0 0 0  / 40%)!important;
         }
 
         .msg-input{
@@ -311,9 +311,16 @@ export function onLoad() {
         .aio{
           background-color: rgb(0 0 0  / 70%)!important;
         }
+        .group-member-list > div.viewport-list > div.viewport-list__inner{
+          background-color: rgb(0 0 0 / 0%)!important;
+        }
       }
 
       @media (prefers-color-scheme: light) {
+        .group-user__name.text-ellipsis,
+        .user-name.text-ellipsis > span {
+          color: black!important;
+        }
 
         .av-call-status {
           background: rgba(255, 255, 255, 0.5)!important;
@@ -424,7 +431,7 @@ export function onLoad() {
         }
   
         .group-member{
-          background-color: rgb(255 255 255  / 70%)!important;
+          background-color: rgb(255 255 255  / 40%)!important;
         }
   
         .contact-top-bar{
@@ -432,7 +439,7 @@ export function onLoad() {
         }
   
         .group-notice{
-          background-color: rgb(255 255 255  / 60%)!important;
+          background-color: rgb(255 255 255  / 40%)!important;
         }
   
         .msg-input{
@@ -454,6 +461,10 @@ export function onLoad() {
   
         .aio{
           background-color: rgb(255 255 255  / 50%)!important;
+        }
+
+        .group-member-list > div.viewport-list > div.viewport-list__inner{
+          background-color: rgb(255 255 255  / 0%)!important;
         }
       }
       `;
