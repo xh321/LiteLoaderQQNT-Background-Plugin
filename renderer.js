@@ -124,7 +124,7 @@ export function onLoad() {
 
     const interval3 = setInterval(async () => {
         console.log(window.location.href);
-        if (window.location.href.indexOf("#/main/message") != -1) {
+        if (window.location.href.indexOf("#/main/message") != -1 || window.location.href.indexOf("#/chat/") != -1) {
             //如果之前已经进过这里，说明是重复进入，直接清除计时器退出即可
             if (isMainPage) {
                 clearInterval(interval3);
@@ -133,7 +133,7 @@ export function onLoad() {
             isMainPage = true;
             console.log(
                 "[Background]",
-                "检测到主页页面，注入背景更新函数",
+                "检测到主页页面或聊天页面，注入背景更新函数",
                 new Date()
             );
 
@@ -147,7 +147,7 @@ export function onLoad() {
 
             clearInterval(interval3);
         } else if (window.location.href.indexOf("#/blank") == -1) {
-            console.log("[Background]", "非主页，停止注入", new Date());
+            console.log("[Background]", "非主页或聊天页面，停止注入", new Date());
             clearInterval(interval3);
         }
     }, 100);
@@ -225,6 +225,10 @@ export function onLoad() {
 
         .self-avatar-mini-card{
           background: rgba(0,0,0,0.7)!important;
+        }
+
+        #app > div.container {
+          background: rgba(0,0,0,0.0)!important;
         }
 
         #app::before {
@@ -348,6 +352,10 @@ export function onLoad() {
         .user-name > span {
           color: #fff!important;
           mix-blend-mode: difference!important;
+        }
+
+        #app > div.container {
+          background: rgba(255,255,255,0.0)!important;
         }
 
         .member-role-tag {
