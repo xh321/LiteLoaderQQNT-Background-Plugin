@@ -8,6 +8,7 @@ const configFilePath = path.join(__dirname, "config.json");
 const sampleConfig = {
   imgDir: path.join(__dirname, "imgs").replaceAll("\\", "/"),
   refreshTime: 600,
+  isAutoRefresh: true
 };
 var nowConfig = loadConfig();
 
@@ -144,12 +145,21 @@ function onLoad(plugin) {
   );
 
   ipcMain.handle(
+    "betterQQNT.background_plugin.setAutoRefresh",
+    (event, isAutoRefresh) => {
+      nowConfig.isAutoRefresh = isAutoRefresh;
+      writeConfig();
+    }
+  );
+
+  ipcMain.handle(
     "betterQQNT.background_plugin.changeRefreshTime",
     (event, refreshTime) => {
       nowConfig.refreshTime = refreshTime;
       writeConfig();
     }
   );
+
 
   ipcMain.handle(
     "betterQQNT.background_plugin.randomSelect",

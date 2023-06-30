@@ -13,4 +13,9 @@ contextBridge.exposeInMainWorld("background_plugin", {
       "betterQQNT.background_plugin.changeRefreshTime",
       refreshTime
     ),
+    setAutoRefresh: (setAutoRefresh) =>
+    ipcRenderer.invoke(
+      "betterQQNT.background_plugin.setAutoRefresh",
+      setAutoRefresh
+    ),
 });

@@ -3,6 +3,8 @@ export async function onConfigView(view) {
     var nowImgDir = nowConfig.imgDir;
     let tmpIndex = nowImgDir.lastIndexOf("/");
     let nowDirName = nowImgDir.substr(tmpIndex + 1);
+    let isAutoRefresh =
+        nowConfig.isAutoRefresh == null || nowConfig.isAutoRefresh === true;
     const new_navbar_item = `
   <div class="q-scroll-view scroll-view--show-scrollbar" data-v-c15b275e="" style="display: block;">
   <div class="common-tab" data-v-dd43c29c="" data-v-c15b275e="">
@@ -80,6 +82,16 @@ export async function onConfigView(view) {
         </div>
       </div>
     </div>
+    <div class="setting-item-title" data-v-526bdad1="" data-v-dfbdec9c="">更新方式</div>
+    <div class="panel-main" data-v-dfbdec9c="">
+      <div data-v-dfbdec9c="">
+        <span class="label" data-v-6c241f5a="">是否自动轮播背景图</span>
+        <div class="tips" data-v-dfbdec9c="">修改会自动保存，重启NTQQ生效</div>
+      </div>
+        <div id="switchAutoRoll" style="margin-right:20px;" class="q-switch">
+          <span class="q-switch__handle"></span>
+        </div>
+    </div>
     <!--<div class="ops" data-v-7fb79317="">
       <div class="ops-btns" data-v-7fb79317="">
         <button class="q-button q-button--secondary q-button--small" aria-disabled="false" aria-busy="false" data-v-7fb79317="">
@@ -109,6 +121,23 @@ export async function onConfigView(view) {
     node2.querySelector("#selectImageDir").onclick = selectDir;
     node2.querySelector("#selectImageDirBtn").onclick = selectDir;
 
+    var q_switch = node2.querySelector("#switchAutoRoll");
+
+    if (isAutoRefresh) {
+        q_switch.classList.toggle("is-active");
+    }
+
+    q_switch.addEventListener("click", async () => {
+        if (q_switch.classList.contains("is-active")) {
+            //取消
+            window.background_plugin.setAutoRefresh(false);
+        } else {
+            //重新设置
+            window.background_plugin.setAutoRefresh(true);
+        }
+        q_switch.classList.toggle("is-active");
+    });
+
     node2.querySelector("#refreshTimeInput").onblur = async () => {
         await window.background_plugin.changeRefreshTime(
             parseInt(node2.querySelector("#refreshTimeInput").value)
@@ -124,7 +153,10 @@ export function onLoad() {
 
     const interval3 = setInterval(async () => {
         console.log(window.location.href);
-        if (window.location.href.indexOf("#/main/message") != -1 || window.location.href.indexOf("#/chat/") != -1) {
+        if (
+            window.location.href.indexOf("#/main/message") != -1 ||
+            window.location.href.indexOf("#/chat/") != -1
+        ) {
             //如果之前已经进过这里，说明是重复进入，直接清除计时器退出即可
             if (isMainPage) {
                 clearInterval(interval3);
@@ -140,14 +172,31 @@ export function onLoad() {
             reloadBg(await window.background_plugin.randomSelect());
             patchCss();
 
-            setInterval(async () => {
-                console.log("[Background]", "更新背景", new Date());
-                reloadBg(await window.background_plugin.randomSelect());
-            }, (await window.background_plugin.getRefreshTime()) * 1000);
+            var nowConfig = await window.background_plugin.getNowConfig();
+            let isAutoRefresh =
+                nowConfig.isAutoRefresh == null ||
+                nowConfig.isAutoRefresh === true;
+
+            if (isAutoRefresh) {
+                setInterval(async () => {
+                    console.log("[Background]", "更新背景", new Date());
+                    reloadBg(await window.background_plugin.randomSelect());
+                }, nowConfig.refreshTime * 1000);
+            } else {
+                console.log(
+                    "[Background]",
+                    "用户设置了不自动更新，仅更新一次",
+                    new Date()
+                );
+            }
 
             clearInterval(interval3);
         } else if (window.location.href.indexOf("#/blank") == -1) {
-            console.log("[Background]", "非主页或聊天页面，停止注入", new Date());
+            console.log(
+                "[Background]",
+                "非主页或聊天页面，停止注入",
+                new Date()
+            );
             clearInterval(interval3);
         }
     }, 100);
