@@ -1,109 +1,267 @@
 export async function onConfigView(view) {
     var nowConfig = await window.background_plugin.getNowConfig();
     var nowImgDir = nowConfig.imgDir;
-    let tmpIndex = nowImgDir.lastIndexOf("/");
-    let nowDirName = nowImgDir.substr(tmpIndex + 1);
     let isAutoRefresh =
         nowConfig.isAutoRefresh == null || nowConfig.isAutoRefresh === true;
     const new_navbar_item = `
-  <div class="q-scroll-view scroll-view--show-scrollbar" data-v-c15b275e="" style="display: block;">
-  <div class="common-tab" data-v-dd43c29c="" data-v-c15b275e="">
-    <div class="setting-item-title" data-v-526bdad1="" data-v-6c241f5a="">背景图</div>
-    <div class="chat-page" data-v-6c241f5a="">
-      <div class="chat-page__send-msg" data-v-6c241f5a="">
-        <span class="label" data-v-6c241f5a="">背景图片文件夹</span>
-        <div class="q-pulldown-menu small-size pulldown-menu" aria-disabled="false" data-v-6c241f5a="" style="width: 150px; pointer-events: auto;">
-          <div class="q-pulldown-menu-button">
-            <!---->
-            <input style="cursor:pointer;" id="selectImageDir" type="text" class="content" spellcheck="false" readonly="" placeholder="请选择图片文件夹" value="${nowDirName}" aria-controls="qContextMenu" aria-expanded="false" aria-haspopup="menu" aria-owns="qContextMenu" role="combobox">
-            <span id="selectImageDirBtn" style="top:0!important;cursor:pointer;" class="icon">
-              <i class="q-icon" data-v-f2a2e0a3="" style="--64bccad3: inherit; --3111caac:16px;">
-                <svg t="1686929070383" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2418" width="200" height="200">
-                  <defs>
-                  <style><![CDATA[
-                    @media (prefers-color-scheme: light) {
-                    .path {
-                      stroke: black;
-                      fill: black;
-                      }
-                    }
-                    @media (prefers-color-scheme: dark) {
-                      .path {
-                        stroke: grey;
-                        fill: grey;
-                      }
-                    }
-                  ]]></style>
-                </defs>
-                  <path class="path" d="M850.3296 374.9888v-45.2096c0-47.4624-38.4-100.5568-89.2416-100.5568h-224.8704l-6.7584-12.4416a62.976 62.976 0 0 0-56.32-33.8944H226.6624A84.6336 84.6336 0 0 0 143.0528 268.8v467.7632a84.6336 84.6336 0 0 0 83.6096 85.8624h578.56a84.6336 84.6336 0 0 0 83.6096-85.8624V449.5872c0-27.136-14.6944-54.2208-38.4-74.5472z m-64.4096-22.5792h-184.32l-30.72-58.7776h190.976c10.24 0 24.8832 19.2 24.8832 36.1472v22.5792z m38.4 96v286.976a21.0944 21.0944 0 0 1-19.2 21.4528h-578.56a20.48 20.48 0 0 1-19.2-21.4528V267.6736a21.0944 21.0944 0 0 1 19.2-21.4528h245.248l81.3568 153.6a33.28 33.28 0 0 0 28.2624 16.9472h209.92c12.4928 0.0512 32.9728 20.3776 32.9728 31.6416z" p-id="2419">
-                  </path>
-                </svg>
-              </i>
-            </span>
+    <body>
+      <div class="config_view">
+        <section class="path">
+          <h1>背景图设置</h1>
+          <div class="wrap">
+            <div class="vertical-list-item top-box">
+              <h2>修改背景图来源（下次更新生效）</h2>
+              <div>
+                <button id="selectImageDirBtn" class="q-button q-button--small q-button--secondary">选择目录</button>
+                <button id="selectImageFileBtn" class="q-button q-button--small q-button--secondary">选择单个文件</button>
+              </div>
+            </div>
+            <hr class="horizontal-dividing-line" />
+            <div class="vertical-list-item">
+              <text>当前背景图来源：<span id="imgSourceType">${nowConfig.imgSource=='folder'|| nowConfig.imgSource==null ?'目录':'单个文件'}</span></text>
+            </div>
+            <hr class="horizontal-dividing-line" />
+            <div class="vertical-list-item bottom-box">
+              <input id="selectImageDir" class="path-input text_color" type="text" spellcheck="false" readonly="true" value="${nowImgDir}">
+            </div>
           </div>
-          <!---->
-        </div>
-      </div>
-    </div>
-    <style>
-      @media (prefers-color-scheme: light) {
-        .text_color {
-          color:black;
-        }
-      }
-      @media (prefers-color-scheme: dark) {
-        .text_color {
-          color:white;
-        }
-      }
+        </section>
 
-      .path-input {
-        align-self: normal;
-        flex: 1;
-        border-radius: 4px;
-        margin-right: 16px;
-        transition: all 100ms ease-out;
-      }
-    
-      .path-input:focus {
-        padding-left: 4px;
-      }
-      
-      </style>
-    <div class="setting-item-title" data-v-526bdad1="" data-v-dfbdec9c="">更新时间</div>
-    <div class="panel-main" data-v-dfbdec9c="">
-      <div data-v-dfbdec9c="">
-        <span class="label" data-v-6c241f5a="">请输入背景图更新时间（秒）</span>
-        <div class="tips" data-v-dfbdec9c="">修改会自动保存，重启NTQQ生效</div>
+        <section class="path">
+          <h1>更新设置</h1>
+          <div class="wrap">
+
+            <div class="list">
+
+              <div class="vertical-list-item">
+                <div>
+                  <h2>背景图更新间隔</h2>
+                  <span class="secondary-text">修改将自动保存，但重启才生效</span>
+                </div>
+                <div style="width:80px;" style="width: 75px; pointer-events: auto;">
+                  <input id="refreshTimeInput" min="1" max="999" maxlength="3" class="text_color path-input" style="width:45px;" type="number" value="${nowConfig.refreshTime}"/>秒
+                </div>
+              </div>
+
+              <hr class="horizontal-dividing-line" />          
+
+              <div class="vertical-list-item">
+                <div>
+                  <h2>是否自动轮播背景图</h2>
+                  <span class="secondary-text">修改将自动保存，但重启才生效</span>
+                </div>
+                <div id="switchAutoRoll" class="q-switch">
+                  <span class="q-switch__handle"></span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+
+        <style>
+          .path-input {
+            align-self: normal;
+            flex: 1;
+            border-radius: 4px;
+            margin-right: 16px;
+            transition: all 100ms ease-out;
+          }
+        
+          .path-input:focus {
+            padding-left: 4px;
+          }
+          
+          .bq-icon {
+            height:16px;
+            width:16px;
+          }
+          
+          /* 通用 */
+          .config_view {
+              margin: 20px;
+          }
+          
+          .config_view h1 {
+              color: var(--text_primary);
+              font-weight: var(--font-bold);
+              font-size: min(var(--font_size_3), 18px);
+              line-height: min(var(--line_height_3), 24px);
+              padding: 0px 16px;
+              margin-bottom: 8px;
+          }
+          
+          .config_view .wrap {
+              /* Linux样式兼容：--fg_white */
+              background-color: var(--fill_light_primary, var(--fg_white));
+              border-radius: 8px;
+              font-size: min(var(--font_size_3), 18px);
+              line-height: min(var(--line_height_3), 24px);
+              margin-bottom: 20px;
+              overflow: hidden;
+              padding: 0px 16px;
+          }
+          
+          .config_view .vertical-list-item {
+              margin: 12px 0px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+          }
+          
+          .config_view .horizontal-dividing-line {
+              border: unset;
+              margin: unset;
+              height: 1px;
+              background-color: rgba(127, 127, 127, 0.15);
+          }
+          
+          .config_view .vertical-dividing-line {
+              border: unset;
+              margin: unset;
+              width: 1px;
+              background-color: rgba(127, 127, 127, 0.15);
+          }
+          
+          .config_view .ops-btns {
+              display: flex;
+          }
+          
+          .config_view .hidden {
+              display: none !important;
+          }
+          
+          .config_view .disabled {
+              pointer-events: none;
+              opacity: 0.5;
+          }
+          
+          .config_view .secondary-text {
+              color: var(--text_secondary);
+              font-size: min(var(--font_size_2), 16px);
+              line-height: min(var(--line_height_2), 22px);
+              margin-top: 4px;
+          }
+          
+          .config_view .wrap .title {
+              cursor: pointer;
+              font-size: min(var(--font_size_3), 18px);
+              line-height: min(var(--line_height_3), 24px);
+          }
+          
+          .config_view .wrap .title svg {
+              width: 1em;
+              height: 1em;
+              transform: rotate(-180deg);
+              transition-duration: 0.2s;
+              transition-timing-function: ease;
+              transition-delay: 0s;
+              transition-property: transform;
+          }
+          
+          .config_view .wrap .title svg.is-fold {
+              transform: rotate(0deg);
+          }
+          
+          
+          /* 模态框 */
+          .config_view .modal-window {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              position: fixed;
+              top: 0;
+              right: 0;
+              bottom: 0;
+              left: 0;
+              z-index: 999;
+              background-color: rgba(0, 0, 0, 0.5);
+          }
+          
+          .config_view .modal-dialog {
+              width: 480px;
+              border-radius: 8px;
+              /* Linux样式兼容：--fg_white */
+              background-color: var(--bg_bottom_standard, var(--fg_white));
+          }
+          
+          .config_view .modal-dialog header {
+              font-size: 12px;
+              height: 30px;
+              line-height: 30px;
+              text-align: center;
+          }
+          
+          .config_view .modal-dialog main {
+              padding: 0px 16px;
+          }
+          
+          .config_view .modal-dialog main p {
+              margin: 8px 0px;
+          }
+          
+          .config_view .modal-dialog footer {
+              height: 30px;
+              display: flex;
+              justify-content: right;
+              align-items: center;
+          }
+          
+          .config_view .modal-dialog .q-icon {
+              width: 22px;
+              height: 22px;
+              margin: 8px;
+          }
+          
+          
+          /* 版本号 */
+          .config_view .versions .wrap {
+              display: flex;
+              justify-content: space-between;
+              padding: 16px 0px;
+          }
+          
+          .config_view .versions .wrap>div {
+              flex: 1;
+              margin: 0px 10px;
+              border-radius: 8px;
+              text-align: center;
+          }
+          
+          
+          /* 数据目录 */
+          .config_view .path .path-input {
+              align-self: normal;
+              flex: 1;
+              border-radius: 4px;
+              margin-right: 16px;
+              transition: all 100ms ease-out;
+          }
+          
+          .config_view .path .path-input:focus {
+              padding-left: 5px;
+              background-color: rgba(127, 127, 127, 0.1);
+          }
+          
+          @media (prefers-color-scheme: light) {
+              .text_color {
+                  color: black;
+              }
+          }
+          
+          @media (prefers-color-scheme: dark) {
+              .text_color {
+                  color: white;
+              }
+          }
+
+        </style>
       </div>
-      <div style="width:80px;" class="q-pulldown-menu small-size pulldown-menu" aria-disabled="false" data-v-6c241f5a="" style="width: 150px; pointer-events: auto;">
-        <div style="width:80px;" class="q-pulldown-menu-button">
-          <input id="refreshTimeInput" min="1" max="999" maxlength="3" class="text_color path-input" style="width:80px;" type="number" placeholder="单位：秒" value="${nowConfig.refreshTime}"/>
-        </div>
-      </div>
-    </div>
-    <div class="setting-item-title" data-v-526bdad1="" data-v-dfbdec9c="">更新方式</div>
-    <div class="panel-main" data-v-dfbdec9c="">
-      <div data-v-dfbdec9c="">
-        <span class="label" data-v-6c241f5a="">是否自动轮播背景图</span>
-        <div class="tips" data-v-dfbdec9c="">修改会自动保存，重启NTQQ生效</div>
-      </div>
-        <div id="switchAutoRoll" style="margin-right:20px;" class="q-switch">
-          <span class="q-switch__handle"></span>
-        </div>
-    </div>
-    <!--<div class="ops" data-v-7fb79317="">
-      <div class="ops-btns" data-v-7fb79317="">
-        <button class="q-button q-button--secondary q-button--small" aria-disabled="false" aria-busy="false" data-v-7fb79317="">
-          <span class="q-button__slot-warp">应用</span>
-        </button>
-      </div>
-    </div>-->
-  </div>
-  <div class="loadmore-placeholder" style="display: none;">
-  </div>
-</div>
+    </body>
   `;
+
     const parser = new DOMParser();
 
     const doc2 = parser.parseFromString(new_navbar_item, "text/html");
@@ -111,15 +269,21 @@ export async function onConfigView(view) {
 
     var selectDir = async () => {
         var path = await window.background_plugin.showFolderSelect();
-        alert("成功修改路径为：" + path);
+        alert("成功修改路径为目录：" + path);
         var realPath = path[0].replaceAll("\\", "/");
-        let index = realPath.lastIndexOf("/");
-        let dirName = realPath.substr(index + 1);
-        node2.querySelector("#selectImageDir").value = dirName;
+        node2.querySelector("#imgSourceType").innerText="目录"
+        node2.querySelector("#selectImageDir").value = realPath;
     };
+    var selectFile = async () => {
+      var path = await window.background_plugin.showFileSelect();
+      alert("成功修改路径为单个文件：" + path);
+      var realPath = path[0].replaceAll("\\", "/");
+      node2.querySelector("#imgSourceType").innerText="单个文件"
+      node2.querySelector("#selectImageDir").value = realPath;
+  };
 
-    node2.querySelector("#selectImageDir").onclick = selectDir;
     node2.querySelector("#selectImageDirBtn").onclick = selectDir;
+    node2.querySelector("#selectImageFileBtn").onclick = selectFile;
 
     var q_switch = node2.querySelector("#switchAutoRoll");
 
