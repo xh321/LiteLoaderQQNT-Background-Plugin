@@ -1,6 +1,6 @@
 # LiteLoaderQQNT - background-plugin
 
-LiteLoaderQQNT插件，用于自动切换QQNT的背景图片，并自带一些CSS优化（参考自[BetterQQNT-Test-Theme](https://github.com/mo-jinran/BetterQQNT-test-theme)）。
+LiteLoaderQQNT插件，用于自动切换QQNT的背景图片，并自带一些CSS优化（参考自[LiteLoaderQQNT-Test-Theme](https://github.com/mo-jinran/test-theme)）。
 使用前需要安装[LiteLoaderQQNT](https://github.com/mo-jinran/LiteLoaderQQNT)，并在QQNT新版上使用。
 
 ## 使用方法
