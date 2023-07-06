@@ -12,6 +12,7 @@ export async function onConfigView(view) {
             <div class="vertical-list-item top-box">
               <h2>修改背景图来源</h2>
               <div>
+                <button id="refreshBgNow" class="q-button q-button--small q-button--secondary">立即更新一次背景图</button>
                 <button id="selectImageDirBtn" class="q-button q-button--small q-button--secondary">选择目录</button>
                 <button id="selectImageFileBtn" class="q-button q-button--small q-button--secondary">选择单个文件</button>
               </div>
@@ -282,7 +283,7 @@ export async function onConfigView(view) {
 
         await window.background_plugin.reloadBg();
     };
-    
+
     var selectFile = async () => {
         var path = await window.background_plugin.showFileSelect();
         alert("成功修改路径为单个文件：" + path);
@@ -293,6 +294,11 @@ export async function onConfigView(view) {
         await window.background_plugin.reloadBg();
     };
 
+    var refreshBg = async () => {
+        await window.background_plugin.reloadBg();
+    };
+
+    node2.querySelector("#refreshBgNow").onclick = refreshBg;
     node2.querySelector("#selectImageDirBtn").onclick = selectDir;
     node2.querySelector("#selectImageFileBtn").onclick = selectFile;
 
