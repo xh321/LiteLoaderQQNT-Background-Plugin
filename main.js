@@ -80,9 +80,12 @@ function rd(n) {
 // 随机获取一张图片路径
 function rdpic() {
     return new Promise((resolve, reject) => {
-        if(nowConfig.overrideImgFile != null && fs.existsSync(nowConfig.overrideImgFile)){
-          resolve(nowConfig.overrideImgFile);
-          return;
+        if (
+            nowConfig.overrideImgFile != null &&
+            fs.existsSync(nowConfig.overrideImgFile)
+        ) {
+            resolve(nowConfig.overrideImgFile);
+            return;
         }
         //目录
         if (nowConfig.imgSource == null || nowConfig.imgSource == "folder") {
@@ -121,6 +124,12 @@ function watchConfigChange() {
         "utf-8",
         debounce(() => {
             nowConfig = loadConfig();
+            mainWindowObj.webContents.send(
+                "betterQQNT.background_plugin.mainWindow.resetTimer"
+            );
+            mainWindowObj.webContents.send(
+                "betterQQNT.background_plugin.mainWindow.reloadBg"
+            );
         }, 100)
     );
 }
@@ -147,6 +156,24 @@ function writeConfig() {
 }
 
 function onLoad(plugin) {
+    ipcMain.handle(
+        "betterQQNT.background_plugin.resetTimer",
+        async (event, message) => {
+            mainWindowObj.webContents.send(
+                "betterQQNT.background_plugin.mainWindow.resetTimer"
+            );
+        }
+    );
+
+    ipcMain.handle(
+        "betterQQNT.background_plugin.reloadBg",
+        async (event, message) => {
+            mainWindowObj.webContents.send(
+                "betterQQNT.background_plugin.mainWindow.reloadBg"
+            );
+        }
+    );
+
     ipcMain.handle(
         "betterQQNT.background_plugin.showFolderSelect",
         (event, message) => {
@@ -244,8 +271,15 @@ function onLoad(plugin) {
     // );
 }
 
+var mainWindowObj = null;
 function onBrowserWindowCreated(window) {
     watchConfigChange();
+
+    window.webContents.on("did-stop-loading", () => {
+        if (window.webContents.getURL().indexOf("#/main/message") != -1) {
+            mainWindowObj = window;
+        }
+    });
 }
 
 module.exports = {

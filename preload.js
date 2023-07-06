@@ -1,6 +1,19 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("background_plugin", {
+    reloadBgListener: (callback) =>
+        ipcRenderer.on(
+            "betterQQNT.background_plugin.mainWindow.reloadBg",
+            callback
+        ),
+    resetTimerListener: (callback) =>
+        ipcRenderer.on(
+            "betterQQNT.background_plugin.mainWindow.resetTimer",
+            callback
+        ),
+    resetTimer: () =>
+        ipcRenderer.invoke("betterQQNT.background_plugin.resetTimer"),
+    reloadBg: () => ipcRenderer.invoke("betterQQNT.background_plugin.reloadBg"),
     showFolderSelect: () =>
         ipcRenderer.invoke("betterQQNT.background_plugin.showFolderSelect"),
     showFileSelect: () =>

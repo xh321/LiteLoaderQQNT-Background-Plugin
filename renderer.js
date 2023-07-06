@@ -10,7 +10,7 @@ export async function onConfigView(view) {
           <h1>背景图设置</h1>
           <div class="wrap">
             <div class="vertical-list-item top-box">
-              <h2>修改背景图来源（下次更新生效）</h2>
+              <h2>修改背景图来源</h2>
               <div>
                 <button id="selectImageDirBtn" class="q-button q-button--small q-button--secondary">选择目录</button>
                 <button id="selectImageFileBtn" class="q-button q-button--small q-button--secondary">选择单个文件</button>
@@ -18,7 +18,11 @@ export async function onConfigView(view) {
             </div>
             <hr class="horizontal-dividing-line" />
             <div class="vertical-list-item">
-              <text>当前背景图来源：<span id="imgSourceType">${nowConfig.imgSource=='folder'|| nowConfig.imgSource==null ?'目录':'单个文件'}</span></text>
+              <text>当前背景图来源：<span id="imgSourceType">${
+                  nowConfig.imgSource == "folder" || nowConfig.imgSource == null
+                      ? "目录"
+                      : "单个文件"
+              }</span></text>
             </div>
             <hr class="horizontal-dividing-line" />
             <div class="vertical-list-item bottom-box">
@@ -36,10 +40,12 @@ export async function onConfigView(view) {
               <div class="vertical-list-item">
                 <div>
                   <h2>背景图更新间隔</h2>
-                  <span class="secondary-text">修改将自动保存，但重启才生效</span>
+                  <span class="secondary-text">修改将自动保存并立即生效；为了最佳体验，请勿设置过短哦~</span>
                 </div>
                 <div style="width:80px;" style="width: 75px; pointer-events: auto;">
-                  <input id="refreshTimeInput" min="1" max="999" maxlength="3" class="text_color path-input" style="width:45px;" type="number" value="${nowConfig.refreshTime}"/>秒
+                  <input id="refreshTimeInput" min="1" max="999" maxlength="3" class="text_color path-input" style="width:45px;" type="number" value="${
+                      nowConfig.refreshTime
+                  }"/>秒
                 </div>
               </div>
 
@@ -48,7 +54,7 @@ export async function onConfigView(view) {
               <div class="vertical-list-item">
                 <div>
                   <h2>是否自动轮播背景图</h2>
-                  <span class="secondary-text">修改将自动保存，但重启才生效</span>
+                  <span class="secondary-text">修改将自动保存并立即生效</span>
                 </div>
                 <div id="switchAutoRoll" class="q-switch">
                   <span class="q-switch__handle"></span>
@@ -271,16 +277,21 @@ export async function onConfigView(view) {
         var path = await window.background_plugin.showFolderSelect();
         alert("成功修改路径为目录：" + path);
         var realPath = path[0].replaceAll("\\", "/");
-        node2.querySelector("#imgSourceType").innerText="目录"
+        node2.querySelector("#imgSourceType").innerText = "目录";
         node2.querySelector("#selectImageDir").value = realPath;
+
+        await window.background_plugin.reloadBg();
     };
+    
     var selectFile = async () => {
-      var path = await window.background_plugin.showFileSelect();
-      alert("成功修改路径为单个文件：" + path);
-      var realPath = path[0].replaceAll("\\", "/");
-      node2.querySelector("#imgSourceType").innerText="单个文件"
-      node2.querySelector("#selectImageDir").value = realPath;
-  };
+        var path = await window.background_plugin.showFileSelect();
+        alert("成功修改路径为单个文件：" + path);
+        var realPath = path[0].replaceAll("\\", "/");
+        node2.querySelector("#imgSourceType").innerText = "单个文件";
+        node2.querySelector("#selectImageDir").value = realPath;
+
+        await window.background_plugin.reloadBg();
+    };
 
     node2.querySelector("#selectImageDirBtn").onclick = selectDir;
     node2.querySelector("#selectImageFileBtn").onclick = selectFile;
@@ -303,9 +314,13 @@ export async function onConfigView(view) {
     });
 
     node2.querySelector("#refreshTimeInput").onblur = async () => {
-        await window.background_plugin.changeRefreshTime(
-            parseInt(node2.querySelector("#refreshTimeInput").value)
-        );
+        var time = parseFloat(node2.querySelector("#refreshTimeInput").value);
+        if (time <= 0) {
+            alert("你的时间设置有误！将不会保存，请重新输入");
+            return;
+        }
+
+        await window.background_plugin.changeRefreshTime(time);
     };
 
     view.appendChild(node2);
@@ -314,6 +329,8 @@ export function onLoad() {
     console.log("[Background]", "开始检测页面路径", new Date());
 
     var isMainPage = false;
+
+    var bgUpdateTimer = null;
 
     const interval3 = setInterval(async () => {
         console.log(window.location.href);
@@ -333,26 +350,24 @@ export function onLoad() {
                 new Date()
             );
 
+            //监听任何可能的重载背景的请求
+            await window.background_plugin.reloadBgListener(
+                async (event, message) => {
+                    reloadBg(await window.background_plugin.randomSelect());
+                }
+            );
+
+            //监听任何可能的重载计时器的请求
+            await window.background_plugin.resetTimerListener(
+                async (event, message) => {
+                    await resetTimer();
+                }
+            );
+
             reloadBg(await window.background_plugin.randomSelect());
             patchCss();
 
-            var nowConfig = await window.background_plugin.getNowConfig();
-            let isAutoRefresh =
-                nowConfig.isAutoRefresh == null ||
-                nowConfig.isAutoRefresh === true;
-
-            if (isAutoRefresh) {
-                setInterval(async () => {
-                    console.log("[Background]", "更新背景", new Date());
-                    reloadBg(await window.background_plugin.randomSelect());
-                }, nowConfig.refreshTime * 1000);
-            } else {
-                console.log(
-                    "[Background]",
-                    "用户设置了不自动更新，仅更新一次",
-                    new Date()
-                );
-            }
+            await resetTimer();
 
             clearInterval(interval3);
         } else if (window.location.href.indexOf("#/blank") == -1) {
@@ -364,6 +379,41 @@ export function onLoad() {
             clearInterval(interval3);
         }
     }, 100);
+
+    var resetTimerFlag = false;
+    async function resetTimer() {
+        //防并发
+        if (resetTimerFlag) return;
+        resetTimerFlag = true;
+
+        if (bgUpdateTimer != null) {
+            clearInterval(bgUpdateTimer);
+        }
+        var nowConfig = await window.background_plugin.getNowConfig();
+
+        let isAutoRefresh =
+            nowConfig.isAutoRefresh == null || nowConfig.isAutoRefresh === true;
+
+        if (isAutoRefresh) {
+            console.log(
+                "[Background]",
+                `当前背景更新间隔：${nowConfig.refreshTime}秒`,
+                new Date()
+            );
+            bgUpdateTimer = setInterval(async () => {
+                console.log("[Background]", "更新背景", new Date());
+                reloadBg(await window.background_plugin.randomSelect());
+            }, nowConfig.refreshTime * 1000);
+        } else {
+            console.log(
+                "[Background]",
+                "用户设置了不自动更新，仅更新一次",
+                new Date()
+            );
+        }
+
+        resetTimerFlag = false;
+    }
 
     function reloadBg(imgUrl) {
         const element = document.createElement("style");
