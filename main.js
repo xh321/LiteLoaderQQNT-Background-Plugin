@@ -125,10 +125,10 @@ function watchConfigChange() {
         debounce(() => {
             nowConfig = loadConfig();
             mainWindowObj.webContents.send(
-                "betterQQNT.background_plugin.mainWindow.resetTimer"
+                "LiteLoader.background_plugin.mainWindow.resetTimer"
             );
             mainWindowObj.webContents.send(
-                "betterQQNT.background_plugin.mainWindow.reloadBg"
+                "LiteLoader.background_plugin.mainWindow.reloadBg"
             );
         }, 100)
     );
@@ -157,25 +157,25 @@ function writeConfig() {
 
 function onLoad(plugin) {
     ipcMain.handle(
-        "betterQQNT.background_plugin.resetTimer",
+        "LiteLoader.background_plugin.resetTimer",
         async (event, message) => {
             mainWindowObj.webContents.send(
-                "betterQQNT.background_plugin.mainWindow.resetTimer"
+                "LiteLoader.background_plugin.mainWindow.resetTimer"
             );
         }
     );
 
     ipcMain.handle(
-        "betterQQNT.background_plugin.reloadBg",
+        "LiteLoader.background_plugin.reloadBg",
         async (event, message) => {
             mainWindowObj.webContents.send(
-                "betterQQNT.background_plugin.mainWindow.reloadBg"
+                "LiteLoader.background_plugin.mainWindow.reloadBg"
             );
         }
     );
 
     ipcMain.handle(
-        "betterQQNT.background_plugin.showFolderSelect",
+        "LiteLoader.background_plugin.showFolderSelect",
         (event, message) => {
             const window = BrowserWindow.fromWebContents(event.sender);
             let filePath = dialog.showOpenDialogSync(window, {
@@ -190,7 +190,7 @@ function onLoad(plugin) {
     );
 
     ipcMain.handle(
-        "betterQQNT.background_plugin.showFileSelect",
+        "LiteLoader.background_plugin.showFileSelect",
         (event, message) => {
             const window = BrowserWindow.fromWebContents(event.sender);
             var allowedExtStr = `*.${allowedExt[0]};`;
@@ -216,7 +216,7 @@ function onLoad(plugin) {
     );
 
     ipcMain.handle(
-        "betterQQNT.background_plugin.setAutoRefresh",
+        "LiteLoader.background_plugin.setAutoRefresh",
         (event, isAutoRefresh) => {
             nowConfig.isAutoRefresh = isAutoRefresh;
             writeConfig();
@@ -224,7 +224,7 @@ function onLoad(plugin) {
     );
 
     ipcMain.handle(
-        "betterQQNT.background_plugin.changeRefreshTime",
+        "LiteLoader.background_plugin.changeRefreshTime",
         (event, refreshTime) => {
             nowConfig.refreshTime = refreshTime;
             writeConfig();
@@ -232,43 +232,25 @@ function onLoad(plugin) {
     );
 
     ipcMain.handle(
-        "betterQQNT.background_plugin.randomSelect",
+        "LiteLoader.background_plugin.randomSelect",
         async (event, message) => {
             return await rdpic();
         }
     );
 
     ipcMain.handle(
-        "betterQQNT.background_plugin.getNowConfig",
+        "LiteLoader.background_plugin.getNowConfig",
         async (event, message) => {
             return nowConfig;
         }
     );
 
     ipcMain.handle(
-        "betterQQNT.background_plugin.getRefreshTime",
+        "LiteLoader.background_plugin.getRefreshTime",
         async (event, message) => {
             return nowConfig.refreshTime;
         }
     );
-
-    // ipcMain.handle(
-    //   "betterQQNT.background_plugin.showSetting",
-    //   (event, message) => {
-    //     const window = BrowserWindow.fromWebContents(event.sender);
-
-    //     const win = new BrowserWindow({
-    //       webPreferences: {
-    //           devTools: true
-    //       }
-    //   });
-    //   win.webContents.toggleDevTools()
-    //   console.log(win)
-    //   console.log(window)
-
-    //     return true;
-    //   }
-    // );
 }
 
 var mainWindowObj = null;
