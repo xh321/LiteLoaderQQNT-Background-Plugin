@@ -452,12 +452,14 @@ export function onLoad() {
           background: rgba(0, 0, 0, 0.2)!important;
         }
 
+        .message__timestamp,
+        .gray-tip-content,
         .group-user__name.text-ellipsis,
         .user-name > span {
-          color: #fff!important;
-          mix-blend-mode: difference!important;
+          color: #fff;
+          mix-blend-mode: difference;
         }
-
+        
         .member-role-tag {
           background: rgba(80,80, 80)!important;
         }
@@ -617,10 +619,12 @@ export function onLoad() {
           background: rgba(255, 255, 255, 0.35)!important;
         }
 
+        .message__timestamp,
+        .gray-tip-content,
         .group-user__name.text-ellipsis,
         .user-name > span {
-          color: #fff!important;
-          mix-blend-mode: difference!important;
+          color: #fff;
+          mix-blend-mode: difference;
         }
 
         #app > div.container {
