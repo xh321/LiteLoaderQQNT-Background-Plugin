@@ -623,6 +623,10 @@ export function onLoad() {
           background-color: rgb(0 0 0  / 35%)!important;
         }
 
+        .q-context-menu{
+          border:1px solid rgba(80,80,80,0.6)!important;
+        }
+
         .chat-msg-area{
           background-color: rgb(0 0 0  / 0%)!important;
         }
@@ -850,6 +854,10 @@ export function onLoad() {
         .q-context-sub-menu__container , .q-context-menu{
           background: unset!important;
           background-color: rgb(255 255 255  / 85%)!important;
+        }
+        
+        .q-context-menu{
+          border:1px solid rgba(230,230,230,0.6)!important;
         }
   
         .chat-msg-area{
