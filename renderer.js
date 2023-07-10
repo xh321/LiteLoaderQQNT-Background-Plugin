@@ -444,6 +444,59 @@ export function onLoad() {
         stylee.id = "background-plugin-css";
         var sHtml = `
       @media (prefers-color-scheme: dark) {
+        .contact-adder-btn,
+        .q-input {
+          background: rgba(80, 80, 80, 0.35)!important;
+        }
+
+        .q-pulldown-menu-button {
+          background: rgba(80, 80, 80, 0.25)!important;
+        }
+
+        .tab {
+          background: rgba(80, 80, 80, 0)!important;
+        }
+        
+        .tab .radio-tab {
+          background: rgba(80, 80, 80, 0.35)!important;
+        }
+
+        .tab .q-collapse-item__header,
+        .tab .tab-header {
+          background: rgba(80, 80, 80, 0)!important;
+        }
+
+        .tab .viewport-list__inner {
+          background: rgba(80, 80, 80, 0)!important;
+        }
+
+        .sys-notify-list .viewport-list__inner {
+          background: rgba(80, 80, 80, 0)!important;
+        }
+
+        .q-divider {
+          background: rgba(80, 80, 80, 0.85)!important;
+        }
+        
+        .profile,
+        .resize-handler,
+        .resize-handler > *,
+        .sys-notify {
+          background: rgba(30, 30, 30, 0.85)!important;
+        }
+
+        .main-search {
+          background: rgba(30, 30, 30, 0)!important;
+        }
+        
+        .contact__top-area {
+          background: rgba(30, 30, 30, 0)!important;
+        }
+
+        .contact {
+          background: rgba(30, 30, 30, 0.85)!important;
+        }
+
         .search-result {
           background: rgba(30, 30, 30, 0.85)!important;
         }
@@ -533,6 +586,7 @@ export function onLoad() {
         }
 
         /* 添加模糊 */
+        .q-context-menu,
         .search-result,
         .av-call-status,
         .self-avatar-mini-card,
@@ -566,7 +620,7 @@ export function onLoad() {
 
         .q-context-sub-menu__container , .q-context-menu{
           background: unset!important;
-          background-color: rgb(0 0 0  / 90%)!important;
+          background-color: rgb(0 0 0  / 35%)!important;
         }
 
         .chat-msg-area{
@@ -577,7 +631,7 @@ export function onLoad() {
           background-color: rgb(0 0 0  / 40%)!important;
         }
 
-        .contact-top-bar{
+        .recent-contact .contact-top-bar{
           background-color: rgb(0 0 0  / 70%)!important;
         }
 
@@ -611,8 +665,66 @@ export function onLoad() {
       }
 
       @media (prefers-color-scheme: light) {
+        .buddy-profile__info-uin {
+          color: #fff;
+          mix-blend-mode: difference;
+        }
+
+        .contact-adder-btn,
+        .q-input {
+          background: rgba(230, 230, 230, 0.35)!important;
+        }
+
+        .q-pulldown-menu-button {
+          background: rgba(230, 230, 230, 0.25)!important;
+        }
+
+        .tab {
+          background: rgba(230, 230, 230, 0)!important;
+        }
+        
+        .tab .radio-tab {
+          background: rgba(230, 230, 230, 0.35)!important;
+        }
+
+        .tab .q-collapse-item__header,
+        .tab .tab-header {
+          background: rgba(230, 230, 230, 0)!important;
+        }
+
+        .tab .viewport-list__inner {
+          background: rgba(230, 230, 230, 0)!important;
+        }
+
+        .sys-notify-list .viewport-list__inner {
+          background: rgba(230, 230, 230, 0)!important;
+        }
+
+        .profile,
+        .sys-notify {
+          background: rgba(230, 230, 230, 0.75)!important;
+        }
+
+        .q-divider,
+        .resize-handler,
+        .resize-handler > *{
+          background: rgba(230, 230, 230, 0.5)!important;
+        }
+
+        .main-search {
+          background: rgba(230, 230, 230, 0)!important;
+        }
+        
+        .contact__top-area {
+          background: rgba(230, 230, 230, 0)!important;
+        }
+
+        .contact {
+          background: rgba(230, 230, 230, 0.75)!important;
+        }
+
         .search-result {
-          background: rgba(230, 230, 230, 0.85)!important;
+          background: rgba(230, 230, 230, 0.75)!important;
         }
 
         .chat-header {
@@ -737,7 +849,7 @@ export function onLoad() {
   
         .q-context-sub-menu__container , .q-context-menu{
           background: unset!important;
-          background-color: rgb(255 255 255  / 90%)!important;
+          background-color: rgb(255 255 255  / 85%)!important;
         }
   
         .chat-msg-area{
@@ -748,7 +860,7 @@ export function onLoad() {
           background-color: rgb(255 255 255  / 40%)!important;
         }
   
-        .contact-top-bar{
+        .recent-contact .contact-top-bar{
           background-color: rgb(255 255 255  / 70%)!important;
         }
   
