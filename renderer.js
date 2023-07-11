@@ -475,14 +475,18 @@ export function onLoad() {
         }
 
         .q-divider {
-          background: rgba(80, 80, 80, 0.85)!important;
+          background: rgba(80, 80, 80, 0.15)!important;
         }
         
-        .profile,
+
+        .profile {
+          background: rgba(30, 30, 30, 0.85)!important;
+        }
+
         .resize-handler,
         .resize-handler > *,
         .sys-notify {
-          background: rgba(30, 30, 30, 0.85)!important;
+          background: rgba(30, 30, 30, 0.15)!important;
         }
 
         .main-search {
@@ -585,13 +589,16 @@ export function onLoad() {
           background-color: rgba(0, 0, 0, 0.1) !important;
         }
 
+        .msg-content-container {
+          backdrop-filter: brightness(120%) saturate(120%) blur(8px);
+        }
+
         /* 添加模糊 */
         .q-context-menu,
         .search-result,
         .av-call-status,
         .self-avatar-mini-card,
         .sidebar,
-        .msg-content-container,
         .forward-msg,
         .normal-file,
         .forward-ops .op-icon,
@@ -712,7 +719,7 @@ export function onLoad() {
         .q-divider,
         .resize-handler,
         .resize-handler > *{
-          background: rgba(230, 230, 230, 0.5)!important;
+          background: rgba(230, 230, 230, 0.15)!important;
         }
 
         .main-search {
@@ -811,12 +818,15 @@ export function onLoad() {
           background-color: rgba(255, 255, 255, 0.1) !important;
         }
   
+        .msg-content-container {
+          backdrop-filter: brightness(120%) saturate(120%) blur(8px);
+        }
+
         /* 添加模糊 */
         .search-result,
         .av-call-status,
         .self-avatar-mini-card,
         .sidebar,
-        .msg-content-container,
         .forward-msg,
         .normal-file,
         .forward-ops .op-icon,
