@@ -444,6 +444,40 @@ export function onLoad() {
         stylee.id = "background-plugin-css";
         var sHtml = `
       @media (prefers-color-scheme: dark) {
+        .q-dialog-main {
+          background: rgba(80,80,80,0.8)!important;
+        }
+
+        .q-dialog-main .selector {
+          background: rgba(80,80,80,0)!important;
+        }
+        
+        .q-dialog-main .msg-abstract {
+          background: rgba(80,80,80,0.6)!important;
+        }
+
+        .q-dialog-main .selector .q-collapse-item__header {
+          background: rgba(80,80,80,0.1)!important;
+          backdrop-filter: brightness(80%) saturate(120%) blur(8px);
+        }
+
+        .q-dialog-main .selector .q-collapse-item__content .viewport-list__inner {
+          background: rgba(80,80,80,0)!important;
+        }
+
+        .q-dialog-main .selector .q-collapse-item__content .viewport-list__inner .list-item {
+          background: rgba(80,80,80,0.4)!important;
+        }
+
+        .q-dialog-main .selector .forward-view .selector-editor {
+          background: rgba(80,80,80,0.6)!important;
+        }
+
+        .q-dialog-main .selector .selected-list .list-item {
+          background: rgba(80,80,80,0.4)!important;
+          margin-bottom: 5px;
+        }
+
         .contact-adder-btn,
         .q-input {
           background: rgba(80, 80, 80, 0.5)!important;
@@ -628,7 +662,7 @@ export function onLoad() {
 
         .q-context-sub-menu__container , .q-context-menu{
           background: unset!important;
-          background-color: rgb(0 0 0  / 35%)!important;
+          background-color: rgb(0 0 0  / 65%)!important;
         }
 
         .q-context-menu{
@@ -677,6 +711,40 @@ export function onLoad() {
       }
 
       @media (prefers-color-scheme: light) {
+        .q-dialog-main {
+          background: rgba(255,255,255,0.8)!important;
+        }
+
+        .q-dialog-main .selector {
+          background: rgba(255,255,255,0)!important;
+        }
+        
+        .q-dialog-main .msg-abstract {
+          background: rgba(255,255,255,0.6)!important;
+        }
+
+        .q-dialog-main .selector .q-collapse-item__header {
+          background: rgba(255,255,255,0.55)!important;
+          backdrop-filter: brightness(80%) saturate(120%) blur(8px);
+        }
+
+        .q-dialog-main .selector .q-collapse-item__content .viewport-list__inner {
+          background: rgba(255,255,255,0.4)!important;
+        }
+
+        .q-dialog-main .selector .q-collapse-item__content .viewport-list__inner .list-item {
+          background: rgba(255,255,255,0.4)!important;
+        }
+
+        .q-dialog-main .selector .forward-view .selector-editor {
+          background: rgba(255,255,255,0.6)!important;
+        }
+
+        .q-dialog-main .selector .selected-list .list-item {
+          background: rgba(255,255,255,0.4)!important;
+          margin-bottom: 5px;
+        }
+
         .buddy-profile__info-uin {
           color: #fff;
           mix-blend-mode: difference;
@@ -824,6 +892,7 @@ export function onLoad() {
         }
 
         /* 添加模糊 */
+        .q-context-menu,
         .contact,
         .search-result,
         .av-call-status,
