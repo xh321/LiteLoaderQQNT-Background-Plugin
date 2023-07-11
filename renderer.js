@@ -510,13 +510,13 @@ export function onLoad() {
         }
         
 
-        .profile {
+        .profile,
+        .sys-notify {
           background: rgba(30, 30, 30, 0.85)!important;
         }
 
         .resize-handler,
-        .resize-handler > *,
-        .sys-notify {
+        .resize-handler > * {
           background: rgba(30, 30, 30, 0.15)!important;
         }
 
