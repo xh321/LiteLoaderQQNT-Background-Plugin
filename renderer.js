@@ -465,18 +465,15 @@ export function onLoad() {
           background: rgba(80,80,80,0)!important;
         }
 
-        .q-dialog-main .selector .q-collapse-item__content .viewport-list__inner .list-item {
+        .q-dialog-main .selector .list-item {
           background: rgba(80,80,80,0.4)!important;
+          margin-bottom: 5px;
         }
-
+      
         .q-dialog-main .selector .forward-view .selector-editor {
           background: rgba(80,80,80,0.6)!important;
         }
 
-        .q-dialog-main .selector .selected-list .list-item {
-          background: rgba(80,80,80,0.4)!important;
-          margin-bottom: 5px;
-        }
 
         .contact-adder-btn,
         .q-input {
@@ -732,19 +729,14 @@ export function onLoad() {
           background: rgba(255,255,255,0.4)!important;
         }
 
-        .q-dialog-main .selector .q-collapse-item__content .viewport-list__inner .list-item {
-          background: rgba(255,255,255,0.4)!important;
-        }
-
-        .q-dialog-main .selector .forward-view .selector-editor {
-          background: rgba(255,255,255,0.6)!important;
-        }
-
-        .q-dialog-main .selector .selected-list .list-item {
+        .q-dialog-main .selector .list-item {
           background: rgba(255,255,255,0.4)!important;
           margin-bottom: 5px;
         }
-
+        
+        .q-dialog-main .selector .forward-view .selector-editor {
+          background: rgba(255,255,255,0.6)!important;
+        }
         .buddy-profile__info-uin {
           color: #fff;
           mix-blend-mode: difference;
