@@ -446,7 +446,7 @@ export function onLoad() {
       @media (prefers-color-scheme: dark) {
         .contact-adder-btn,
         .q-input {
-          background: rgba(80, 80, 80, 0.35)!important;
+          background: rgba(80, 80, 80, 0.5)!important;
         }
 
         .q-pulldown-menu-button {
@@ -490,7 +490,7 @@ export function onLoad() {
         }
 
         .main-search {
-          background: rgba(30, 30, 30, 0)!important;
+          background: rgba(30, 30, 30, 0.5)!important;
         }
         
         .contact__top-area {
@@ -594,6 +594,7 @@ export function onLoad() {
         }
 
         /* 添加模糊 */
+        .contact,
         .q-context-menu,
         .search-result,
         .av-call-status,
@@ -664,7 +665,7 @@ export function onLoad() {
         }
 
         .sidebar{
-          background-color: rgb(0 0 0  / 60%)!important;
+          background-color: rgb(0 0 0  / 80%)!important;
         }
 
         .aio{
@@ -683,7 +684,7 @@ export function onLoad() {
 
         .contact-adder-btn,
         .q-input {
-          background: rgba(230, 230, 230, 0.35)!important;
+          background: rgba(230, 230, 230, 0.5)!important;
         }
 
         .q-pulldown-menu-button {
@@ -723,7 +724,7 @@ export function onLoad() {
         }
 
         .main-search {
-          background: rgba(230, 230, 230, 0)!important;
+          background: rgba(230, 230, 230, 0.5)!important;
         }
         
         .contact__top-area {
@@ -731,7 +732,7 @@ export function onLoad() {
         }
 
         .contact {
-          background: rgba(230, 230, 230, 0.75)!important;
+          background: rgba(255, 255, 255, 0.75)!important;
         }
 
         .search-result {
@@ -823,6 +824,7 @@ export function onLoad() {
         }
 
         /* 添加模糊 */
+        .contact,
         .search-result,
         .av-call-status,
         .self-avatar-mini-card,
@@ -900,7 +902,7 @@ export function onLoad() {
         }
   
         .sidebar{
-          background-color: rgb(255 255 255  / 60%)!important;
+          background-color: rgb(255 255 255  / 80%)!important;
         }
   
         .aio{
