@@ -444,6 +444,10 @@ export function onLoad() {
         stylee.id = "background-plugin-css";
         var sHtml = `
       @media (prefers-color-scheme: dark) {
+        .viewport-list {
+          background-image: unset!important;
+        }
+
         .q-dialog-main {
           background: rgba(80,80,80,0.8)!important;
         }
@@ -708,6 +712,10 @@ export function onLoad() {
       }
 
       @media (prefers-color-scheme: light) {
+        .viewport-list {
+          background-image: unset!important;
+        }
+
         .q-dialog-main {
           background: rgba(255,255,255,0.8)!important;
         }
