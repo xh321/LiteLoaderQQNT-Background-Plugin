@@ -630,7 +630,6 @@ export function onLoad() {
 
         /* 添加模糊 */
         .contact,
-        .q-context-menu,
         .search-result,
         .av-call-status,
         .self-avatar-mini-card,
@@ -663,7 +662,7 @@ export function onLoad() {
 
         .q-context-sub-menu__container , .q-context-menu{
           background: unset!important;
-          background-color: rgb(0 0 0  / 65%)!important;
+          background-color: rgb(0 0 0  / 85%)!important;
         }
 
         .q-context-menu{
@@ -892,7 +891,6 @@ export function onLoad() {
         }
 
         /* 添加模糊 */
-        .q-context-menu,
         .contact,
         .search-result,
         .av-call-status,
