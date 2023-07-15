@@ -7,6 +7,8 @@ const allowedExt = ["JPG", "BMP", "PNG", "WEBP", "JPEG"];
 const configFilePath = path.join(__dirname, "config.json");
 const sampleConfig = {
     imgDir: path.join(__dirname, "imgs").replaceAll("\\", "/"),
+    imgFile: "",
+    imgApi: "",
     imgSource: "folder",
     refreshTime: 600,
     isAutoRefresh: true,
@@ -93,8 +95,14 @@ function rdpic() {
                 let n = rd(data.length - 1);
                 resolve(data[n]);
             });
-        } else {
-            resolve(nowConfig.imgDir); //文件
+        }
+        //网络
+        else if (nowConfig.imgSource == "network") {
+            resolve(nowConfig.imgApi)
+        }
+        //文件
+        else {
+            resolve(nowConfig.imgFile);
         }
     });
 }
@@ -175,6 +183,13 @@ function onLoad(plugin) {
     );
 
     ipcMain.handle(
+        "LiteLoader.background_plugin.setImageSourceType",
+        (event, type) => {
+            nowConfig.imgSource = type;
+            writeConfig();
+        }
+    );
+    ipcMain.handle(
         "LiteLoader.background_plugin.showFolderSelect",
         (event, message) => {
             const window = BrowserWindow.fromWebContents(event.sender);
@@ -186,6 +201,14 @@ function onLoad(plugin) {
             nowConfig.imgDir = filePath.toString().replaceAll("\\", "/");
             writeConfig();
             return filePath;
+        }
+    );
+
+    ipcMain.handle(
+        "LiteLoader.background_plugin.networkImgConfigApply",
+        (event, api) => {
+            nowConfig.imgApi = api.toString();
+            writeConfig();
         }
     );
 
@@ -209,7 +232,7 @@ function onLoad(plugin) {
                 ]
             });
             nowConfig.imgSource = "file";
-            nowConfig.imgDir = filePath.toString().replaceAll("\\", "/");
+            nowConfig.imgFile = filePath.toString().replaceAll("\\", "/");
             writeConfig();
             return filePath;
         }
@@ -251,6 +274,13 @@ function onLoad(plugin) {
             return nowConfig.refreshTime;
         }
     );
+
+    ipcMain.handle(
+        "LiteLoader.background_plugin.getMinWidth",
+        async (event, message) => {
+            return mainWindowObj.getMinimumSize();
+        }
+    );
 }
 
 var mainWindowObj = null;
@@ -260,6 +290,8 @@ function onBrowserWindowCreated(window) {
     window.webContents.on("did-stop-loading", () => {
         if (window.webContents.getURL().indexOf("#/main/message") != -1) {
             mainWindowObj = window;
+            mainWindowObj.setMinimumSize(310, 540);
+            console.log("!!!!!!!", mainWindowObj.getMinimumSize());
         }
     });
 }
