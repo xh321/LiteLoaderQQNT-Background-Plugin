@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld("background_plugin", {
     resetTimer: () =>
         ipcRenderer.invoke("LiteLoader.background_plugin.resetTimer"),
     reloadBg: () => ipcRenderer.invoke("LiteLoader.background_plugin.reloadBg"),
+    resetAll: () => ipcRenderer.invoke("LiteLoader.background_plugin.resetAll"),
     setImageSourceType: (type) =>
         ipcRenderer.invoke(
             "LiteLoader.background_plugin.setImageSourceType",
@@ -34,16 +35,19 @@ contextBridge.exposeInMainWorld("background_plugin", {
         ipcRenderer.invoke("LiteLoader.background_plugin.getRefreshTime"),
     getNowConfig: () =>
         ipcRenderer.invoke("LiteLoader.background_plugin.getNowConfig"),
-    getMinWidth: () =>
-        ipcRenderer.invoke("LiteLoader.background_plugin.getMinWidth"),
     changeRefreshTime: (refreshTime) =>
         ipcRenderer.invoke(
             "LiteLoader.background_plugin.changeRefreshTime",
             refreshTime
         ),
-    setAutoRefresh: (setAutoRefresh) =>
+    setAutoRefresh: (isAutoRefresh) =>
         ipcRenderer.invoke(
             "LiteLoader.background_plugin.setAutoRefresh",
-            setAutoRefresh
+            isAutoRefresh
+        ),
+    setUseCache: (isUseCache) =>
+        ipcRenderer.invoke(
+            "LiteLoader.background_plugin.setUseCache",
+            isUseCache
         )
 });

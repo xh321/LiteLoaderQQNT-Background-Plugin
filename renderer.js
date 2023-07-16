@@ -7,6 +7,12 @@ export async function onConfigView(view) {
     var nNowImgFile = nowImgFile == null ? "" : nowImgFile;
     let isAutoRefresh =
         nowConfig.isAutoRefresh == null || nowConfig.isAutoRefresh === true;
+    let isUseCache = !(
+        (nowConfig.apiOptions &&
+            (nowConfig.apiOptions.useCache === false ||
+                nowConfig.apiOptions.useCache == null)) ||
+        nowConfig.apiOptions == null
+    );
     const new_navbar_item = `
     <body>
       <div class="config_view">
@@ -17,6 +23,7 @@ export async function onConfigView(view) {
               <h2>操作</h2>
               <div>
                 <button id="refreshBgNow" class="q-button q-button--small q-button--secondary">立即更新一次背景图</button>
+                <button id="resetAll" class="q-button q-button--small q-button--secondary">恢复默认设置</button>
               </div>
             </div>
             <hr class="horizontal-dividing-line" />
@@ -122,6 +129,27 @@ export async function onConfigView(view) {
                   <span class="secondary-text">修改将自动保存并立即生效</span>
                 </div>
                 <div id="switchAutoRoll" class="q-switch">
+                  <span class="q-switch__handle"></span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        <section class="path">
+          <h1>网络请求设置</h1>
+          <div class="wrap">
+
+            <div class="list">      
+
+              <div class="vertical-list-item">
+                <div>
+                  <h2>是否启用缓存</h2>
+                  <span class="secondary-text">若使用API请关闭缓存，否则每次图片将因为缓存无法更新；若使用单张图片可以开启缓存</span>
+                </div>
+                <div id="switchUseCache" class="q-switch">
                   <span class="q-switch__handle"></span>
                 </div>
               </div>
@@ -377,9 +405,22 @@ export async function onConfigView(view) {
         alert("成功修改路径为单个文件：" + realPath);
     };
 
+    function isUrl(str) {
+        var v = new RegExp(
+            "^(?!mailto:)(?:(?:http|https|ftp)://|//)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$",
+            "i"
+        );
+        return v.test(str);
+    }
+
     var selectNetwork = async () => {
         var path = node2.querySelector("#selectImageApi").value;
         if (path == null || path.trim() == "") return;
+
+        if (!isUrl(path)) {
+            alert("URL不合法，请重新输入！");
+            return;
+        }
 
         await window.background_plugin.networkImgConfigApply(path);
     };
@@ -388,35 +429,71 @@ export async function onConfigView(view) {
         await window.background_plugin.reloadBg();
     };
 
+    var resetAll = async () => {
+        var result = await window.background_plugin.resetAll();
+        if (result == true) {
+            alert("已重置所有设置，请重新打开设置界面");
+            window.close();
+        }
+    };
+
     var testNetworkApi = async () => {
         node2.querySelector("#testImage").classList.remove("img-hidden");
-        node2.querySelector("#testImage").src = "";
-        node2.querySelector("#testImage").src =
-            node2.querySelector("#selectImageApi").value;
-        alert("请观察下侧是否能显示网络图片，若无任何图片显示则说明有问题。");
+
+        var imgUrl = node2.querySelector("#selectImageApi").value;
+        try {
+            var url = new URL(imgUrl);
+            url.searchParams.append("t", new Date().getTime());
+            imgUrl = url.toString();
+
+            node2.querySelector("#testImage").src = imgUrl;
+            alert(
+                "请观察下侧是否能显示网络图片，若无任何图片显示则说明有问题。"
+            );
+        } catch {
+            alert("URL不合法，请重新输入！");
+        }
     };
 
     node2.querySelector("#refreshBgNow").onclick = refreshBg;
+    node2.querySelector("#resetAll").onclick = resetAll;
     node2.querySelector("#selectImageDirBtn").onclick = selectDir;
     node2.querySelector("#selectImageFileBtn").onclick = selectFile;
     node2.querySelector("#selectImageApi").onblur = selectNetwork;
     node2.querySelector("#testNetworkApi").onclick = testNetworkApi;
 
-    var q_switch = node2.querySelector("#switchAutoRoll");
+    var q_switch_autoroll = node2.querySelector("#switchAutoRoll");
 
     if (isAutoRefresh) {
-        q_switch.classList.toggle("is-active");
+        q_switch_autoroll.classList.toggle("is-active");
     }
 
-    q_switch.addEventListener("click", async () => {
-        if (q_switch.classList.contains("is-active")) {
+    q_switch_autoroll.addEventListener("click", async () => {
+        if (q_switch_autoroll.classList.contains("is-active")) {
             //取消
             window.background_plugin.setAutoRefresh(false);
         } else {
             //重新设置
             window.background_plugin.setAutoRefresh(true);
         }
-        q_switch.classList.toggle("is-active");
+        q_switch_autoroll.classList.toggle("is-active");
+    });
+
+    var q_switch_usecache = node2.querySelector("#switchUseCache");
+
+    if (isUseCache) {
+        q_switch_usecache.classList.toggle("is-active");
+    }
+
+    q_switch_usecache.addEventListener("click", async () => {
+        if (q_switch_usecache.classList.contains("is-active")) {
+            //取消
+            window.background_plugin.setUseCache(false);
+        } else {
+            //重新设置
+            window.background_plugin.setUseCache(true);
+        }
+        q_switch_usecache.classList.toggle("is-active");
     });
 
     node2.querySelector("#refreshTimeInput").onblur = async () => {
@@ -587,7 +664,9 @@ export function onLoad() {
             //监听任何可能的重载背景的请求
             await window.background_plugin.reloadBgListener(
                 async (event, message) => {
-                    reloadBg(await window.background_plugin.randomSelect());
+                    await reloadBg(
+                        await window.background_plugin.randomSelect()
+                    );
                 }
             );
 
@@ -598,8 +677,8 @@ export function onLoad() {
                 }
             );
 
-            reloadBg(await window.background_plugin.randomSelect());
             patchCss();
+            await reloadBg(await window.background_plugin.randomSelect());
 
             await resetTimer();
 
@@ -636,7 +715,7 @@ export function onLoad() {
             );
             bgUpdateTimer = setInterval(async () => {
                 console.log("[Background]", "更新背景", new Date());
-                reloadBg(await window.background_plugin.randomSelect());
+                await reloadBg(await window.background_plugin.randomSelect());
             }, nowConfig.refreshTime * 1000);
         } else {
             console.log(
@@ -649,21 +728,45 @@ export function onLoad() {
         resetTimerFlag = false;
     }
 
-    function reloadBg(imgUrl) {
-        const element = document.createElement("style");
-        document.head.appendChild(element);
+    async function reloadBg(imgUrl) {
+        if (imgUrl == "" || imgUrl == null) {
+            //地址为空，说明没获取到图片，直接置空背景图
+            document.documentElement.style.removeProperty(
+                "--background-image-url"
+            );
+            return;
+        }
+
+        var nowConfig = await window.background_plugin.getNowConfig();
 
         var realUrl = imgUrl;
         //如果是本地路径
         if (/(^[A-Za-z]{1}:[/\\]{1,2}.*)|(^[/\\]{1,2}.*)/.test(imgUrl)) {
             //前面加上协议头
             realUrl = `appimg://${realUrl}`;
+        } else if (
+            imgUrl.indexOf("http") == 0 &&
+            //确定不开启缓存，再加时间戳避免缓存
+            ((nowConfig.apiOptions &&
+                (nowConfig.apiOptions.useCache === false ||
+                    nowConfig.apiOptions.useCache == null)) ||
+                nowConfig.apiOptions == null)
+        ) {
+            //加上时间戳，防止缓存
+            var url = new URL(imgUrl);
+            url.searchParams.append("t", new Date().getTime());
+            realUrl = url.toString();
         }
 
-        document.documentElement.style.setProperty(
-            "--background-image-url",
-            `url("${realUrl}")`
-        );
+        //图片预载，加载完毕后再更新属性
+        var img = new Image();
+        img.src = realUrl;
+        img.onload = function () {
+            document.documentElement.style.setProperty(
+                "--background-image-url",
+                `url("${realUrl}")`
+            );
+        };
     }
 
     function patchCss() {
