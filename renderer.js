@@ -782,6 +782,10 @@ export function onLoad() {
         stylee.id = "background-plugin-css";
         var sHtml = `
       @media (prefers-color-scheme: dark) {
+        .markdown_it_link {
+          color: #2398ff;
+        }
+
         .viewport-list {
           background-image: unset!important;
         }
