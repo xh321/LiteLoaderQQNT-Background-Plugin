@@ -743,7 +743,7 @@ export function onLoad() {
         //如果是本地路径
         if (/(^[A-Za-z]{1}:[/\\]{1,2}.*)|(^[/\\]{1,2}.*)/.test(imgUrl)) {
             //前面加上协议头
-            realUrl = `file://${realUrl}`;
+            realUrl = `appimg://${realUrl}`;
         } else if (
             imgUrl.indexOf("http") == 0 &&
             //确定不开启缓存，再加时间戳避免缓存
