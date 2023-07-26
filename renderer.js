@@ -890,8 +890,8 @@ export function onLoad() {
         .gray-tip-content,
         .group-user__name.text-ellipsis,
         .user-name > span {
-          color: #fff;
-          mix-blend-mode: difference;
+          color:white;
+          backrgound: rgba(80,80,80,0.8)!important;
         }
         
         .member-role-tag {
@@ -1086,9 +1086,11 @@ export function onLoad() {
         .q-dialog-main .selector .forward-view .selector-editor {
           background: rgba(255,255,255,0.6)!important;
         }
+        
         .buddy-profile__info-uin {
           color: #fff;
-          mix-blend-mode: difference;
+          font-weight:900;
+          backrgound: rgba(255,255,255,0.8)!important;
         }
 
         .contact-adder-btn,
@@ -1156,8 +1158,8 @@ export function onLoad() {
         .gray-tip-content,
         .group-user__name.text-ellipsis,
         .user-name > span {
-          color: #fff;
-          mix-blend-mode: difference;
+          color: #000!important;
+          backrgound: rgba(255,255,255,0.8)!important;
         }
 
         #app > div.container {
