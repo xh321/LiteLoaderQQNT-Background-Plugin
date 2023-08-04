@@ -644,7 +644,6 @@ export function onLoad() {
     var bgUpdateTimer = null;
 
     const interval3 = setInterval(async () => {
-        console.log(window.location.href);
         if (
             window.location.href.indexOf("#/main/message") != -1 ||
             window.location.href.indexOf("#/chat/") != -1
