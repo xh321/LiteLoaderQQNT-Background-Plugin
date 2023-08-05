@@ -922,7 +922,7 @@ export function onLoad() {
           background-color: rgb(0 0 0 / 40%)!important;
         }
 
-        .chat-msg-area__vlist{
+        .chat-msg-area__vlist, #ml-root{
           z-index:unset!important;
         }
 
@@ -1213,7 +1213,7 @@ export function onLoad() {
           background-color: rgb(255 255 255 / 40%)!important;
         }
         
-        .chat-msg-area__vlist{
+        .chat-msg-area__vlist, #ml-root {
           z-index:unset!important;
         }
   
