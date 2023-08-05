@@ -781,6 +781,11 @@ export function onLoad() {
         stylee.id = "background-plugin-css";
         var sHtml = `
       @media (prefers-color-scheme: dark) {
+        .favorites-layout,
+        .favorites-layout__content {
+          background:unset!important;
+        }
+
         .favorites-layout__left-area {
           background: rgba(30, 30, 30, 0.85)!important;
         }
@@ -1061,6 +1066,11 @@ export function onLoad() {
       }
 
       @media (prefers-color-scheme: light) {
+        .favorites-layout,
+        .favorites-layout__content {
+          background:unset!important;
+        }
+
         .favorites-layout__left-area {
           background: rgba(255, 255, 255, 0.75)!important;
         }
