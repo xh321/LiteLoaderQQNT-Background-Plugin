@@ -781,6 +781,14 @@ export function onLoad() {
         stylee.id = "background-plugin-css";
         var sHtml = `
       @media (prefers-color-scheme: dark) {
+        .favorites-layout__left-area {
+          background: rgba(30, 30, 30, 0.85)!important;
+        }
+
+        .favorites-layout__right-area {
+          background: rgba(30,30,30,0.85)!important;
+        }
+
         .markdown_it_link {
           color: #2398ff;
         }
@@ -970,6 +978,7 @@ export function onLoad() {
         }
 
         /* 添加模糊 */
+        .favorites-layout__left-area,
         .contact,
         .search-result,
         .av-call-status,
@@ -1052,6 +1061,14 @@ export function onLoad() {
       }
 
       @media (prefers-color-scheme: light) {
+        .favorites-layout__left-area {
+          background: rgba(255, 255, 255, 0.75)!important;
+        }
+
+        .favorites-layout__right-area {
+          background: rgba(255,255,255,0.8)!important;
+        }
+
         .viewport-list {
           background-image: unset!important;
         }
@@ -1234,6 +1251,7 @@ export function onLoad() {
         }
 
         /* 添加模糊 */
+        .favorites-layout__left-area,
         .contact,
         .search-result,
         .av-call-status,
