@@ -1,6 +1,11 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("background_plugin", {
+    repatchFrostedGlassStyleListener: (callback) =>
+        ipcRenderer.on(
+            "LiteLoader.background_plugin.mainWindow.repatchFrostedGlassStyle",
+            callback
+        ),
     reloadBgListener: (callback) =>
         ipcRenderer.on(
             "LiteLoader.background_plugin.mainWindow.reloadBg",
@@ -15,6 +20,11 @@ contextBridge.exposeInMainWorld("background_plugin", {
         ipcRenderer.invoke("LiteLoader.background_plugin.resetTimer"),
     reloadBg: () => ipcRenderer.invoke("LiteLoader.background_plugin.reloadBg"),
     resetAll: () => ipcRenderer.invoke("LiteLoader.background_plugin.resetAll"),
+    setFrostedGlassStyle: (isEnable) =>
+        ipcRenderer.invoke(
+            "LiteLoader.background_plugin.setFrostedGlassStyle",
+            isEnable
+        ),
     setImageSourceType: (type) =>
         ipcRenderer.invoke(
             "LiteLoader.background_plugin.setImageSourceType",

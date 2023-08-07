@@ -12,6 +12,7 @@ const sampleConfig = {
     refreshTime: 600,
     isAutoRefresh: true,
     overrideImgFile: "",
+    enableFrostedGlassStyle: true,
     apiOptions: {
         useCache: false
     }
@@ -168,10 +169,10 @@ function watchConfigChange() {
                 return;
             }
             nowConfig = loadConfig();
-            mainWindowObj.webContents.send(
+            sendChatWindowsMessage(
                 "LiteLoader.background_plugin.mainWindow.resetTimer"
             );
-            mainWindowObj.webContents.send(
+            sendChatWindowsMessage(
                 "LiteLoader.background_plugin.mainWindow.reloadBg"
             );
         }, 100)
@@ -210,11 +211,18 @@ function writeConfig() {
     );
 }
 
+function sendChatWindowsMessage(message) {
+    for (var window of mainWindowObjs) {
+        if (window.isDestroyed()) continue;
+        window.webContents.send(message);
+    }
+}
+
 function onLoad(plugin) {
     ipcMain.handle(
         "LiteLoader.background_plugin.resetTimer",
         async (event, message) => {
-            mainWindowObj.webContents.send(
+            sendChatWindowsMessage(
                 "LiteLoader.background_plugin.mainWindow.resetTimer"
             );
         }
@@ -223,7 +231,7 @@ function onLoad(plugin) {
     ipcMain.handle(
         "LiteLoader.background_plugin.reloadBg",
         async (event, message) => {
-            mainWindowObj.webContents.send(
+            sendChatWindowsMessage(
                 "LiteLoader.background_plugin.mainWindow.reloadBg"
             );
         }
@@ -251,10 +259,11 @@ function onLoad(plugin) {
 
                             nowConfig = loadConfig();
                             accept(true);
-                            mainWindowObj.webContents.send(
+
+                            sendChatWindowsMessage(
                                 "LiteLoader.background_plugin.mainWindow.resetTimer"
                             );
-                            mainWindowObj.webContents.send(
+                            sendChatWindowsMessage(
                                 "LiteLoader.background_plugin.mainWindow.reloadBg"
                             );
                         }
@@ -273,7 +282,7 @@ function onLoad(plugin) {
         (event, type) => {
             nowConfig.imgSource = type;
             writeConfig();
-            mainWindowObj.webContents.send(
+            sendChatWindowsMessage(
                 "LiteLoader.background_plugin.mainWindow.reloadBg"
             );
         }
@@ -285,10 +294,21 @@ function onLoad(plugin) {
             nowConfig.imgApi = api.toString();
             writeConfig();
             if (nowConfig.imgSource == "network") {
-                mainWindowObj.webContents.send(
+                sendChatWindowsMessage(
                     "LiteLoader.background_plugin.mainWindow.reloadBg"
                 );
             }
+        }
+    );
+
+    ipcMain.handle(
+        "LiteLoader.background_plugin.setFrostedGlassStyle",
+        (event, isEnable) => {
+            nowConfig.enableFrostedGlassStyle = isEnable;
+            writeConfig();
+            sendChatWindowsMessage(
+                "LiteLoader.background_plugin.mainWindow.repatchFrostedGlassStyle"
+            );
         }
     );
 
@@ -340,7 +360,7 @@ function onLoad(plugin) {
         (event, isAutoRefresh) => {
             nowConfig.isAutoRefresh = isAutoRefresh;
             writeConfig();
-            mainWindowObj.webContents.send(
+            sendChatWindowsMessage(
                 "LiteLoader.background_plugin.mainWindow.resetTimer"
             );
         }
@@ -364,7 +384,7 @@ function onLoad(plugin) {
         (event, refreshTime) => {
             nowConfig.refreshTime = refreshTime;
             writeConfig();
-            mainWindowObj.webContents.send(
+            sendChatWindowsMessage(
                 "LiteLoader.background_plugin.mainWindow.resetTimer"
             );
         }
@@ -392,13 +412,16 @@ function onLoad(plugin) {
     );
 }
 
-var mainWindowObj = null;
+var mainWindowObjs = [];
 function onBrowserWindowCreated(window) {
     watchConfigChange();
 
     window.webContents.on("did-stop-loading", () => {
-        if (window.webContents.getURL().indexOf("#/main/message") != -1) {
-            mainWindowObj = window;
+        if (
+            window.webContents.getURL().indexOf("#/main/message") != -1 ||
+            window.webContents.getURL().indexOf("#/chat/") != -1
+        ) {
+            mainWindowObjs.push(window);
         }
     });
 }

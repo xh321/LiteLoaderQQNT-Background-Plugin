@@ -5,6 +5,9 @@ export async function onConfigView(view) {
     var nowImgFile = nowConfig.imgFile;
     var nNowImgApi = nowImgApi == null ? "" : nowImgApi;
     var nNowImgFile = nowImgFile == null ? "" : nowImgFile;
+    let isFrostedGlassStyle =
+        nowConfig.enableFrostedGlassStyle == null ||
+        nowConfig.enableFrostedGlassStyle === true;
     let isAutoRefresh =
         nowConfig.isAutoRefresh == null || nowConfig.isAutoRefresh === true;
     let isUseCache = !(
@@ -102,6 +105,18 @@ export async function onConfigView(view) {
               <button id="selectImageFileBtn" class="q-button q-button--small q-button--secondary">选择文件</button>
             </div>
           </div>
+            
+              <hr class="horizontal-dividing-line" />          
+
+              <div class="vertical-list-item">
+                <div>
+                  <h2>是否对部分组件启用毛玻璃模糊效果</h2>
+                  <span class="secondary-text">修改将自动保存并立即生效</span>
+                </div>
+                <div id="switchFrostedGlassStyle" class="q-switch">
+                  <span class="q-switch__handle"></span>
+                </div>
+              </div>
           </div>
         </section>
 
@@ -462,6 +477,23 @@ export async function onConfigView(view) {
     node2.querySelector("#selectImageApi").onblur = selectNetwork;
     node2.querySelector("#testNetworkApi").onclick = testNetworkApi;
 
+    var q_switch_fglass = node2.querySelector("#switchFrostedGlassStyle");
+
+    if (isFrostedGlassStyle) {
+        q_switch_fglass.classList.toggle("is-active");
+    }
+
+    q_switch_fglass.addEventListener("click", async () => {
+        if (q_switch_fglass.classList.contains("is-active")) {
+            //取消
+            window.background_plugin.setFrostedGlassStyle(false);
+        } else {
+            //重新设置
+            window.background_plugin.setFrostedGlassStyle(true);
+        }
+        q_switch_fglass.classList.toggle("is-active");
+    });
+
     var q_switch_autoroll = node2.querySelector("#switchAutoRoll");
 
     if (isAutoRefresh) {
@@ -669,6 +701,12 @@ export function onLoad() {
                 }
             );
 
+            await window.background_plugin.repatchFrostedGlassStyleListener(
+                async (event, message) => {
+                    await patchFrostedGlassStyle();
+                }
+            );
+
             //监听任何可能的重载计时器的请求
             await window.background_plugin.resetTimerListener(
                 async (event, message) => {
@@ -677,6 +715,8 @@ export function onLoad() {
             );
 
             patchCss();
+            await patchFrostedGlassStyle();
+
             await reloadBg(await window.background_plugin.randomSelect());
 
             await resetTimer();
@@ -766,6 +806,71 @@ export function onLoad() {
                 `url("${realUrl}")`
             );
         };
+    }
+
+    async function patchFrostedGlassStyle() {
+        var nowConfig = await window.background_plugin.getNowConfig();
+
+        var thisNode = document
+            .evaluate(
+                "/html/head/style[@id='background-plugin-frostedglass-css']",
+                document
+            )
+            .iterateNext();
+        if (thisNode) {
+            thisNode.parentElement.removeChild(thisNode);
+        }
+
+        if (
+            nowConfig.enableFrostedGlassStyle == null ||
+            nowConfig.enableFrostedGlassStyle == true
+        ) {
+            var stylee = document.createElement("style");
+            stylee.type = "text/css";
+            stylee.id = "background-plugin-frostedglass-css";
+            var sHtml = `
+      @media (prefers-color-scheme: dark) {
+        /* 添加模糊 */
+        .favorites-layout__left-area,
+        .contact,
+        .search-result,
+        .av-call-status,
+        .self-avatar-mini-card,
+        .sidebar,
+        .forward-msg,
+        .normal-file,
+        .forward-ops .op-icon,
+        .radio-tab,
+        .sys-notify-card,
+        .recent-contact,
+        .chat-input-area {
+          backdrop-filter: brightness(110%) saturate(120%) blur(8px);
+        }
+      }
+      
+      @media (prefers-color-scheme: light) {
+        /* 添加模糊 */
+        .favorites-layout__left-area,
+        .contact,
+        .search-result,
+        .av-call-status,
+        .self-avatar-mini-card,
+        .sidebar,
+        .forward-msg,
+        .normal-file,
+        .forward-ops .op-icon,
+        .radio-tab,
+        .sys-notify-card,
+        .recent-contact,
+        .chat-input-area {
+          backdrop-filter: brightness(90%) saturate(120%) blur(8px);
+        }
+      }
+      `;
+
+            stylee.innerHTML = sHtml;
+            document.getElementsByTagName("head").item(0).appendChild(stylee);
+        }
     }
 
     function patchCss() {
@@ -980,23 +1085,6 @@ export function onLoad() {
 
         .msg-content-container {
           backdrop-filter: brightness(120%) saturate(120%) blur(8px);
-        }
-
-        /* 添加模糊 */
-        .favorites-layout__left-area,
-        .contact,
-        .search-result,
-        .av-call-status,
-        .self-avatar-mini-card,
-        .sidebar,
-        .forward-msg,
-        .normal-file,
-        .forward-ops .op-icon,
-        .radio-tab,
-        .sys-notify-card,
-        .recent-contact,
-        .chat-input-area {
-          backdrop-filter: brightness(110%) saturate(120%) blur(8px);
         }
 
         .viewport-list__inner{
@@ -1258,23 +1346,6 @@ export function onLoad() {
   
         .msg-content-container {
           backdrop-filter: brightness(120%) saturate(120%) blur(8px);
-        }
-
-        /* 添加模糊 */
-        .favorites-layout__left-area,
-        .contact,
-        .search-result,
-        .av-call-status,
-        .self-avatar-mini-card,
-        .sidebar,
-        .forward-msg,
-        .normal-file,
-        .forward-ops .op-icon,
-        .radio-tab,
-        .sys-notify-card,
-        .recent-contact,
-        .chat-input-area {
-          backdrop-filter: brightness(90%) saturate(120%) blur(8px);
         }
   
         .q-dialog-main {
