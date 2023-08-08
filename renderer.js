@@ -1154,6 +1154,10 @@ export function onLoad() {
       }
 
       @media (prefers-color-scheme: light) {
+        .group-notice .content {
+          color: #3d3d3d!important;
+        }
+
         .favorites-layout,
         .favorites-layout__content {
           background:unset!important;
