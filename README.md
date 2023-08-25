@@ -5,7 +5,9 @@ LiteLoaderQQNT插件，用于自动轮换QQNT的背景图片，并自带一些CS
 
 ## 使用方法
 
-clone或下载zip文件解压，保留文件夹结构（文件夹名称为`插件名`，内容为github上的内容），将文件夹移动至`LiteLoaderQQNT数据目录/plugins/`下面，重启QQNT即可。
+建议从`LiteLoaderQQNT`应用商店中直接下载安装，方便快捷。
+
+也可以clone或下载zip文件解压，保留文件夹结构（文件夹名称为`插件名`，内容为github上的内容），将文件夹移动至`LiteLoaderQQNT数据目录/plugins/`下面，重启QQNT即可。
 
 - 启动QQ后会自动写入默认配置文件到**插件目录下面的`config.json`**，然后你对配置文件做的任何修改都会被插件实时应用（详见后文）。若无必要，不建议手动修改`config.json`；
 - 你还可以通过QQ设置里的背景插件设置界面对插件进行设置（推荐这种方法，更方便，也能实时应用）。
