@@ -1027,12 +1027,20 @@ export function onLoad() {
           background-color: rgb(0 0 0 / 40%)!important;
         }
 
-        .chat-msg-area__vlist, #ml-root{
-          z-index:unset!important;
+        .expression-panel,.expression-panel-inner,.sticker-panel {
+          background: rgba(0, 0, 0, 0.9)!important;
+          z-index:999!important;
         }
 
-        .sticker-panel {
-          background: rgba(0, 0, 0, 0.9)!important;
+        #ml-root {
+          z-index:0!important;
+        }
+
+        .v-scrollbar-track {
+          z-index:999!important;
+        }
+        .v-scrollbar-thumb {
+          z-index:999!important;
         }
 
   
@@ -1304,16 +1312,22 @@ export function onLoad() {
           color: black!important;
           background-color: rgb(255 255 255 / 40%)!important;
         }
-        
-        .chat-msg-area__vlist, #ml-root {
-          z-index:unset!important;
-        }
   
-        .sticker-panel {
+        .expression-panel,.expression-panel-inner, .sticker-panel {
           background: rgba(255, 255, 255, 0.9)!important;
+          z-index:999!important;
         }
-  
-  
+
+        #ml-root {
+          z-index:0!important;
+        }
+
+        .v-scrollbar-track {
+          z-index:999!important;
+        }
+        .v-scrollbar-thumb {
+          z-index:999!important;
+        }
         .self-avatar-mini-card{
           background: rgba(255,255,255,0.7)!important;
         }
