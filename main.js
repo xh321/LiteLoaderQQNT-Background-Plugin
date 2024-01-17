@@ -419,7 +419,11 @@ function onBrowserWindowCreated(window) {
     window.webContents.on("did-stop-loading", () => {
         if (
             window.webContents.getURL().indexOf("#/main/message") != -1 ||
-            window.webContents.getURL().indexOf("#/chat/") != -1
+            window.webContents.getURL().indexOf("#/chat/") != -1 ||
+            window.webContents.getURL().indexOf("#/setting") != -1 ||
+            window.webContents.getURL().indexOf("#/fileManager") != -1 ||
+            window.webContents.getURL().indexOf("#/imageViewer") != -1 ||
+            window.webContents.getURL().indexOf("#/about") != -1
         ) {
             mainWindowObjs.push(window);
         }

@@ -678,7 +678,11 @@ export function onLoad() {
     const interval3 = setInterval(async () => {
         if (
             window.location.href.indexOf("#/main/message") != -1 ||
-            window.location.href.indexOf("#/chat/") != -1
+            window.location.href.indexOf("#/chat/") != -1 ||
+            window.location.href.indexOf("#/setting") != -1 ||
+            window.location.href.indexOf("#/fileManager") != -1 ||
+            window.location.href.indexOf("#/imageViewer") != -1 ||
+            window.location.href.indexOf("#/about") != -1
         ) {
             //如果之前已经进过这里，说明是重复进入，直接清除计时器退出即可
             if (isMainPage) {
@@ -886,6 +890,53 @@ export function onLoad() {
         stylee.id = "background-plugin-css";
         var sHtml = `
       @media (prefers-color-scheme: dark) {
+
+        /* 非主界面半透明（左侧） */
+        .nav-bar-container, .setting-tab {
+          background: rgba(0,0,0,0.8)!important;
+        }
+
+        /* 非主界面半透明（右侧） */
+        .group-msg-container, .setting-main, .file-manager-main {
+          background: rgba(0,0,0,0.85)!important;
+        }
+
+        /* 需要半透明的控件 */
+        /* 公共组件 */
+        :has(> .q-switch), :has(> .label), .panel-main,
+        /* 设置页面专用 */
+        .add-perm, .other-shortcut, .common-shotcut, .chat-page, .new-msg , .cue-tone, .location-setting, .storage-item, .setting-item-group,
+        /* 文件选择器*/
+       .file-list-normal-scroll-container, .file-list-normal-sort-title
+        {
+          background: rgba(255,255,255,0.15)!important;
+        }
+
+        /* 需要完全透明的子控件（避免重复透明度不好看） */
+        /* 公共组件 */
+        .item-container, .q-collapse-item__header, .q-collapse-item, .q-collapse,
+        /* 设置页面专用 */
+        .setting-item, .verify-way, .question-audit, .close-shotcut, .chat-page__item, .new-msg__item, .cue-tone__item, .shortcut-conflict,
+        /* 文件选择器 */
+        .sender-container, .file-type-container, .group-file-container
+        {
+          background: rgba(255,255,255,0)!important;
+        }
+
+        /* 关于页 */
+        .version {
+          color: white;
+          background: rgba(80,80,80,0.8);
+          margin-bottom: 0;
+          padding-bottom: 4px;
+          padding-top:8px;
+        }
+        .copyright {
+          color: white;
+          background: rgba(80,80,80,0.8);
+          padding-bottom: 8px;
+        }
+
         .favorites-layout,
         .favorites-layout__content {
           background:unset!important;
@@ -969,9 +1020,13 @@ export function onLoad() {
         }
 
         .q-divider {
-          background: rgba(80, 80, 80, 0.15)!important;
+          background: rgba(80, 80, 80, 1)!important;
         }
-        
+
+        .resize-handler,
+        .resize-handler > *{
+          background: rgba(80, 80, 80, 0)!important;
+        }
 
         .profile,
         .sys-notify {
@@ -1162,6 +1217,54 @@ export function onLoad() {
       }
 
       @media (prefers-color-scheme: light) {
+        /* 非主界面半透明（左侧） */
+        .nav-bar-container, .setting-tab {
+          background: rgba(250,250,250,0.85)!important;
+        }
+
+        /* 非主界面半透明（右侧） */
+        .group-msg-container, .setting-main, .file-manager-main {
+          background: rgba(250,250,250,0.88)!important;
+        }
+
+        /* 需要半透明的控件 */
+        /* 公共组件 */
+        :has(> .q-switch), :has(> .label), .panel-main,
+        /* 设置页面专用 */
+        .add-perm, .other-shortcut, .common-shotcut, .chat-page, .new-msg , .cue-tone, .location-setting, .storage-item, .setting-item-group,
+        /* 文件选择器*/
+       .file-list-normal-scroll-container, .file-list-normal-sort-title
+        {
+          background: rgba(250,250,250,0.7)!important;
+        }
+
+        /* 需要完全透明的子控件（避免重复透明度不好看） */
+        /* 公共组件 */
+        .item-container, .q-collapse-item__header, .q-collapse-item, .q-collapse,
+        /* 设置页面专用 */
+        .setting-item, .verify-way, .question-audit, .close-shotcut, .chat-page__item, .new-msg__item, .cue-tone__item, .shortcut-conflict, .group-body .viewport-list__inner,
+        /* 文件选择器 */
+        .sender-container, .file-type-container, .group-file-container
+        {
+          background: rgba(255,255,255,0)!important;
+        }
+
+        /* 关于页 */
+        .version {
+          color: black;
+          background: rgba(250,250,250,0.8);
+          margin-bottom: 0;
+          padding-bottom: 4px;
+          padding-top:8px;
+        }
+        .copyright {
+          color: black;
+          background: rgba(250,250,250,0.8);
+          padding-bottom: 8px;
+        }
+
+
+
         .group-notice .content {
           color: #3d3d3d!important;
         }
@@ -1254,10 +1357,13 @@ export function onLoad() {
           background: rgba(230, 230, 230, 0.75)!important;
         }
 
-        .q-divider,
+        .q-divider {
+          background: rgba(230, 230, 230, 1)!important;
+        }
+
         .resize-handler,
         .resize-handler > *{
-          background: rgba(230, 230, 230, 0.15)!important;
+          background: rgba(230, 230, 230, 0)!important;
         }
 
         .main-search {
