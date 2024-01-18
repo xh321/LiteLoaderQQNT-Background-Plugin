@@ -937,6 +937,14 @@ export function onLoad() {
           padding-bottom: 8px;
         }
 
+        .main-area__footer {
+          box-shadow: rgb(80 80 80) 0px 0px 20px 4px;
+        }
+
+        .image-viewer__tip {
+          box-shadow: rgb(80 80 80) 0px 0px 20px 4px;
+        }
+
         .favorites-layout,
         .favorites-layout__content {
           background:unset!important;
@@ -1249,6 +1257,26 @@ export function onLoad() {
           background: rgba(255,255,255,0)!important;
         }
 
+        /* 将图片预览器重置为白色 */
+        .main-area__content {
+          background: rgb(255,255,255)!important;
+        }
+
+        .main-area__footer {
+          background: rgba(250, 250, 250, 0.6)!important;
+          box-shadow: rgb(200 200 200) 0px 0px 20px 4px;
+        }
+
+        .main-area__footer .q-tooltips .q-icon, .image-viewer__size {
+          color:black!important;
+        }
+
+        .image-viewer__tip {
+          background: white!important;
+          color:black!important;
+          box-shadow: rgb(200 200 200) 0px 0px 20px 4px;
+        }
+
         /* 关于页 */
         .version {
           color: black;
@@ -1499,8 +1527,23 @@ export function onLoad() {
         .q-context-sub-menu__container , .q-context-menu{
           background: unset!important;
           background-color: rgb(255 255 255  / 85%)!important;
+          color:black;
         }
         
+        .q-context-menu-item__text {
+          color:black;
+        }
+
+        .q-context-menu-item:hover {
+          background-color: rgb(240 240 240 / 95%)!important;
+        }
+
+        .q-context-menu-item__icon .q-icon .path {
+          color:black!important;
+          stroke: black!important;
+          fill: black!important;
+        }
+
         .q-context-menu{
           border:1px solid rgba(230,230,230,0.6)!important;
         }
