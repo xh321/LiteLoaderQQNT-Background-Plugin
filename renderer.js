@@ -1,4 +1,4 @@
-export async function onConfigView(view) {
+export async function onSettingWindowCreated(view) {
     var nowConfig = await window.background_plugin.getNowConfig();
     var nowImgDir = nowConfig.imgDir;
     var nowImgApi = nowConfig.imgApi;
@@ -668,7 +668,10 @@ export async function onConfigView(view) {
 
     view.appendChild(node2);
 }
-export function onLoad() {
+
+onLoad();
+
+function onLoad() {
     console.log("[Background]", "开始检测页面路径", new Date());
 
     var isMainPage = false;
@@ -916,7 +919,7 @@ export function onLoad() {
         /* 公共组件 */
         .item-container, .q-collapse-item__header, .q-collapse-item, .q-collapse,
         /* 设置页面专用 */
-        .setting-item, .verify-way, .question-audit, .close-shotcut, .chat-page__item, .new-msg__item, .cue-tone__item, .shortcut-conflict,
+        .setting-item, .verify-way, .question-audit, .close-shotcut, .chat-page__item, .new-msg__item, .cue-tone__item, .shortcut-conflict, .vertical-list-item,
         /* 文件选择器 */
         .sender-container, .file-type-container, .group-file-container
         {
@@ -1250,7 +1253,7 @@ export function onLoad() {
         /* 公共组件 */
         .item-container, .q-collapse-item__header, .q-collapse-item, .q-collapse,
         /* 设置页面专用 */
-        .setting-item, .verify-way, .question-audit, .close-shotcut, .chat-page__item, .new-msg__item, .cue-tone__item, .shortcut-conflict, .group-body .viewport-list__inner,
+        .setting-item, .verify-way, .question-audit, .close-shotcut, .chat-page__item, .new-msg__item, .cue-tone__item, .shortcut-conflict, .group-body .viewport-list__inner, .vertical-list-item,
         /* 文件选择器 */
         .sender-container, .file-type-container, .group-file-container
         {

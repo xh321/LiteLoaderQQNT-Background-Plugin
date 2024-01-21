@@ -218,7 +218,9 @@ function sendChatWindowsMessage(message) {
     }
 }
 
-function onLoad(plugin) {
+onLoad();
+
+function onLoad() {
     ipcMain.handle(
         "LiteLoader.background_plugin.resetTimer",
         async (event, message) => {
@@ -431,6 +433,5 @@ function onBrowserWindowCreated(window) {
 }
 
 module.exports = {
-    onLoad,
     onBrowserWindowCreated
 };
