@@ -22,7 +22,7 @@ LiteLoaderQQNT插件，用于自动轮换QQNT的背景图片，并自带一些CS
 
 默认加载图片的路径是插件目录下面的imgs文件夹，在QQ的设置里可以切换背景图片的目录，保存后下次更新图片时生效，目前只会读取目录同级的一些常见格式的图片文件，如下：
 
-`const allowedExt = ["JPG", "BMP", "PNG", "WEBP", "JPEG"];  `
+`const allowedExt = ["JPG", "BMP", "PNG", "APNG", "WEBP", "JPEG", "AVIF", "GIF"];  `
 
 图片默认是居中适应，所以如果比例不对可能会不好看，尽量选择横着的图片吧~
 

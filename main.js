@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { BrowserWindow, ipcMain, dialog } = require("electron");
 
-const allowedExt = ["JPG", "BMP", "PNG", "WEBP", "JPEG"];
+const allowedExt = ["JPG", "BMP", "PNG", "APNG", "WEBP", "JPEG", "AVIF", "GIF"];
 const configFilePath = path.join(__dirname, "config.json");
 const sampleConfig = {
     imgDir: path.join(__dirname, "imgs").replaceAll("\\", "/"),
