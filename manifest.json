@@ -4,7 +4,7 @@
     "name": "背景插件",
     "slug": "background_plugin",
     "description": "在QQNT聊天界面轮播展示背景图，同时让QQNT界面透明化以便更好地展示背景图。",
-    "version": "0.1.20",
+    "version": "0.1.21",
     "icon": "./icon.png",
     "authors": [
         {

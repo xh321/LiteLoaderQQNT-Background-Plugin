@@ -852,7 +852,8 @@ function onLoad() {
         .radio-tab,
         .sys-notify-card,
         .recent-contact,
-        .chat-input-area {
+        .chat-input-area,
+        .main-area__footer {
           backdrop-filter: brightness(110%) saturate(120%) blur(8px);
         }
       }
@@ -871,7 +872,8 @@ function onLoad() {
         .radio-tab,
         .sys-notify-card,
         .recent-contact,
-        .chat-input-area {
+        .chat-input-area,
+        .main-area__footer {
           backdrop-filter: brightness(90%) saturate(120%) blur(8px);
         }
       }
@@ -943,11 +945,17 @@ function onLoad() {
         }
 
         .main-area__footer {
-          box-shadow: rgb(80 80 80) 0px 0px 20px 4px;
+          box-shadow: rgb(25 25 25) 0px 0px 20px 4px;
+          background: rgba(80,80,80,0.95)!important;
         }
 
         .image-viewer__tip {
           box-shadow: rgb(80 80 80) 0px 0px 20px 4px;
+        }
+
+        /* 将图片预览器重置为黑色 */
+        .main-area__content {
+          background: rgb(80,80,80,0.8)!important;
         }
 
         .favorites-layout,
@@ -1264,12 +1272,12 @@ function onLoad() {
 
         /* 将图片预览器重置为白色 */
         .main-area__content {
-          background: rgb(255,255,255)!important;
+          background: rgb(255,255,255,0.8)!important;
         }
 
         .main-area__footer {
           background: rgba(250, 250, 250, 0.6)!important;
-          box-shadow: rgb(200 200 200) 0px 0px 20px 4px;
+          box-shadow: rgb(250 250 250) 0px 0px 20px 4px;
         }
 
         .main-area__footer .q-tooltips .q-icon, .image-viewer__size {
