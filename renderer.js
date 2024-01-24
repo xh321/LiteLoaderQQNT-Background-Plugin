@@ -684,7 +684,9 @@ function onLoad() {
             window.location.href.indexOf("#/chat/") != -1 ||
             window.location.href.indexOf("#/setting") != -1 ||
             window.location.href.indexOf("#/fileManager") != -1 ||
+            window.location.href.indexOf("#/file-manager") != -1 ||
             window.location.href.indexOf("#/imageViewer") != -1 ||
+            window.location.href.indexOf("#/image-viewer") != -1 ||
             window.location.href.indexOf("#/about") != -1
         ) {
             //如果之前已经进过这里，说明是重复进入，直接清除计时器退出即可
