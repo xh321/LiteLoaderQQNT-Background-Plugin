@@ -44,7 +44,7 @@ export async function onSettingWindowCreated(view) {
                               <path d="M12 6.0001L8.00004 10L4 6" stroke="currentColor" stroke-linejoin="round"></path>
                           </svg>
                       </div>
-                      <div class="q-context-menu hidden">
+                      <div class="q-context-menu hidden" style="z-index:1">
                           <ul class="q-pulldown-menu-list small-size">
                               <li class="q-pulldown-menu-list-item" data-value="folder">
                                   <span class="content">目录</span>
