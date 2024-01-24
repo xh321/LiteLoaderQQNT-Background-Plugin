@@ -16,7 +16,7 @@
         "repo": "xh321/LiteLoaderQQNT-Background-Plugin",
         "branch": "master",
         "release": {
-            "tag": "0.1.18",
+            "tag": "latest",
             "file": "Background.zip"
         }
     },
