@@ -681,7 +681,7 @@ function onLoad() {
     const interval3 = setInterval(async () => {
         if (
             window.location.href.indexOf("#/main/message") != -1 ||
-            window.location.href.indexOf("#/chat/") != -1 ||
+            window.location.href.indexOf("#/chat") != -1 ||
             window.location.href.indexOf("#/setting") != -1 ||
             window.location.href.indexOf("#/fileManager") != -1 ||
             window.location.href.indexOf("#/file-manager") != -1 ||
@@ -910,7 +910,7 @@ function onLoad() {
 
         /* 需要半透明的控件 */
         /* 公共组件 */
-        :has(> .q-switch), :has(> .label), .panel-main,
+        :has(> .q-switch), :has(> .label), .panel-main, .main-search,
         /* 设置页面专用 */
         .add-perm, .other-shortcut, .common-shotcut, .chat-page, .new-msg , .cue-tone, .location-setting, .storage-item, .setting-item-group,
         /* 文件选择器*/
@@ -1250,7 +1250,7 @@ function onLoad() {
 
         /* 需要半透明的控件 */
         /* 公共组件 */
-        :has(> .q-switch), :has(> .label), .panel-main,
+        :has(> .q-switch), :has(> .label), .panel-main, .main-search,
         /* 设置页面专用 */
         .add-perm, .other-shortcut, .common-shotcut, .chat-page, .new-msg , .cue-tone, .location-setting, .storage-item, .setting-item-group,
         /* 文件选择器*/

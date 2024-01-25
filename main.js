@@ -421,7 +421,7 @@ function onBrowserWindowCreated(window) {
     window.webContents.on("did-stop-loading", () => {
         if (
             window.webContents.getURL().indexOf("#/main/message") != -1 ||
-            window.webContents.getURL().indexOf("#/chat/") != -1 ||
+            window.webContents.getURL().indexOf("#/chat") != -1 ||
             window.webContents.getURL().indexOf("#/setting") != -1 ||
             window.webContents.getURL().indexOf("#/fileManager") != -1 ||
             window.webContents.getURL().indexOf("#/file-manager") != -1 ||
