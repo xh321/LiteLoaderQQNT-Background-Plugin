@@ -2,12 +2,23 @@ const fs = require("fs");
 const path = require("path");
 const { BrowserWindow, ipcMain, dialog } = require("electron");
 
-const allowedExt = ["JPG", "BMP", "PNG", "APNG", "WEBP", "JPEG", "AVIF", "GIF"];
+const allowedImgExt = [
+    "JPG",
+    "BMP",
+    "PNG",
+    "APNG",
+    "WEBP",
+    "JPEG",
+    "AVIF",
+    "GIF"
+];
+const allowedVideoExt = ["MP4", "WEBM", "OGG"];
 const configFilePath = path.join(__dirname, "config.json");
 const sampleConfig = {
     imgDir: path.join(__dirname, "imgs").replaceAll("\\", "/"),
     imgFile: "",
     imgApi: "",
+    apiType: "img",
     imgSource: "folder",
     refreshTime: 600,
     isAutoRefresh: true,
@@ -51,6 +62,17 @@ function fsExistsSync(path) {
     return true;
 }
 
+function isImgOrVideo(src) {
+    if (allowedImgExt.indexOf(path.extname(src).toUpperCase().slice(1)) != -1) {
+        return "img";
+    }
+    if (
+        allowedVideoExt.indexOf(path.extname(src).toUpperCase().slice(1)) != -1
+    ) {
+        return "video";
+    }
+}
+
 // 获取图片文件名称
 function filename(picDir) {
     var dirStat = fs.statSync(picDir);
@@ -70,8 +92,14 @@ function filename(picDir) {
                         filestat(tmpPath)
                             .then((stats) => {
                                 if (
-                                    !stats.isDirectory() &&
-                                    allowedExt.indexOf(
+                                    (!stats.isDirectory() &&
+                                        allowedImgExt.indexOf(
+                                            path
+                                                .extname(tmpPath)
+                                                .toUpperCase()
+                                                .slice(1)
+                                        ) != -1) ||
+                                    allowedVideoExt.indexOf(
                                         path
                                             .extname(tmpPath)
                                             .toUpperCase()
@@ -130,12 +158,19 @@ function rdpic() {
                 });
         }
         //网络
-        else if (nowConfig.imgSource == "network") {
+        else if (
+            nowConfig.imgSource == "network" ||
+            nowConfig.imgSource == "network_video"
+        ) {
             resolve(nowConfig.imgApi);
         }
         //文件
-        else {
+        else if (nowConfig.imgSource == "file") {
             resolve(nowConfig.imgFile);
+        }
+        //不要背景图
+        else if (nowConfig.imgSource == "none") {
+            resolve("");
         }
     });
 }
@@ -290,6 +325,14 @@ function onLoad() {
         }
     );
 
+    ipcMain.handle("LiteLoader.background_plugin.setApiType", (event, type) => {
+        nowConfig.apiType = type;
+        writeConfig();
+        sendChatWindowsMessage(
+            "LiteLoader.background_plugin.mainWindow.reloadBg"
+        );
+    });
+
     ipcMain.handle(
         "LiteLoader.background_plugin.networkImgConfigApply",
         (event, api) => {
@@ -300,6 +343,13 @@ function onLoad() {
                     "LiteLoader.background_plugin.mainWindow.reloadBg"
                 );
             }
+        }
+    );
+
+    ipcMain.handle(
+        "LiteLoader.background_plugin.isImgOrVideo",
+        (event, data) => {
+            return isImgOrVideo(data);
         }
     );
 
@@ -319,7 +369,7 @@ function onLoad() {
         (event, message) => {
             const window = BrowserWindow.fromWebContents(event.sender);
             let filePath = dialog.showOpenDialogSync(window, {
-                title: "请选择背景图所在的文件夹",
+                title: "请选择背景所在的文件夹（可同时包含图片和视频）",
                 properties: ["openDirectory"] // 选择文件夹
             });
             nowConfig.imgSource = "folder";
@@ -334,17 +384,20 @@ function onLoad() {
         "LiteLoader.background_plugin.showFileSelect",
         (event, message) => {
             const window = BrowserWindow.fromWebContents(event.sender);
-            var allowedExtStr = `*.${allowedExt[0]};`;
-            allowedExt.forEach((i) => {
+            var allowedExtStr = `*.${allowedImgExt[0]};`;
+            allowedImgExt.forEach((i) => {
+                allowedExtStr += `*.${i};`;
+            });
+            allowedVideoExt.forEach((i) => {
                 allowedExtStr += `*.${i};`;
             });
             let filePath = dialog.showOpenDialogSync(window, {
-                title: "请选择一张图片作为背景图",
+                title: "请选择一张图片或一个视频作为背景",
                 properties: ["openFile"], // 选择文件
                 filters: [
                     {
-                        name: `图片文件(${allowedExtStr})`,
-                        extensions: allowedExt
+                        name: `图片或视频文件(${allowedExtStr})`,
+                        extensions: allowedImgExt.concat(allowedVideoExt)
                     },
                     { name: "所有文件(*.*)", extensions: ["*"] }
                 ]

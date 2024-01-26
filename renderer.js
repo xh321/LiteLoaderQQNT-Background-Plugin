@@ -2,6 +2,9 @@ export async function onSettingWindowCreated(view) {
     var nowConfig = await window.background_plugin.getNowConfig();
     var nowImgDir = nowConfig.imgDir;
     var nowImgApi = nowConfig.imgApi;
+    var nowApiType = nowConfig.apiType == null ? "img" : nowConfig.apiType;
+    var nowImgSource =
+        nowConfig.imgSource == null ? "folder" : nowConfig.imageSource;
     var nowImgFile = nowConfig.imgFile;
     var nNowImgApi = nowImgApi == null ? "" : nowImgApi;
     var nNowImgFile = nowImgFile == null ? "" : nowImgFile;
@@ -25,14 +28,15 @@ export async function onSettingWindowCreated(view) {
             <div class="vertical-list-item top-box">
               <h2>操作</h2>
               <div>
-                <button id="refreshBgNow" class="q-button q-button--small q-button--secondary">立即更新一次背景图</button>
+                <button id="refreshBgNow" class="q-button q-button--small q-button--secondary">立即更新一次背景</button>
                 <button id="resetAll" class="q-button q-button--small q-button--secondary">恢复默认设置</button>
               </div>
             </div>
             <hr class="horizontal-dividing-line" />
             <div class="vertical-list-item">
               <div>
-                <h2>修改背景图来源</h2>
+                <h2>修改背景来源</h2>
+                <span class="secondary-text">如果使用网络背景API，请务必选择正确是网络图片还是网络视频</span>
               </div>
               <div style="width: 25%; pointer-events: auto;">
                 <section class="list-ctl">
@@ -46,6 +50,14 @@ export async function onSettingWindowCreated(view) {
                       </div>
                       <div class="q-context-menu hidden" style="z-index:1">
                           <ul class="q-pulldown-menu-list small-size">
+                                <li class="q-pulldown-menu-list-item" data-value="none">
+                                  <span class="content">无背景图</span>
+                                  <span class="icon">
+                                      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M2 7L6.00001 11L14 3" stroke="currentColor" stroke-linejoin="round"></path>
+                                      </svg>
+                                  </span>
+                              </li>
                               <li class="q-pulldown-menu-list-item" data-value="folder">
                                   <span class="content">目录</span>
                                   <span class="icon">
@@ -70,6 +82,14 @@ export async function onSettingWindowCreated(view) {
                                       </svg>
                                   </span>
                               </li>
+                              <li class="q-pulldown-menu-list-item" data-value="network_video">
+                              <span class="content">网络视频</span>
+                              <span class="icon">
+                                  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M2 7L6.00001 11L14 3" stroke="currentColor" stroke-linejoin="round"></path>
+                                  </svg>
+                              </span>
+                          </li>
                           </ul>
                       </div>
                   </div>
@@ -79,29 +99,29 @@ export async function onSettingWindowCreated(view) {
             <hr class="horizontal-dividing-line" />
             <div class="vertical-list-item">
               <div>
-                <h2>网络背景图链接</h2>
-                <span class="secondary-text">目前仅支持GET请求，请确保直接访问链接能查看到图片且未设置防盗链~</span>
+                <h2>网络背景API链接</h2>
+                <span class="secondary-text">目前仅支持GET请求，请确保直接访问链接能查看到图片/视频且未设置防盗链~</span>
               </div>
               <div style="width: 95%;display: flex;align-items: center;flex-direction: row; margin-left:20px; pointer-events: auto;">
-                <input id="selectImageApi" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="输入网络图片地址（可选）" value="${nNowImgApi}">
+                <input id="selectImageApi" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="输入API地址（可选）" value="${nNowImgApi}">
                 <button id="testNetworkApi" class="q-button q-button--small q-button--secondary">测试获取</button>
               </div>
             </div> 
             <div class="vertical-list-item">
               <div>
-                <h2>本地背景图文件夹路径</h2>
+                <h2>本地背景文件夹路径</h2>
               </div>
               <div style="width: 55%; display: flex;align-items: center;flex-direction: row;margin-left:40px; pointer-events: auto;">
-                <input id="selectImageDir" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="本地背景图文件夹路径" readonly="true" value="${nowImgDir}">
+                <input id="selectImageDir" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="本地背景文件夹路径" readonly="true" value="${nowImgDir}">
                 <button id="selectImageDirBtn" class="q-button q-button--small q-button--secondary">选择目录</button>
               </div>
             </div>
             <div class="vertical-list-item bottom-box">
             <div>
-              <h2>本地背景图路径</h2>
+              <h2>本地背景路径</h2>
             </div>
             <div style="width: 55%; display: flex;align-items: center;flex-direction: row;margin-left:40px; pointer-events: auto;">
-              <input id="selectImageFile" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="本地背景图文件路径" readonly="true" value="${nNowImgFile}">
+              <input id="selectImageFile" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="本地背景文件路径" readonly="true" value="${nNowImgFile}">
               <button id="selectImageFileBtn" class="q-button q-button--small q-button--secondary">选择文件</button>
             </div>
           </div>
@@ -128,7 +148,7 @@ export async function onSettingWindowCreated(view) {
 
               <div class="vertical-list-item">
                 <div>
-                  <h2>背景图更新间隔</h2>
+                  <h2>背景更新间隔</h2>
                   <span class="secondary-text">修改将自动保存并立即生效；为了最佳体验，请勿设置过短哦~</span>
                 </div>
                 <div style="width:80px;pointer-events: auto;">
@@ -140,7 +160,7 @@ export async function onSettingWindowCreated(view) {
 
               <div class="vertical-list-item">
                 <div>
-                  <h2>是否自动轮播背景图</h2>
+                  <h2>是否自动轮播背景</h2>
                   <span class="secondary-text">修改将自动保存并立即生效</span>
                 </div>
                 <div id="switchAutoRoll" class="q-switch">
@@ -162,7 +182,7 @@ export async function onSettingWindowCreated(view) {
               <div class="vertical-list-item">
                 <div>
                   <h2>是否启用缓存</h2>
-                  <span class="secondary-text">若使用API请关闭缓存，否则每次图片将因为缓存无法更新；若使用单张图片可以开启缓存</span>
+                  <span class="secondary-text">若使用API请关闭缓存，否则每次图片或视频将因为缓存无法更新；若API仅返回单张图片/视频则可以开启缓存</span>
                 </div>
                 <div id="switchUseCache" class="q-switch">
                   <span class="q-switch__handle"></span>
@@ -175,6 +195,7 @@ export async function onSettingWindowCreated(view) {
         </section>
 
         <img id="testImage" class="img-hidden" style="width:80%; height:auto; margin-left:10%; border:1px solid;box-shadow: 2px 2px 2px 1px rgba(80,80, 80, 0.6);"></img>
+        <div id="testVideo" class="img-hidden" style="width:80%; height:auto; margin-left:10%; border:1px solid;box-shadow: 2px 2px 2px 1px rgba(80,80, 80, 0.6);"></div>
 
         <style>
           .img-hidden {
@@ -402,6 +423,9 @@ export async function onSettingWindowCreated(view) {
 
     var selectDir = async () => {
         var path = await window.background_plugin.showFolderSelect();
+
+        if (path == "" || path == null) return;
+
         var realPath = path[0].replaceAll("\\", "/");
         node2.querySelector("#selectImageDir").value = realPath;
         setPulldownValue("image_source", "folder");
@@ -412,6 +436,9 @@ export async function onSettingWindowCreated(view) {
 
     var selectFile = async () => {
         var path = await window.background_plugin.showFileSelect();
+
+        if (path == "" || path == null) return;
+
         var realPath = path[0].replaceAll("\\", "/");
         node2.querySelector("#selectImageFile").value = realPath;
         setPulldownValue("image_source", "file");
@@ -453,20 +480,55 @@ export async function onSettingWindowCreated(view) {
     };
 
     var testNetworkApi = async () => {
-        node2.querySelector("#testImage").classList.remove("img-hidden");
+        var nowConfig = await window.background_plugin.getNowConfig();
+        if (nowConfig.apiType == "img") {
+            node2.querySelector("#testVideo").classList.add("img-hidden");
+            node2.querySelector("#testImage").classList.remove("img-hidden");
 
-        var imgUrl = node2.querySelector("#selectImageApi").value;
-        try {
-            var url = new URL(imgUrl);
-            url.searchParams.append("t", new Date().getTime());
-            imgUrl = url.toString();
+            var videoNode = document.getElementById("test-video");
+            if (videoNode) {
+                videoNode.parentElement.removeChild(videoNode);
+            }
 
-            node2.querySelector("#testImage").src = imgUrl;
-            alert(
-                "请观察下侧是否能显示网络图片，若无任何图片显示则说明有问题。"
-            );
-        } catch {
-            alert("URL不合法，请重新输入！");
+            var imgUrl = node2.querySelector("#selectImageApi").value;
+            try {
+                var url = new URL(imgUrl);
+                url.searchParams.append("t", new Date().getTime());
+                imgUrl = url.toString();
+
+                node2.querySelector("#testImage").src = imgUrl;
+                alert(
+                    "请观察下侧是否能显示网络图片，若无任何图片显示则说明有问题。"
+                );
+            } catch {
+                alert("URL不合法，请重新输入！");
+            }
+        } else if (nowConfig.apiType == "video") {
+            node2.querySelector("#testImage").classList.add("img-hidden");
+            node2.querySelector("#testVideo").classList.remove("img-hidden");
+            var imgUrl = node2.querySelector("#selectImageApi").value;
+            try {
+                var url = new URL(imgUrl);
+                url.searchParams.append("t", new Date().getTime());
+
+                imgUrl = url.toString();
+
+                var videoNode = document.getElementById("test-video");
+                if (videoNode) {
+                    videoNode.parentElement.removeChild(videoNode);
+                }
+
+                var video = document.createElement("video");
+                video.autoplay = true;
+                video.muted = true;
+                video.loop = true;
+                video.style = "margin-left:10%;margin-right:10%;width:80%";
+                video.id = "test-video";
+                video.innerHTML = `<source src="${imgUrl}">`;
+                document.getElementById("testVideo").appendChild(video);
+            } catch {
+                alert("URL不合法，请重新输入！");
+            }
         }
     };
 
@@ -611,7 +673,7 @@ export async function onSettingWindowCreated(view) {
                                 node2.querySelector("#selectImageDir").value;
                             if (path == null || path.trim() == "") {
                                 alert(
-                                    "请先在下方选择文件夹路径，再选中图片来源为目录"
+                                    "请先在下方选择文件夹路径，再选中背景来源为目录"
                                 );
                                 return;
                             }
@@ -621,7 +683,7 @@ export async function onSettingWindowCreated(view) {
                                 node2.querySelector("#selectImageFile").value;
                             if (path == null || path.trim() == "") {
                                 alert(
-                                    "请先在下方选择文件路径，再选中图片来源为单个文件"
+                                    "请先在下方选择文件路径，再选中背景来源为单个文件"
                                 );
                                 return;
                             }
@@ -631,9 +693,27 @@ export async function onSettingWindowCreated(view) {
                                 node2.querySelector("#selectImageApi").value;
                             if (path == null || path.trim() == "") {
                                 alert(
-                                    "请先在下方输入背景链接地址，再选中图片来源为网络图片"
+                                    "请先在下方输入背景链接地址，再选中背景来源为网络图片"
                                 );
                                 return;
+                            } else {
+                                await window.background_plugin.setApiType(
+                                    "img"
+                                );
+                            }
+                            break;
+                        case "network_video":
+                            var path =
+                                node2.querySelector("#selectImageApi").value;
+                            if (path == null || path.trim() == "") {
+                                alert(
+                                    "请先在下方输入背景链接地址，再选中背景来源为网络视频"
+                                );
+                                return;
+                            } else {
+                                await window.background_plugin.setApiType(
+                                    "video"
+                                );
                             }
                             break;
                     }
@@ -704,9 +784,16 @@ function onLoad() {
             //监听任何可能的重载背景的请求
             await window.background_plugin.reloadBgListener(
                 async (event, message) => {
-                    await reloadBg(
-                        await window.background_plugin.randomSelect()
-                    );
+                  
+                    var nowSelect =
+                        await window.background_plugin.randomSelect();
+                        
+                    await reloadBg(nowSelect);
+
+                    if (await getNowIsVideo(nowSelect)) {
+                        //如果是视频，需要设置一下视频地址
+                        setVideoSrc(nowSelect);
+                    }
                 }
             );
 
@@ -724,9 +811,17 @@ function onLoad() {
             );
 
             patchCss();
+
             await patchFrostedGlassStyle();
 
-            await reloadBg(await window.background_plugin.randomSelect());
+            var nowSelect = await window.background_plugin.randomSelect();
+
+            await reloadBg(nowSelect);
+
+            if (await getNowIsVideo(nowSelect)) {
+                //如果是视频，需要设置一下视频地址
+                setVideoSrc(nowSelect);
+            }
 
             await resetTimer();
 
@@ -763,7 +858,12 @@ function onLoad() {
             );
             bgUpdateTimer = setInterval(async () => {
                 console.log("[Background]", "更新背景", new Date());
-                await reloadBg(await window.background_plugin.randomSelect());
+                var src = await window.background_plugin.randomSelect();
+                await reloadBg(src);
+                if (await getNowIsVideo(src)) {
+                    //如果是视频，需要重新设置一下视频地址
+                    setVideoSrc(src);
+                }
             }, nowConfig.refreshTime * 1000);
         } else {
             console.log(
@@ -776,22 +876,46 @@ function onLoad() {
         resetTimerFlag = false;
     }
 
+    async function getNowIsVideo(src) {
+        var nowConfig = await window.background_plugin.getNowConfig();
+
+        var isVideo =
+            //要么是视频后缀名
+            (await window.background_plugin.isImgOrVideo(src ?? "")) ==
+                "video" ||
+            //要么不是本地文件，且是视频API
+            (!isLocalFile(src) && nowConfig.apiType == "video");
+
+        return isVideo;
+    }
+
     async function reloadBg(imgUrl) {
-        if (imgUrl == "" || imgUrl == null) {
+        if (imgUrl == "" || imgUrl == null || (await getNowIsVideo(imgUrl))) {
             //地址为空，说明没获取到图片，直接置空背景图
+            //视频的话也不需要背景图
             document.documentElement.style.removeProperty(
                 "--background-image-url"
             );
             return;
         }
 
-        var nowConfig = await window.background_plugin.getNowConfig();
+        // 清理视频节点
+        var thisNode = document
+            .evaluate(
+                "/html/body/div[@id='app']/video[@id='background-video']",
+                document
+            )
+            .iterateNext();
+        if (thisNode) {
+            thisNode.parentElement.removeChild(thisNode);
+        }
 
+        var nowConfig = await window.background_plugin.getNowConfig();
         var realUrl = encodeURI(imgUrl);
         //如果是本地路径
-        if (/(^[A-Za-z]{1}:[/\\]{1,2}.*)|(^[/\\]{1,2}.*)/.test(imgUrl)) {
+        if (isLocalFile(imgUrl)) {
             //前面加上协议头
-            realUrl = `appimg://${realUrl}`;
+            realUrl = `local:///${realUrl}`;
         } else if (
             imgUrl.indexOf("http") == 0 &&
             //确定不开启缓存，再加时间戳避免缓存
@@ -884,7 +1008,35 @@ function onLoad() {
         }
     }
 
-    function patchCss() {
+    function isLocalFile(src) {
+        return /(^[A-Za-z]{1}:[/\\]{1,2}.*)|(^[/\\]{1,2}.*)/.test(src);
+    }
+
+    function setVideoSrc(videoSrc) {
+        var thisNode = document
+            .evaluate(
+                "/html/body/div[@id='app']/video[@id='background-video']",
+                document
+            )
+            .iterateNext();
+        if (thisNode) {
+            thisNode.parentElement.removeChild(thisNode);
+        }
+
+        if (isLocalFile(videoSrc)) {
+            videoSrc = "local:///" + encodeURI(videoSrc);
+        }
+
+        var video = document.createElement("video");
+        video.autoplay = true;
+        video.muted = true;
+        video.loop = true;
+        video.id = "background-video";
+        video.innerHTML = `<source src="${videoSrc}">`;
+        document.getElementById("app").appendChild(video);
+    }
+
+    async function patchCss() {
         var thisNode = document
             .evaluate("/html/head/style[@id='background-plugin-css']", document)
             .iterateNext();
@@ -896,6 +1048,15 @@ function onLoad() {
         stylee.type = "text/css";
         stylee.id = "background-plugin-css";
         var sHtml = `
+        #background-video {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          z-index: -999;
+        }
       @media (prefers-color-scheme: dark) {
 
         /* 非主界面半透明（左侧） */

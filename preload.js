@@ -25,11 +25,15 @@ contextBridge.exposeInMainWorld("background_plugin", {
             "LiteLoader.background_plugin.setFrostedGlassStyle",
             isEnable
         ),
+    isImgOrVideo: (data) =>
+        ipcRenderer.invoke("LiteLoader.background_plugin.isImgOrVideo", data),
     setImageSourceType: (type) =>
         ipcRenderer.invoke(
             "LiteLoader.background_plugin.setImageSourceType",
             type
         ),
+    setApiType: (type) =>
+        ipcRenderer.invoke("LiteLoader.background_plugin.setApiType", type),
     showFolderSelect: () =>
         ipcRenderer.invoke("LiteLoader.background_plugin.showFolderSelect"),
     showFileSelect: () =>
