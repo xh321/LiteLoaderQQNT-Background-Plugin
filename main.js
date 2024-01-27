@@ -13,9 +13,11 @@ const allowedImgExt = [
     "GIF"
 ];
 const allowedVideoExt = ["MP4", "WEBM", "OGG"];
-const configFilePath = path.join(__dirname, "config.json");
+var pluginDataDir = path.join(LiteLoader.path.data, "background");
+
+const configFilePath = path.join(pluginDataDir, "config.json");
 const sampleConfig = {
-    imgDir: path.join(__dirname, "imgs").replaceAll("\\", "/"),
+    imgDir: path.join(pluginDataDir, "imgs").replaceAll("\\", "/"),
     imgFile: "",
     imgApi: "",
     apiType: "img",
@@ -228,7 +230,7 @@ function initConfig() {
         !fsExistsSync(sampleConfig.imgDir) ||
         !fs.statSync(sampleConfig.imgDir).isDirectory
     ) {
-        fs.mkdirSync(sampleConfig.imgDir);
+        fs.mkdirSync(sampleConfig.imgDir, { recursive: true });
     }
     fs.writeFileSync(
         configFilePath,
