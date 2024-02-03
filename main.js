@@ -32,29 +32,6 @@ const sampleConfig = {
 };
 var nowConfig = loadConfig();
 
-function readdir(res) {
-    return new Promise((resolve, reject) => {
-        fs.readdir(res, (err, data) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(data);
-        });
-    });
-}
-
-// 读取文件属性
-function filestat(res) {
-    return new Promise((resolve, reject) => {
-        fs.stat(res, (err, data) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(data);
-        });
-    });
-}
-
 function fsExistsSync(path) {
     try {
         fs.accessSync(path, fs.F_OK);
@@ -75,58 +52,27 @@ function isImgOrVideo(src) {
     }
 }
 
-// 获取图片文件名称
-function filename(picDir) {
-    var dirStat = fs.statSync(picDir);
-    if (fsExistsSync(picDir) && dirStat.isDirectory) {
-        return new Promise((resolve, reject) => {
-            readdir(picDir)
-                .then((data) => {
-                    if (data.length == 0) {
-                        resolve([]);
-                        return;
-                    }
-                    let paths = [];
-                    let name;
-                    data.map((name, index) => {
-                        let tmpPath = picDir + "/" + name;
-                        //let tmpPath = path.join(picDir, name)
-                        filestat(tmpPath)
-                            .then((stats) => {
-                                if (
-                                    (!stats.isDirectory() &&
-                                        allowedImgExt.indexOf(
-                                            path
-                                                .extname(tmpPath)
-                                                .toUpperCase()
-                                                .slice(1)
-                                        ) != -1) ||
-                                    allowedVideoExt.indexOf(
-                                        path
-                                            .extname(tmpPath)
-                                            .toUpperCase()
-                                            .slice(1)
-                                    ) != -1
-                                ) {
-                                    paths.push(tmpPath.replace("\\", "/"));
-                                }
-                                if (index + 1 === data.length) {
-                                    resolve(paths);
-                                }
-                            })
-                            .catch((err) => {
-                                reject(err);
-                            });
-                    });
-                })
-                .catch((err) => {
-                    console.log(err);
-                    reject(err);
-                });
-        });
-    } else {
-        return Promise.reject();
-    }
+function readFileList(dir, filesList = []) {
+    const files = fs.readdirSync(dir);
+    files.forEach((item, index) => {
+        var fullPath = path.join(dir, item);
+        const stat = fs.statSync(fullPath);
+        if (stat.isDirectory()) {
+            readFileList(path.join(dir, item), filesList); //递归读取文件
+        } else {
+            if (
+                allowedImgExt.indexOf(
+                    path.extname(fullPath).toUpperCase().slice(1)
+                ) != -1 ||
+                allowedVideoExt.indexOf(
+                    path.extname(fullPath).toUpperCase().slice(1)
+                ) != -1
+            ) {
+                filesList.push(fullPath.replace("\\", "/"));
+            }
+        }
+    });
+    return filesList;
 }
 
 // 获取0到n的随机整数
@@ -146,18 +92,14 @@ function rdpic() {
         }
         //目录
         if (nowConfig.imgSource == null || nowConfig.imgSource == "folder") {
-            filename(nowConfig.imgDir)
-                .then((data) => {
-                    if (data.length == 0) {
-                        resolve("");
-                    } else {
-                        let n = rd(data.length - 1);
-                        resolve(data[n]);
-                    }
-                })
-                .catch(() => {
-                    resolve("");
-                });
+            var filesList = [];
+            readFileList(nowConfig.imgDir, filesList);
+            if (filesList.length == 0) {
+                resolve("");
+            } else {
+                let n = rd(filesList.length - 1);
+                resolve(filesList[n]);
+            }
         }
         //网络
         else if (
