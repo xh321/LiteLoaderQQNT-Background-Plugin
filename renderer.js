@@ -2,11 +2,13 @@ export async function onSettingWindowCreated(view) {
     var nowConfig = await window.background_plugin.getNowConfig();
     var nowImgDir = nowConfig.imgDir;
     var nowImgApi = nowConfig.imgApi;
+    var nowApiJsonPath = nowConfig.imgApiJsonPath;
     var nowApiType = nowConfig.apiType == null ? "img" : nowConfig.apiType;
     var nowImgSource =
         nowConfig.imgSource == null ? "folder" : nowConfig.imageSource;
     var nowImgFile = nowConfig.imgFile;
     var nNowImgApi = nowImgApi == null ? "" : nowImgApi;
+    var nNowApiJsonPath = nowApiJsonPath == null ? "" : nowApiJsonPath;
     var nNowImgFile = nowImgFile == null ? "" : nowImgFile;
     let isFrostedGlassStyle =
         nowConfig.enableFrostedGlassStyle == null ||
@@ -105,6 +107,17 @@ export async function onSettingWindowCreated(view) {
               <div style="width: 95%;display: flex;align-items: center;flex-direction: row; margin-left:20px; pointer-events: auto;">
                 <input id="selectImageApi" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="输入API地址（可选）" value="${nNowImgApi}">
                 <button id="testNetworkApi" class="q-button q-button--small q-button--secondary">测试获取</button>
+              </div>
+            </div>             
+            <hr class="horizontal-dividing-line" />
+            <div class="vertical-list-item">
+              <div>
+                <h2>网络背景API JSON路径</h2>
+                <span class="secondary-text">若API返回的是JSON，请填写图片直链对应的 JSON 路径。</span>
+              </div>
+              <div style="width: 72%;display: flex;align-items: center;flex-direction: row; margin-left:20px; pointer-events: auto;">
+                <input id="apiJsonPath" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="输入 JSON 路径（可选）" value="${nNowApiJsonPath}">
+                <button id="apiJsonPathHelp" class="q-button q-button--small q-button--secondary">查看帮助</button>
               </div>
             </div> 
             <div class="vertical-list-item">
@@ -467,6 +480,13 @@ export async function onSettingWindowCreated(view) {
         await window.background_plugin.networkImgConfigApply(path);
     };
 
+    var apiJsonPathChange = async () => {
+        var path = node2.querySelector("#apiJsonPath").value;
+        if (path == null || path.trim() == "") return;
+
+        await window.background_plugin.apiJsonPathApply(path);
+    };
+
     var refreshBg = async () => {
         await window.background_plugin.reloadBg();
     };
@@ -491,6 +511,9 @@ export async function onSettingWindowCreated(view) {
             }
 
             var imgUrl = node2.querySelector("#selectImageApi").value;
+
+            imgUrl = await window.background_plugin.fetchApi(imgUrl);
+
             try {
                 var url = new URL(imgUrl);
                 url.searchParams.append("t", new Date().getTime());
@@ -507,6 +530,9 @@ export async function onSettingWindowCreated(view) {
             node2.querySelector("#testImage").classList.add("img-hidden");
             node2.querySelector("#testVideo").classList.remove("img-hidden");
             var imgUrl = node2.querySelector("#selectImageApi").value;
+
+            imgUrl = await window.background_plugin.fetchApi(imgUrl);
+
             try {
                 var url = new URL(imgUrl);
                 url.searchParams.append("t", new Date().getTime());
@@ -532,12 +558,18 @@ export async function onSettingWindowCreated(view) {
         }
     };
 
+    var apiJsonPathHelp = async () => {
+      await window.background_plugin.showApiPathHelp();
+    };
+
     node2.querySelector("#refreshBgNow").onclick = refreshBg;
     node2.querySelector("#resetAll").onclick = resetAll;
     node2.querySelector("#selectImageDirBtn").onclick = selectDir;
     node2.querySelector("#selectImageFileBtn").onclick = selectFile;
     node2.querySelector("#selectImageApi").onblur = selectNetwork;
+    node2.querySelector("#apiJsonPath").onblur = apiJsonPathChange;
     node2.querySelector("#testNetworkApi").onclick = testNetworkApi;
+    node2.querySelector("#apiJsonPathHelp").onclick = apiJsonPathHelp;
 
     var q_switch_fglass = node2.querySelector("#switchFrostedGlassStyle");
 
@@ -784,10 +816,9 @@ function onLoad() {
             //监听任何可能的重载背景的请求
             await window.background_plugin.reloadBgListener(
                 async (event, message) => {
-                  
                     var nowSelect =
                         await window.background_plugin.randomSelect();
-                        
+
                     await reloadBg(nowSelect);
 
                     if (await getNowIsVideo(nowSelect)) {

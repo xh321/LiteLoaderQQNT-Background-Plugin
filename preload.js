@@ -25,6 +25,10 @@ contextBridge.exposeInMainWorld("background_plugin", {
             "LiteLoader.background_plugin.setFrostedGlassStyle",
             isEnable
         ),
+    showApiPathHelp: () =>
+        ipcRenderer.invoke("LiteLoader.background_plugin.showApiPathHelp"),
+    fetchApi: (api) =>
+        ipcRenderer.invoke("LiteLoader.background_plugin.fetchApi", api),
     isImgOrVideo: (data) =>
         ipcRenderer.invoke("LiteLoader.background_plugin.isImgOrVideo", data),
     setImageSourceType: (type) =>
@@ -38,6 +42,11 @@ contextBridge.exposeInMainWorld("background_plugin", {
         ipcRenderer.invoke("LiteLoader.background_plugin.showFolderSelect"),
     showFileSelect: () =>
         ipcRenderer.invoke("LiteLoader.background_plugin.showFileSelect"),
+    apiJsonPathApply: (jsonPath) =>
+        ipcRenderer.invoke(
+            "LiteLoader.background_plugin.apiJsonPathApply",
+            jsonPath
+        ),
     networkImgConfigApply: (filePath) =>
         ipcRenderer.invoke(
             "LiteLoader.background_plugin.networkImgConfigApply",

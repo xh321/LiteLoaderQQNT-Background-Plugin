@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
-const { BrowserWindow, ipcMain, dialog } = require("electron");
+var objectPath = require("object-path");
+const { shell, net, BrowserWindow, ipcMain, dialog } = require("electron");
 
 const allowedImgExt = [
     "JPG",
@@ -20,6 +21,7 @@ const sampleConfig = {
     imgDir: path.join(pluginDataDir, "imgs").replaceAll("\\", "/"),
     imgFile: "",
     imgApi: "",
+    imgApiJsonPath: "",
     apiType: "img",
     imgSource: "folder",
     refreshTime: 600,
@@ -81,42 +83,84 @@ function rd(n) {
 }
 
 // 随机获取一张图片路径
-function rdpic() {
-    return new Promise((resolve, reject) => {
-        if (
-            nowConfig.overrideImgFile != null &&
-            fs.existsSync(nowConfig.overrideImgFile)
-        ) {
-            resolve(nowConfig.overrideImgFile);
-            return;
+async function rdpic() {
+    if (
+        nowConfig.overrideImgFile != null &&
+        fs.existsSync(nowConfig.overrideImgFile)
+    ) {
+        return nowConfig.overrideImgFile;
+    }
+    //目录
+    if (nowConfig.imgSource == null || nowConfig.imgSource == "folder") {
+        output("从本地文件夹更新背景");
+        var filesList = [];
+        readFileList(nowConfig.imgDir, filesList);
+        if (filesList.length == 0) {
+            return "";
+        } else {
+            let n = rd(filesList.length - 1);
+            return filesList[n];
         }
-        //目录
-        if (nowConfig.imgSource == null || nowConfig.imgSource == "folder") {
-            var filesList = [];
-            readFileList(nowConfig.imgDir, filesList);
-            if (filesList.length == 0) {
-                resolve("");
-            } else {
-                let n = rd(filesList.length - 1);
-                resolve(filesList[n]);
-            }
-        }
-        //网络
-        else if (
-            nowConfig.imgSource == "network" ||
-            nowConfig.imgSource == "network_video"
-        ) {
-            resolve(nowConfig.imgApi);
-        }
-        //文件
-        else if (nowConfig.imgSource == "file") {
-            resolve(nowConfig.imgFile);
-        }
-        //不要背景图
-        else if (nowConfig.imgSource == "none") {
-            resolve("");
-        }
+    }
+    //网络
+    else if (
+        nowConfig.imgSource == "network" ||
+        nowConfig.imgSource == "network_video"
+    ) {
+        output("从网络 API 更新背景");
+        return await fetchApi(nowConfig.imgApi);
+    }
+    //文件
+    else if (nowConfig.imgSource == "file") {
+        return nowConfig.imgFile;
+    }
+    //不要背景图
+    else if (nowConfig.imgSource == "none") {
+        return "";
+    }
+}
+
+function isValidUrl(str) {
+    const pattern = new RegExp(
+        "^([a-zA-Z]+:\\/\\/)?" + // protocol
+            "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+            "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR IP (v4) address
+            "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+            "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+            "(\\#[-a-z\\d_]*)?$", // fragment locator
+        "i"
+    );
+    return pattern.test(str);
+}
+
+async function fetchApi(api) {
+    var resp = await net.fetch(api, {
+        mode: "cors",
+        credentials: "omit",
+        cache: "no-store",
+        redirect: "follow",
+        referrer: api,
+        referrerPolicy: "unsafe-url"
     });
+
+    if (resp.ok) {
+        var isJson = resp.headers
+            .get("content-type")
+            .includes("application/json");
+        if (isJson) {
+            var data = await resp.json();
+            var apiUrl = objectPath.get(data, nowConfig?.imgApiJsonPath ?? "");
+            if (!isValidUrl(apiUrl)) {
+                return "";
+            } else {
+                output("本次获取到的背景图为：" + apiUrl);
+                return apiUrl;
+            }
+        } else {
+            return api;
+        }
+    }
+    return "";
 }
 
 // 防抖函数
@@ -259,6 +303,13 @@ function onLoad() {
     );
 
     ipcMain.handle(
+        "LiteLoader.background_plugin.fetchApi",
+        async (event, api) => {
+            return await fetchApi(api);
+        }
+    );
+
+    ipcMain.handle(
         "LiteLoader.background_plugin.setImageSourceType",
         (event, type) => {
             nowConfig.imgSource = type;
@@ -287,6 +338,53 @@ function onLoad() {
                     "LiteLoader.background_plugin.mainWindow.reloadBg"
                 );
             }
+        }
+    );
+
+    ipcMain.handle(
+        "LiteLoader.background_plugin.apiJsonPathApply",
+        (event, jsonPath) => {
+            nowConfig.imgApiJsonPath = jsonPath;
+            writeConfig();
+            if (nowConfig.imgSource == "network") {
+                sendChatWindowsMessage(
+                    "LiteLoader.background_plugin.mainWindow.reloadBg"
+                );
+            }
+        }
+    );
+
+    ipcMain.handle(
+        "LiteLoader.background_plugin.showApiPathHelp",
+        (event, data) => {
+            const win = new BrowserWindow({
+                width: 1024,
+                height: 768,
+                title: "API-JSON路径帮助",
+                autoHideMenuBar: true
+            });
+            var htmlText = fs.readFileSync(
+                path.join(__dirname, "assets", "API-JSON路径帮助.html"),
+                "utf-8"
+            );
+            win.loadURL("about:blank");
+
+            win.webContents.setWindowOpenHandler(({ url }) => {
+                return {
+                    action: "allow",
+                    overrideBrowserWindowOptions: {
+                        width: 1024,
+                        height: 768,
+                        autoHideMenuBar: true
+                    }
+                };
+            });
+
+            win.webContents.executeJavaScript(
+                'document.write(decodeURIComponent("' +
+                    encodeURIComponent(htmlText) +
+                    '"))'
+            );
         }
     );
 
@@ -409,6 +507,10 @@ function onLoad() {
             return nowConfig.refreshTime;
         }
     );
+}
+
+function output(...args) {
+    console.log("\x1b[32m%s\x1b[0m", "Background:", ...args);
 }
 
 var mainWindowObjs = [];
