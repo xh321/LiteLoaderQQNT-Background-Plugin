@@ -25,6 +25,7 @@ const sampleConfig = {
     apiType: "img",
     imgSource: "folder",
     refreshTime: 600,
+    isCommonBg: true,
     isAutoRefresh: true,
     overrideImgFile: "",
     enableFrostedGlassStyle: true,
@@ -82,8 +83,22 @@ function rd(n) {
     return Math.floor(Math.random() * (n + 1));
 }
 
+let cachedApiImg = "";
+let cacheFolderImg = "";
+
+function getRdFolderImg(folder) {
+    var filesList = [];
+    readFileList(folder, filesList);
+    if (filesList.length == 0) {
+        return "";
+    } else {
+        let n = rd(filesList.length - 1);
+        return filesList[n];
+    }
+}
+
 // 随机获取一张图片路径
-async function rdpic() {
+async function rdpic(isForce) {
     if (
         nowConfig.overrideImgFile != null &&
         fs.existsSync(nowConfig.overrideImgFile)
@@ -92,14 +107,17 @@ async function rdpic() {
     }
     //目录
     if (nowConfig.imgSource == null || nowConfig.imgSource == "folder") {
-        output("从本地文件夹更新背景");
-        var filesList = [];
-        readFileList(nowConfig.imgDir, filesList);
-        if (filesList.length == 0) {
-            return "";
+        if (isForce || nowConfig.isCommonBg === false) {
+            output("从本地文件夹更新背景");
+            cacheFolderImg = getRdFolderImg(nowConfig.imgDir);
+            return cacheFolderImg;
         } else {
-            let n = rd(filesList.length - 1);
-            return filesList[n];
+            //否则，使用缓存的值
+            if (cacheFolderImg == "") {
+                output("从本地文件夹更新背景");
+                cacheFolderImg = getRdFolderImg(nowConfig.imgDir);
+            }
+            return cacheFolderImg;
         }
     }
     //网络
@@ -107,8 +125,19 @@ async function rdpic() {
         nowConfig.imgSource == "network" ||
         nowConfig.imgSource == "network_video"
     ) {
-        output("从网络 API 更新背景");
-        return await fetchApi(nowConfig.imgApi);
+        //如果是强制更换，或者每个页面不要求同一背景图，则重新请求一次api获取新图片
+        if (isForce || nowConfig.isCommonBg === false) {
+            output("从网络 API 更新背景");
+            cachedApiImg = await fetchApi(nowConfig.imgApi);
+            return cachedApiImg;
+        } else {
+            //否则，使用缓存的值
+            if (cachedApiImg == "") {
+                output("从网络 API 更新背景");
+                cachedApiImg = await fetchApi(nowConfig.imgApi);
+            }
+            return cachedApiImg;
+        }
     }
     //文件
     else if (nowConfig.imgSource == "file") {
@@ -183,7 +212,7 @@ function watchConfigChange() {
     fs.watch(
         configFilePath,
         "utf-8",
-        debounce(() => {
+        debounce(async () => {
             if (isSelfWrite) {
                 //因为fs.watch可能会触发多次，所以延迟
                 setTimeout(() => {
@@ -192,11 +221,14 @@ function watchConfigChange() {
                 return;
             }
             nowConfig = loadConfig();
+
+            await resetTimer();
+
             sendChatWindowsMessage(
-                "LiteLoader.background_plugin.mainWindow.resetTimer"
-            );
-            sendChatWindowsMessage(
-                "LiteLoader.background_plugin.mainWindow.reloadBg"
+                "LiteLoader.background_plugin.mainWindow.reloadBg",
+                nowConfig.isCommonBg === true || nowConfig.isCommonBg == null
+                    ? await rdpic(true)
+                    : ""
             );
         }, 100)
     );
@@ -234,22 +266,55 @@ function writeConfig() {
     );
 }
 
-function sendChatWindowsMessage(message) {
+function sendChatWindowsMessage(event, message = "") {
     for (var window of mainWindowObjs) {
         if (window.isDestroyed()) continue;
-        window.webContents.send(message);
+        window.webContents.send(event, message);
     }
 }
 
 onLoad();
 
+var bgUpdateTimer = null;
+var resetTimerFlag = false;
+async function resetTimer() {
+    //防并发
+    if (resetTimerFlag) return;
+    resetTimerFlag = true;
+
+    if (bgUpdateTimer != null) {
+        clearInterval(bgUpdateTimer);
+    }
+
+    let isAutoRefresh =
+        nowConfig.isAutoRefresh == null || nowConfig.isAutoRefresh === true;
+
+    if (isAutoRefresh) {
+        output(`当前背景更新间隔：${nowConfig.refreshTime}秒`, new Date());
+        bgUpdateTimer = setInterval(async () => {
+            output("[Background]", "更新背景", new Date());
+
+            sendChatWindowsMessage(
+                "LiteLoader.background_plugin.mainWindow.reloadBg",
+                nowConfig.isCommonBg === true || nowConfig.isCommonBg == null
+                    ? await rdpic(true)
+                    : ""
+            );
+        }, nowConfig.refreshTime * 1000);
+    } else {
+        output("用户设置了不自动更新，仅更新一次", new Date());
+    }
+
+    resetTimerFlag = false;
+}
+
 function onLoad() {
+    resetTimer();
+
     ipcMain.handle(
         "LiteLoader.background_plugin.resetTimer",
         async (event, message) => {
-            sendChatWindowsMessage(
-                "LiteLoader.background_plugin.mainWindow.resetTimer"
-            );
+            await resetTimer();
         }
     );
 
@@ -257,7 +322,10 @@ function onLoad() {
         "LiteLoader.background_plugin.reloadBg",
         async (event, message) => {
             sendChatWindowsMessage(
-                "LiteLoader.background_plugin.mainWindow.reloadBg"
+                "LiteLoader.background_plugin.mainWindow.reloadBg",
+                nowConfig.isCommonBg === true || nowConfig.isCommonBg == null
+                    ? await rdpic(true)
+                    : ""
             );
         }
     );
@@ -274,7 +342,7 @@ function onLoad() {
                         buttons: ["确定", "取消"],
                         cancelId: 1
                     })
-                    .then((idx) => {
+                    .then(async (idx) => {
                         //确定
                         if (idx.response == 0) {
                             isSelfWrite = true;
@@ -285,11 +353,13 @@ function onLoad() {
                             nowConfig = loadConfig();
                             accept(true);
 
+                            await resetTimer();
                             sendChatWindowsMessage(
-                                "LiteLoader.background_plugin.mainWindow.resetTimer"
-                            );
-                            sendChatWindowsMessage(
-                                "LiteLoader.background_plugin.mainWindow.reloadBg"
+                                "LiteLoader.background_plugin.mainWindow.reloadBg",
+                                nowConfig.isCommonBg === true ||
+                                    nowConfig.isCommonBg == null
+                                    ? await rdpic(true)
+                                    : ""
                             );
                         }
                         //取消
@@ -311,44 +381,75 @@ function onLoad() {
 
     ipcMain.handle(
         "LiteLoader.background_plugin.setImageSourceType",
-        (event, type) => {
+        async (event, type) => {
             nowConfig.imgSource = type;
             writeConfig();
             sendChatWindowsMessage(
-                "LiteLoader.background_plugin.mainWindow.reloadBg"
+                "LiteLoader.background_plugin.mainWindow.reloadBg",
+                nowConfig.isCommonBg === true || nowConfig.isCommonBg == null
+                    ? await rdpic(true)
+                    : ""
             );
         }
     );
 
-    ipcMain.handle("LiteLoader.background_plugin.setApiType", (event, type) => {
-        nowConfig.apiType = type;
-        writeConfig();
-        sendChatWindowsMessage(
-            "LiteLoader.background_plugin.mainWindow.reloadBg"
-        );
-    });
+    ipcMain.handle(
+        "LiteLoader.background_plugin.setApiType",
+        async (event, type) => {
+            nowConfig.apiType = type;
+            writeConfig();
+            sendChatWindowsMessage(
+                "LiteLoader.background_plugin.mainWindow.reloadBg",
+                nowConfig.isCommonBg === true || nowConfig.isCommonBg == null
+                    ? await rdpic(true)
+                    : ""
+            );
+        }
+    );
 
     ipcMain.handle(
         "LiteLoader.background_plugin.networkImgConfigApply",
-        (event, api) => {
+        async (event, api) => {
             nowConfig.imgApi = api.toString();
             writeConfig();
             if (nowConfig.imgSource == "network") {
                 sendChatWindowsMessage(
-                    "LiteLoader.background_plugin.mainWindow.reloadBg"
+                    "LiteLoader.background_plugin.mainWindow.reloadBg",
+                    nowConfig.isCommonBg === true ||
+                        nowConfig.isCommonBg == null
+                        ? await rdpic(true)
+                        : ""
                 );
             }
         }
     );
 
     ipcMain.handle(
+        "LiteLoader.background_plugin.setCommonBg",
+        async (event, data) => {
+            nowConfig.isCommonBg = data;
+            writeConfig();
+            sendChatWindowsMessage(
+                "LiteLoader.background_plugin.mainWindow.reloadBg",
+                nowConfig.isCommonBg === true || nowConfig.isCommonBg == null
+                    ? await rdpic(true)
+                    : ""
+            );
+        }
+    );
+
+    ipcMain.handle(
         "LiteLoader.background_plugin.apiJsonPathApply",
-        (event, jsonPath) => {
+        async (event, jsonPath) => {
             nowConfig.imgApiJsonPath = jsonPath;
             writeConfig();
             if (nowConfig.imgSource == "network") {
                 sendChatWindowsMessage(
-                    "LiteLoader.background_plugin.mainWindow.reloadBg"
+                    "LiteLoader.background_plugin.mainWindow.reloadBg",
+                    nowConfig.isCommonBg === true ||
+                        nowConfig.isCommonBg == null
+                        ? await rdpic(true)
+                        : ""
                 );
             }
         }
@@ -454,12 +555,11 @@ function onLoad() {
 
     ipcMain.handle(
         "LiteLoader.background_plugin.setAutoRefresh",
-        (event, isAutoRefresh) => {
+        async (event, isAutoRefresh) => {
             nowConfig.isAutoRefresh = isAutoRefresh;
             writeConfig();
-            sendChatWindowsMessage(
-                "LiteLoader.background_plugin.mainWindow.resetTimer"
-            );
+
+            await resetTimer();
         }
     );
 
@@ -478,19 +578,18 @@ function onLoad() {
 
     ipcMain.handle(
         "LiteLoader.background_plugin.changeRefreshTime",
-        (event, refreshTime) => {
+        async (event, refreshTime) => {
             nowConfig.refreshTime = refreshTime;
             writeConfig();
-            sendChatWindowsMessage(
-                "LiteLoader.background_plugin.mainWindow.resetTimer"
-            );
+
+            await resetTimer();
         }
     );
 
     ipcMain.handle(
         "LiteLoader.background_plugin.randomSelect",
-        async (event, message) => {
-            return await rdpic();
+        async (event, isForce) => {
+            return await rdpic(isForce);
         }
     );
 

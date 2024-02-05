@@ -11,11 +11,6 @@ contextBridge.exposeInMainWorld("background_plugin", {
             "LiteLoader.background_plugin.mainWindow.reloadBg",
             callback
         ),
-    resetTimerListener: (callback) =>
-        ipcRenderer.on(
-            "LiteLoader.background_plugin.mainWindow.resetTimer",
-            callback
-        ),
     resetTimer: () =>
         ipcRenderer.invoke("LiteLoader.background_plugin.resetTimer"),
     reloadBg: () => ipcRenderer.invoke("LiteLoader.background_plugin.reloadBg"),
@@ -36,6 +31,8 @@ contextBridge.exposeInMainWorld("background_plugin", {
             "LiteLoader.background_plugin.setImageSourceType",
             type
         ),
+    setCommonBg: (data) =>
+        ipcRenderer.invoke("LiteLoader.background_plugin.setCommonBg", data),
     setApiType: (type) =>
         ipcRenderer.invoke("LiteLoader.background_plugin.setApiType", type),
     showFolderSelect: () =>
@@ -52,8 +49,11 @@ contextBridge.exposeInMainWorld("background_plugin", {
             "LiteLoader.background_plugin.networkImgConfigApply",
             filePath
         ),
-    randomSelect: () =>
-        ipcRenderer.invoke("LiteLoader.background_plugin.randomSelect"),
+    randomSelect: (isForce) =>
+        ipcRenderer.invoke(
+            "LiteLoader.background_plugin.randomSelect",
+            isForce
+        ),
     getRefreshTime: () =>
         ipcRenderer.invoke("LiteLoader.background_plugin.getRefreshTime"),
     getNowConfig: () =>

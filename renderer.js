@@ -2,11 +2,13 @@ export async function onSettingWindowCreated(view) {
     var nowConfig = await window.background_plugin.getNowConfig();
     var nowImgDir = nowConfig.imgDir;
     var nowImgApi = nowConfig.imgApi;
+    var nowCommonBg = nowConfig.isCommonBg;
     var nowApiJsonPath = nowConfig.imgApiJsonPath;
     var nowApiType = nowConfig.apiType == null ? "img" : nowConfig.apiType;
     var nowImgSource =
         nowConfig.imgSource == null ? "folder" : nowConfig.imageSource;
     var nowImgFile = nowConfig.imgFile;
+    var nNowCommonBg = nowCommonBg == null ? true : nowCommonBg;
     var nNowImgApi = nowImgApi == null ? "" : nowImgApi;
     var nNowApiJsonPath = nowApiJsonPath == null ? "" : nowApiJsonPath;
     var nNowImgFile = nowImgFile == null ? "" : nowImgFile;
@@ -138,7 +140,19 @@ export async function onSettingWindowCreated(view) {
               <button id="selectImageFileBtn" class="q-button q-button--small q-button--secondary">选择文件</button>
             </div>
           </div>
-            
+          
+          <hr class="horizontal-dividing-line" />          
+
+          <div class="vertical-list-item">
+            <div>
+              <h2>是否对所有窗口共用背景</h2>
+              <span class="secondary-text">修改将自动保存并立即生效</span>
+            </div>
+            <div id="switchCommonBg" class="q-switch">
+              <span class="q-switch__handle"></span>
+            </div>
+          </div>
+
               <hr class="horizontal-dividing-line" />          
 
               <div class="vertical-list-item">
@@ -559,7 +573,7 @@ export async function onSettingWindowCreated(view) {
     };
 
     var apiJsonPathHelp = async () => {
-      await window.background_plugin.showApiPathHelp();
+        await window.background_plugin.showApiPathHelp();
     };
 
     node2.querySelector("#refreshBgNow").onclick = refreshBg;
@@ -570,6 +584,23 @@ export async function onSettingWindowCreated(view) {
     node2.querySelector("#apiJsonPath").onblur = apiJsonPathChange;
     node2.querySelector("#testNetworkApi").onclick = testNetworkApi;
     node2.querySelector("#apiJsonPathHelp").onclick = apiJsonPathHelp;
+
+    var q_switch_commonBg = node2.querySelector("#switchCOmmonBg");
+
+    if (nNowCommonBg) {
+        q_switch_commonBg.classList.toggle("is-active");
+    }
+
+    q_switch_commonBg.addEventListener("click", async () => {
+        if (q_switch_commonBg.classList.contains("is-active")) {
+            //取消
+            window.background_plugin.setCommonBg(false);
+        } else {
+            //重新设置
+            window.background_plugin.setCommonBg(true);
+        }
+        q_switch_commonBg.classList.toggle("is-active");
+    });
 
     var q_switch_fglass = node2.querySelector("#switchFrostedGlassStyle");
 
@@ -788,8 +819,6 @@ function onLoad() {
 
     var isMainPage = false;
 
-    var bgUpdateTimer = null;
-
     const interval3 = setInterval(async () => {
         if (
             window.location.href.indexOf("#/main/message") != -1 ||
@@ -815,9 +844,13 @@ function onLoad() {
 
             //监听任何可能的重载背景的请求
             await window.background_plugin.reloadBgListener(
-                async (event, message) => {
-                    var nowSelect =
-                        await window.background_plugin.randomSelect();
+                async (event, selectedImg) => {
+                    var nowSelect = selectedImg;
+                    if (nowSelect == "" || nowSelect == null) {
+                        nowSelect = await window.background_plugin.randomSelect(
+                            true
+                        );
+                    }
 
                     await reloadBg(nowSelect);
 
@@ -834,18 +867,11 @@ function onLoad() {
                 }
             );
 
-            //监听任何可能的重载计时器的请求
-            await window.background_plugin.resetTimerListener(
-                async (event, message) => {
-                    await resetTimer();
-                }
-            );
-
             patchCss();
 
             await patchFrostedGlassStyle();
 
-            var nowSelect = await window.background_plugin.randomSelect();
+            var nowSelect = await window.background_plugin.randomSelect(false);
 
             await reloadBg(nowSelect);
 
@@ -853,8 +879,6 @@ function onLoad() {
                 //如果是视频，需要设置一下视频地址
                 setVideoSrc(nowSelect);
             }
-
-            await resetTimer();
 
             clearInterval(interval3);
         } else if (window.location.href.indexOf("#/blank") == -1) {
@@ -866,46 +890,6 @@ function onLoad() {
             clearInterval(interval3);
         }
     }, 100);
-
-    var resetTimerFlag = false;
-    async function resetTimer() {
-        //防并发
-        if (resetTimerFlag) return;
-        resetTimerFlag = true;
-
-        if (bgUpdateTimer != null) {
-            clearInterval(bgUpdateTimer);
-        }
-        var nowConfig = await window.background_plugin.getNowConfig();
-
-        let isAutoRefresh =
-            nowConfig.isAutoRefresh == null || nowConfig.isAutoRefresh === true;
-
-        if (isAutoRefresh) {
-            console.log(
-                "[Background]",
-                `当前背景更新间隔：${nowConfig.refreshTime}秒`,
-                new Date()
-            );
-            bgUpdateTimer = setInterval(async () => {
-                console.log("[Background]", "更新背景", new Date());
-                var src = await window.background_plugin.randomSelect();
-                await reloadBg(src);
-                if (await getNowIsVideo(src)) {
-                    //如果是视频，需要重新设置一下视频地址
-                    setVideoSrc(src);
-                }
-            }, nowConfig.refreshTime * 1000);
-        } else {
-            console.log(
-                "[Background]",
-                "用户设置了不自动更新，仅更新一次",
-                new Date()
-            );
-        }
-
-        resetTimerFlag = false;
-    }
 
     async function getNowIsVideo(src) {
         var nowConfig = await window.background_plugin.getNowConfig();
@@ -970,6 +954,7 @@ function onLoad() {
                 `url("${realUrl}")`
             );
         };
+        console.log("[Background]", "加载图片：" + imgUrl);
     }
 
     async function patchFrostedGlassStyle() {
