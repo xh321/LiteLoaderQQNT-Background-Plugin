@@ -1,5 +1,7 @@
 const fs = require("fs");
 const path = require("path");
+const http = require("http");
+const https = require("https");
 var objectPath = require("object-path");
 const { shell, net, BrowserWindow, ipcMain, dialog } = require("electron");
 
@@ -15,6 +17,7 @@ const allowedImgExt = [
 ];
 const allowedVideoExt = ["MP4", "WEBM", "OGG"];
 var pluginDataDir = path.join(LiteLoader.path.data, "background");
+var pluginTmpDir = path.join(pluginDataDir, "tmp");
 
 const configFilePath = path.join(pluginDataDir, "config.json");
 const sampleConfig = {
@@ -76,6 +79,21 @@ function readFileList(dir, filesList = []) {
         }
     });
     return filesList;
+}
+
+function calcDirSize(dir) {
+    const files = fs.readdirSync(dir);
+    var total = 0;
+    files.forEach((item, index) => {
+        var fullPath = path.join(dir, item);
+        const stat = fs.statSync(fullPath);
+        if (stat.isDirectory()) {
+            total += calcDirSize(path.join(dir, item)); //递归读取文件
+        } else {
+            total += stat.size;
+        }
+    });
+    return total;
 }
 
 // 获取0到n的随机整数
@@ -162,6 +180,43 @@ function isValidUrl(str) {
     return pattern.test(str);
 }
 
+function request(url) {
+    return new Promise((resolve, reject) => {
+        const protocol = url.startsWith("https") ? https : http;
+        const req = protocol.get(url);
+        req.on("error", (error) => reject(error));
+        req.on("response", (res) => {
+            // 发生跳转就继续请求
+            if (res.statusCode >= 300 && res.statusCode <= 399) {
+                return resolve(request(res.headers.location));
+            }
+            const chunks = [];
+            res.on("error", (error) => reject(error));
+            res.on("data", (chunk) => chunks.push(chunk));
+            res.on("end", () => resolve(Buffer.concat(chunks)));
+        });
+    });
+}
+
+async function savePic(url, localPath) {
+    const body = await request(url);
+    if (!fs.existsSync(localPath) || !fs.statSync(localPath).isDirectory) {
+        fs.mkdirSync(path.dirname(localPath), { recursive: true });
+    }
+    fs.writeFileSync(localPath, body);
+}
+
+function uuid() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+        /[xy]/g,
+        function (c) {
+            const r = (Math.random() * 16) | 0;
+            const v = c === "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        }
+    );
+}
+
 async function fetchApi(api) {
     var resp = await net.fetch(api, {
         mode: "cors",
@@ -176,6 +231,7 @@ async function fetchApi(api) {
         var isJson = resp.headers
             .get("content-type")
             .includes("application/json");
+        var isImage = resp.headers.get("content-type").includes("image");
         if (isJson) {
             var data = await resp.json();
             var apiUrl = objectPath.get(data, nowConfig?.imgApiJsonPath ?? "");
@@ -183,8 +239,14 @@ async function fetchApi(api) {
                 return "";
             } else {
                 output("本次获取到的背景图为：" + apiUrl);
-                return apiUrl;
+                var localPic = path.join(pluginTmpDir, `${uuid()}.jpg`);
+                await savePic(apiUrl, localPic);
+                return localPic;
             }
+        } else if (isImage) {
+            var localPic = path.join(pluginTmpDir, `${uuid()}.jpg`);
+            await savePic(api, localPic);
+            return localPic;
         } else {
             return api;
         }
@@ -245,11 +307,12 @@ function loadConfig() {
 
 function initConfig() {
     if (
-        !fsExistsSync(sampleConfig.imgDir) ||
+        !fs.existsSync(sampleConfig.imgDir) ||
         !fs.statSync(sampleConfig.imgDir).isDirectory
     ) {
         fs.mkdirSync(sampleConfig.imgDir, { recursive: true });
     }
+
     fs.writeFileSync(
         configFilePath,
         JSON.stringify(sampleConfig, null, 2),
@@ -308,8 +371,87 @@ async function resetTimer() {
     resetTimerFlag = false;
 }
 
+function emptyDir(path) {
+    const files = fs.readdirSync(path);
+    files.forEach((file) => {
+        const filePath = `${path}/${file}`;
+        const stats = fs.statSync(filePath);
+        if (stats.isDirectory()) {
+            emptyDir(filePath);
+        } else {
+            fs.unlinkSync(filePath);
+        }
+    });
+}
+
+
+function rmEmptyDir(path, level=0) {
+    const files = fs.readdirSync(path);
+    if (files.length > 0) {
+        let tempFile = 0;
+        files.forEach(file => {
+            tempFile++;
+            rmEmptyDir(`${path}/${file}`, 1);
+        });
+        if (tempFile === files.length && level !== 0) {
+            fs.rmdirSync(path);
+        }
+    }
+    else {
+        level !==0 && fs.rmdirSync(path);
+    }
+}
+
 function onLoad() {
     resetTimer();
+
+    ipcMain.handle(
+        "LiteLoader.background_plugin.clearTmpDir",
+        async (event, message) => {
+            return await new Promise((accept) => {
+                dialog
+                    .showMessageBox({
+                        type: "warning",
+                        title: "警告",
+                        message:
+                            "是否立即清空缓存文件夹？这将导致立即更新一次背景图，同时之前缓存的API背景图都将被永久删除。",
+                        buttons: ["确定", "取消"],
+                        cancelId: 1
+                    })
+                    .then(async (idx) => {
+                        //确定
+                        if (idx.response == 0) {
+                            emptyDir(pluginTmpDir);
+                            rmEmptyDir(pluginTmpDir);
+
+                            nowConfig = loadConfig();
+
+                            await resetTimer();
+                            sendChatWindowsMessage(
+                                "LiteLoader.background_plugin.mainWindow.reloadBg",
+                                nowConfig.isCommonBg === true ||
+                                    nowConfig.isCommonBg == null
+                                    ? await rdpic(true)
+                                    : ""
+                            );
+                            accept(true);
+                        }
+                        //取消
+                        else if (idx.response == 1) {
+                            //什么也不做
+                            accept(false);
+                        }
+                    });
+            });
+        }
+    );
+
+    ipcMain.handle(
+        "LiteLoader.background_plugin.getTmpDirSize",
+        async (event, message) => {
+            return calcDirSize(pluginTmpDir);
+        }
+    );
 
     ipcMain.handle(
         "LiteLoader.background_plugin.resetTimer",
@@ -398,12 +540,12 @@ function onLoad() {
         async (event, type) => {
             nowConfig.apiType = type;
             writeConfig();
-            sendChatWindowsMessage(
-                "LiteLoader.background_plugin.mainWindow.reloadBg",
-                nowConfig.isCommonBg === true || nowConfig.isCommonBg == null
-                    ? await rdpic(true)
-                    : ""
-            );
+            // sendChatWindowsMessage(
+            //     "LiteLoader.background_plugin.mainWindow.reloadBg",
+            //     nowConfig.isCommonBg === true || nowConfig.isCommonBg == null
+            //         ? await rdpic(true)
+            //         : ""
+            // );
         }
     );
 

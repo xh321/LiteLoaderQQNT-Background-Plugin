@@ -1,4 +1,7 @@
 export async function onSettingWindowCreated(view) {
+    var tmpDirSize = getfilesize(
+        await window.background_plugin.getTmpDirSize()
+    );
     var nowConfig = await window.background_plugin.getNowConfig();
     var nowImgDir = nowConfig.imgDir;
     var nowImgApi = nowConfig.imgApi;
@@ -33,6 +36,7 @@ export async function onSettingWindowCreated(view) {
               <h2>操作</h2>
               <div>
                 <button id="refreshBgNow" class="q-button q-button--small q-button--secondary">立即更新一次背景</button>
+                <button id="clearTmpDir" class="q-button q-button--small q-button--secondary">清空网络图片缓存文件夹（${tmpDirSize}）</button>
                 <button id="resetAll" class="q-button q-button--small q-button--secondary">恢复默认设置</button>
               </div>
             </div>
@@ -110,9 +114,8 @@ export async function onSettingWindowCreated(view) {
                 <input id="selectImageApi" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="输入API地址（可选）" value="${nNowImgApi}">
                 <button id="testNetworkApi" class="q-button q-button--small q-button--secondary">测试获取</button>
               </div>
-            </div>             
-            <hr class="horizontal-dividing-line" />
-            <div class="vertical-list-item">
+            </div>
+            <div class="vertical-list-item bottom-box">
               <div>
                 <h2>网络背景API JSON路径</h2>
                 <span class="secondary-text">若API返回的是JSON，请填写图片直链对应的 JSON 路径。</span>
@@ -122,6 +125,8 @@ export async function onSettingWindowCreated(view) {
                 <button id="apiJsonPathHelp" class="q-button q-button--small q-button--secondary">查看帮助</button>
               </div>
             </div> 
+            
+          <hr class="horizontal-dividing-line" /> 
             <div class="vertical-list-item">
               <div>
                 <h2>本地背景文件夹路径</h2>
@@ -131,6 +136,7 @@ export async function onSettingWindowCreated(view) {
                 <button id="selectImageDirBtn" class="q-button q-button--small q-button--secondary">选择目录</button>
               </div>
             </div>
+            
             <div class="vertical-list-item bottom-box">
             <div>
               <h2>本地背景路径</h2>
@@ -208,11 +214,13 @@ export async function onSettingWindowCreated(view) {
 
               <div class="vertical-list-item">
                 <div>
-                  <h2>是否启用缓存</h2>
-                  <span class="secondary-text">若使用API请关闭缓存，否则每次图片或视频将因为缓存无法更新；若API仅返回单张图片/视频则可以开启缓存</span>
+                  <h2>是否启用视频缓存</h2>
+                  <span class="secondary-text">若使用的API每次返回不同视频请关闭缓存，否则每次视频可能因为缓存无法更新；若API仅返回单个视频则可以开启缓存。注意：本选项现在对网络图片无效，网络图片均会自动保存。</span>
                 </div>
-                <div id="switchUseCache" class="q-switch">
-                  <span class="q-switch__handle"></span>
+                <div style="width:10%; display: flex;align-items: center;flex-direction: row;margin-left:40px; pointer-events: auto;" >
+                  <div id="switchUseCache" class="q-switch">
+                    <span class="q-switch__handle"></span>
+                  </div>
                 </div>
               </div>
 
@@ -501,6 +509,16 @@ export async function onSettingWindowCreated(view) {
         await window.background_plugin.apiJsonPathApply(path);
     };
 
+    var clearTmpDir = async () => {
+        await window.background_plugin.clearTmpDir();
+        var tmpDirSize = getfilesize(
+            await window.background_plugin.getTmpDirSize()
+        );
+        node2.querySelector(
+            "#clearTmpDir"
+        ).innerText = `清空缓存文件夹（${tmpDirSize}）`;
+    };
+
     var refreshBg = async () => {
         await window.background_plugin.reloadBg();
     };
@@ -515,6 +533,7 @@ export async function onSettingWindowCreated(view) {
 
     var testNetworkApi = async () => {
         var nowConfig = await window.background_plugin.getNowConfig();
+        alert("请观察界面最下侧是否能显示，若无任何媒体显示则说明有问题。");
         if (nowConfig.apiType == "img") {
             node2.querySelector("#testVideo").classList.add("img-hidden");
             node2.querySelector("#testImage").classList.remove("img-hidden");
@@ -527,16 +546,16 @@ export async function onSettingWindowCreated(view) {
             var imgUrl = node2.querySelector("#selectImageApi").value;
 
             imgUrl = await window.background_plugin.fetchApi(imgUrl);
-
+            if (isLocalFile(imgUrl)) {
+                //前面加上协议头
+                imgUrl = `local:///${imgUrl}`;
+            }
             try {
-                var url = new URL(imgUrl);
-                url.searchParams.append("t", new Date().getTime());
-                imgUrl = url.toString();
+                // var url = new URL(imgUrl);
+                // url.searchParams.append("t", new Date().getTime());
+                // imgUrl = url.toString();
 
                 node2.querySelector("#testImage").src = imgUrl;
-                alert(
-                    "请观察下侧是否能显示网络图片，若无任何图片显示则说明有问题。"
-                );
             } catch {
                 alert("URL不合法，请重新输入！");
             }
@@ -546,12 +565,15 @@ export async function onSettingWindowCreated(view) {
             var imgUrl = node2.querySelector("#selectImageApi").value;
 
             imgUrl = await window.background_plugin.fetchApi(imgUrl);
-
+            if (isLocalFile(imgUrl)) {
+                //前面加上协议头
+                imgUrl = `local:///${imgUrl}`;
+            }
             try {
-                var url = new URL(imgUrl);
-                url.searchParams.append("t", new Date().getTime());
+                // var url = new URL(imgUrl);
+                // url.searchParams.append("t", new Date().getTime());
 
-                imgUrl = url.toString();
+                // imgUrl = url.toString();
 
                 var videoNode = document.getElementById("test-video");
                 if (videoNode) {
@@ -569,6 +591,10 @@ export async function onSettingWindowCreated(view) {
             } catch {
                 alert("URL不合法，请重新输入！");
             }
+        } else {
+            alert(
+                "请先选择背景来源为网络图片或网络视频，再进行测试（否则插件不知道应该渲染图片还是视频）"
+            );
         }
     };
 
@@ -576,6 +602,7 @@ export async function onSettingWindowCreated(view) {
         await window.background_plugin.showApiPathHelp();
     };
 
+    node2.querySelector("#clearTmpDir").onclick = clearTmpDir;
     node2.querySelector("#refreshBgNow").onclick = refreshBg;
     node2.querySelector("#resetAll").onclick = resetAll;
     node2.querySelector("#selectImageDirBtn").onclick = selectDir;
@@ -760,9 +787,7 @@ export async function onSettingWindowCreated(view) {
                                 );
                                 return;
                             } else {
-                                await window.background_plugin.setApiType(
-                                    "img"
-                                );
+                                window.background_plugin.setApiType("img");
                             }
                             break;
                         case "network_video":
@@ -774,15 +799,11 @@ export async function onSettingWindowCreated(view) {
                                 );
                                 return;
                             } else {
-                                await window.background_plugin.setApiType(
-                                    "video"
-                                );
+                                window.background_plugin.setApiType("video");
                             }
                             break;
                     }
-                    await window.background_plugin.setImageSourceType(
-                        item_value
-                    );
+                    window.background_plugin.setImageSourceType(item_value);
                     break;
             }
 
@@ -810,6 +831,23 @@ export async function onSettingWindowCreated(view) {
     }
 
     view.appendChild(node2);
+}
+
+function getfilesize(size) {
+    //把字节转换成正常文件大小
+    if (!size) return "0B";
+    var num = 1024.0; //byte
+    if (size < num) return size + "B";
+    if (size < Math.pow(num, 2)) return (size / num).toFixed(2) + "KB"; //kb
+    if (size < Math.pow(num, 3))
+        return (size / Math.pow(num, 2)).toFixed(2) + "MB"; //M
+    if (size < Math.pow(num, 4))
+        return (size / Math.pow(num, 3)).toFixed(2) + "G"; //G
+    return (size / Math.pow(num, 4)).toFixed(2) + "T"; //T
+}
+
+function isLocalFile(src) {
+    return /(^[A-Za-z]{1}:[/\\]{1,2}.*)|(^[/\\]{1,2}.*)/.test(src);
 }
 
 onLoad();
@@ -1022,10 +1060,6 @@ function onLoad() {
             stylee.innerHTML = sHtml;
             document.getElementsByTagName("head").item(0).appendChild(stylee);
         }
-    }
-
-    function isLocalFile(src) {
-        return /(^[A-Za-z]{1}:[/\\]{1,2}.*)|(^[/\\]{1,2}.*)/.test(src);
     }
 
     function setVideoSrc(videoSrc) {

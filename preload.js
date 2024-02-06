@@ -20,6 +20,10 @@ contextBridge.exposeInMainWorld("background_plugin", {
             "LiteLoader.background_plugin.setFrostedGlassStyle",
             isEnable
         ),
+    clearTmpDir: () =>
+        ipcRenderer.invoke("LiteLoader.background_plugin.clearTmpDir"),
+    getTmpDirSize: () =>
+        ipcRenderer.invoke("LiteLoader.background_plugin.getTmpDirSize"),
     showApiPathHelp: () =>
         ipcRenderer.invoke("LiteLoader.background_plugin.showApiPathHelp"),
     fetchApi: (api) =>
