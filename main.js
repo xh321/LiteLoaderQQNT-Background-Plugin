@@ -38,15 +38,6 @@ const sampleConfig = {
 };
 var nowConfig = loadConfig();
 
-function fsExistsSync(path) {
-    try {
-        fs.accessSync(path, fs.F_OK);
-    } catch (e) {
-        return false;
-    }
-    return true;
-}
-
 function isImgOrVideo(src) {
     if (allowedImgExt.indexOf(path.extname(src).toUpperCase().slice(1)) != -1) {
         return "img";
@@ -59,6 +50,8 @@ function isImgOrVideo(src) {
 }
 
 function readFileList(dir, filesList = []) {
+    if(!fs.existsSync(dir)) return [];
+
     const files = fs.readdirSync(dir);
     files.forEach((item, index) => {
         var fullPath = path.join(dir, item);
@@ -82,6 +75,8 @@ function readFileList(dir, filesList = []) {
 }
 
 function calcDirSize(dir) {
+    if(!fs.existsSync(dir)) return 0;
+
     const files = fs.readdirSync(dir);
     var total = 0;
     files.forEach((item, index) => {
