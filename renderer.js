@@ -1,6 +1,7 @@
 const BackgroundSaveBtnHtml = `
 <div
   id="backgroundSave"
+  class="customBtn"
   style="app-region: no-drag; display: flex; height: 24px; justify-content: center; margin-bottom: 16px"
 >
   <i style="display: inline-flex; justify-content: center; align-items: center; color: var(--icon_primary)">
@@ -15,14 +16,31 @@ const BackgroundSaveBtnHtml = `
   </i>
 </div>
 `;
-const BackgroundSaveBtnStyle = `
+
+const BackgroundCustomBtnStyle = `
 <style>
-  #backgroundSave i:hover {
+  .customBtn i:hover {
     color: var(--brand_standard) !important;
   }
 </style>
 `;
 
+const BackgroundChangeBtnHtml = `
+<div
+  id="backgroundChange"
+  class="customBtn"
+  style="app-region: no-drag; display: flex; height: 24px; justify-content: center; margin-bottom: 16px"
+>
+  <i style="display: inline-flex; justify-content: center; align-items: center; color: var(--icon_primary)">
+    <svg width="24" height="24" t="1707309462760" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6358" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <path fill="currentColor" d="M224.028444 96.028444A159.971556 159.971556 0 0 0 64 256v447.317333a30.72 30.72 0 0 0 0 1.422223V768a159.971556 159.971556 0 0 0 160.028444 160.028444h351.971556a31.971556 31.971556 0 1 0 0-64H224.028444A95.971556 95.971556 0 0 1 128 768v-45.454222l190.065778-108.600889 207.36 148.081778a31.971556 31.971556 0 1 0 37.148444-52.053334l-98.190222-70.144 241.777778-214.926222 189.838222 135.566222v15.530667a32.028444 32.028444 0 0 0 64 0V256a160.028444 160.028444 0 0 0-160.028444-160.028444H224.028444zM682.666667 360.106667l-271.758223 241.550222-72.362666-51.712a31.971556 31.971556 0 0 0-34.474667-1.706667L128 648.874667V256c0-53.020444 43.008-96.028444 96.028444-96.028444h576c52.963556 0 95.971556 43.008 95.971556 96.028444v225.848889l-173.397333-123.904a32.028444 32.028444 0 0 0-39.822223 2.161778z m-394.695111-40.106667a31.971556 31.971556 0 1 1 64 0 31.971556 31.971556 0 0 1-64 0z m31.971555-96.028444a95.971556 95.971556 0 1 0 0 192 95.971556 95.971556 0 0 0 0-192z" fill="#000000" p-id="6359">
+      </path>
+      <path fill="currentColor" d="M703.431111 828.302222h224.711111a26.510222 26.510222 0 0 1 19.114667 45.852445l-46.933333 46.819555a26.339556 26.339556 0 0 1-37.432889 0 26.453333 26.453333 0 0 1 0-37.432889l2.275555-2.332444h-161.735111a26.453333 26.453333 0 1 1 0-52.906667z m232.448 19.797334zM929.28 783.075556h-224.711111a26.510222 26.510222 0 0 1-19.114667-45.852445l46.990222-46.762667a26.339556 26.339556 0 0 1 37.376-0.056888 26.453333 26.453333 0 0 1 0 37.432888l-2.275555 2.332445h161.735111a26.453333 26.453333 0 1 1 0 52.906667z m-232.448-19.797334z" fill="#000000" p-id="6360">
+      </path>
+    </svg>
+  </i>
+</div>
+`;
 export async function onSettingWindowCreated(view) {
     var tmpDirSize = getfilesize(
         await window.background_plugin.getTmpDirSize()
@@ -952,14 +970,22 @@ function onLoad() {
             clearInterval(findFuncMenuInterval);
             // 插入按钮和悬停样式
             funcMenu.insertAdjacentHTML("afterbegin", BackgroundSaveBtnHtml);
+            funcMenu.insertAdjacentHTML("afterbegin", BackgroundChangeBtnHtml);
             document.head.insertAdjacentHTML(
                 "beforeend",
-                BackgroundSaveBtnStyle
+                BackgroundCustomBtnStyle
             );
-            // 监听按钮点击
+            // 下载背景图按钮
             const backgroundSaveBtn = document.querySelector("#backgroundSave");
             backgroundSaveBtn.addEventListener("click", async () => {
                 await window.background_plugin.saveNowBg();
+            });
+
+            // 更新背景图按钮
+            const backgroundChangeBtn =
+                document.querySelector("#backgroundChange");
+            backgroundChangeBtn.addEventListener("click", async () => {
+                await window.background_plugin.reloadBg();
             });
         }
     }, 100);
