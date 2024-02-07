@@ -49,6 +49,8 @@ function isImgOrVideo(src) {
     ) {
         return "video";
     }
+
+    return "";
 }
 
 function readFileList(dir, filesList = []) {
@@ -236,12 +238,20 @@ async function fetchApi(api) {
                 return "";
             } else {
                 output("本次获取到的背景图为：" + apiUrl);
-                var localPic = path.join(pluginTmpDir, `${uuid()}.jpg`);
+                var fileName = getImgFileNameFromUrl(apiUrl);
+
+                var localPic = path.join(pluginTmpDir, fileName);
                 await savePic(apiUrl, localPic);
                 return localPic;
             }
         } else if (isImage) {
-            var localPic = path.join(pluginTmpDir, `${uuid()}.jpg`);
+            const mime = (await import("mime")).default;
+            //如果直接是图片文件，则提取content-type
+            var fileExt = mime.getExtension(resp.headers.get("content-type"));
+
+            var fileName = getImgFileNameFromUrl(api, fileExt);
+
+            var localPic = path.join(pluginTmpDir, fileName);
             await savePic(api, localPic);
             return localPic;
         } else {
@@ -249,6 +259,18 @@ async function fetchApi(api) {
         }
     }
     return "";
+}
+
+function getImgFileNameFromUrl(url, ext = "jpg") {
+    var fileName = path.parse(url);
+    if (isImgOrVideo(fileName.base) == "") {
+        //文件后缀不是支持的图片格式
+        fileName = uuid() + "." + ext;
+    } else {
+        //若后缀名支持，直接按原文件名保存即可
+        fileName = fileName.base;
+    }
+    return fileName;
 }
 
 // 防抖函数

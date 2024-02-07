@@ -162,7 +162,7 @@ export async function onSettingWindowCreated(view) {
                 <h2>保存背景图的路径</h2>
               </div>
               <div style="width: 55%; display: flex;align-items: center;flex-direction: row;margin-left:40px; pointer-events: auto;">
-                <input id="selectImagSaveeDir" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="点击保存按钮后保存到哪" readonly="true" value="${nowImgSaveDir}">
+                <input id="selectImageSaveDir" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="点击保存按钮后保存到哪" readonly="true" value="${nowImgSaveDir}">
                 <button id="selectImageSaveDirBtn" class="q-button q-button--small q-button--secondary">选择目录</button>
               </div>
             </div>
@@ -238,7 +238,7 @@ export async function onSettingWindowCreated(view) {
                   <span class="secondary-text">修改将自动保存并立即生效；为了最佳体验，请勿设置过短哦~</span>
                 </div>
                 <div style="width:80px;pointer-events: auto;">
-                  <input id="refreshTimeInput" min="1" max="999" maxlength="3" class="text_color path-input" style="width:45px;" type="number" value="${nowConfig.refreshTime}"/>秒
+                  <input id="refreshTimeInput" min="1" max="999" maxlength="5" class="text_color path-input" style="width:45px;" type="number" value="${nowConfig.refreshTime}"/>秒
                 </div>
               </div>
 
@@ -523,16 +523,15 @@ export async function onSettingWindowCreated(view) {
     };
 
     var selectImgSaveDir = async () => {
-      var path = await window.background_plugin.showImgSaveFolderSelect();
+        var path = await window.background_plugin.showImgSaveFolderSelect();
 
-      if (path == "" || path == null) return;
+        if (path == "" || path == null) return;
 
-      var realPath = path[0].replaceAll("\\", "/");
-      node2.querySelector("#selectImageSaveDir").value = realPath;
+        var realPath = path[0].replaceAll("\\", "/");
+        node2.querySelector("#selectImageSaveDir").value = realPath;
 
-      alert("成功修改保存图片的路径为：" + realPath);
-  };
-
+        alert("成功修改保存图片的路径为：" + realPath);
+    };
 
     var selectFile = async () => {
         var path = await window.background_plugin.showFileSelect();
@@ -765,7 +764,7 @@ export async function onSettingWindowCreated(view) {
 
     node2.querySelector("#refreshTimeInput").onblur = async () => {
         var time = parseFloat(node2.querySelector("#refreshTimeInput").value);
-        if (time <= 0) {
+        if (time <= 0 || time > 99999) {
             alert("你的时间设置有误！将不会保存，请重新输入");
             return;
         }
