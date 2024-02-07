@@ -1,16 +1,48 @@
+const BackgroundSaveBtnHtml = `
+<div
+  id="backgroundSave"
+  style="app-region: no-drag; display: flex; height: 24px; justify-content: center; margin-bottom: 16px"
+>
+  <i style="display: inline-flex; justify-content: center; align-items: center; color: var(--icon_primary)">
+    <svg width="24" height="24" t="1707242102031" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1469" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <path fill="currentColor" d="M682.752 627.894857L571.904 544.914286a47.725714 47.725714 0 0 0-57.014857 0l-97.572572 73.142857-130.084571-104.082286a47.286857 47.286857 0 0 0-56.246857-2.377143l-131.035429 88.137143V246.345143h696.832v238.738286a31.670857 31.670857 0 0 0 63.341715 0v-241.371429A60.745143 60.745143 0 0 0 799.451429 182.857143H97.28A60.745143 60.745143 0 0 0 36.571429 243.529143V819.2a60.745143 60.745143 0 0 0 60.672 60.672h477.805714a31.670857 31.670857 0 1 0 0-63.341714H99.913143v-140.397715l156.745143-105.398857 159.378285 127.488 127.305143-95.488 101.339429 75.995429a31.670857 31.670857 0 1 0 37.997714-50.688z" p-id="1470">
+      </path>
+      <path fill="currentColor" d="M543.378286 404.662857a95.085714 95.085714 0 1 0 95.085714-95.085714 95.085714 95.085714 0 0 0-95.085714 95.085714z m126.72 0a31.670857 31.670857 0 1 1-31.670857-31.670857 31.707429 31.707429 0 0 1 31.670857 31.670857z" p-id="1471">
+      </path>
+      <path fill="currentColor" d="M891.245714 829.513143l-21.174857 21.174857v-221.586286a29.257143 29.257143 0 1 0-58.514286 0v221.732572l-21.174857-21.174857a29.257143 29.257143 0 0 0-41.508571 0 29.257143 29.257143 0 0 0 0 41.398857l71.168 71.168 1.097143 1.024c0.182857 0 0.292571 0.292571 0.475428 0.365714a3.949714 3.949714 0 0 0 0.658286 0.548571l0.658286 0.548572c0.182857 0 0.292571 0.292571 0.475428 0.365714l0.731429 0.548572 0.475428 0.292571a3.657143 3.657143 0 0 0 0.841143 0.475429l0.475429 0.292571 0.841143 0.475429 0.475428 0.292571c0.292571 0 0.475429 0.292571 0.731429 0.365714l0.548571 0.292572 0.731429 0.292571 0.658286 0.292572 0.658285 0.292571 0.731429 0.292571 0.548571 0.182858 0.841143 0.292571a0.841143 0.841143 0 0 0 0.475429 0l0.914285 0.292571h0.475429a3.218286 3.218286 0 0 0 0.914286 0.182858h0.475428c0.182857 0 0.658286 0 0.914286 0.182857a1.170286 1.170286 0 0 1 0.548571 0h0.914286a145795831155.78513 145795831155.78513 0 0 1 1.462857 0.182857h2.925715a151002825111.04 151002825111.04 0 0 1 1.462857-0.182857h0.914285a1.170286 1.170286 0 0 0 0.548572 0c0.292571 0 0.658286 0 0.914286-0.182857s0.292571 0 0.475428 0 0.658286 0 0.914286-0.182858h0.475428l0.914286-0.292571h0.475429l0.841143-0.292571 0.548571-0.182858 0.731429-0.292571 0.658285-0.292571 0.658286-0.292572 0.731429-0.292571 0.548571-0.292572c0.292571 0 0.475429-0.292571 0.731429-0.365714l0.475428-0.292571 0.841143-0.475429 0.475429-0.292571a3.657143 3.657143 0 0 1 0.841142-0.475429l0.475429-0.292571 0.731429-0.548572c0.182857 0 0.292571-0.292571 0.475428-0.365714l0.658286-0.548572a3.986286 3.986286 0 0 1 0.658286-0.548571c0.182857 0 0.292571-0.292571 0.475428-0.365714l1.097143-1.024 71.168-71.168a29.257143 29.257143 0 0 0 0-41.508572 29.878857 29.878857 0 0 0-42.386286-0.036571z" p-id="1472">
+      </path>
+    </svg>
+  </i>
+</div>
+`;
+const BackgroundSaveBtnStyle = `
+<style>
+  #backgroundSave i:hover {
+    color: var(--brand_standard) !important;
+  }
+</style>
+`;
+
 export async function onSettingWindowCreated(view) {
     var tmpDirSize = getfilesize(
         await window.background_plugin.getTmpDirSize()
     );
     var nowConfig = await window.background_plugin.getNowConfig();
     var nowImgDir = nowConfig.imgDir;
+    var nowImgSaveDir = nowConfig.imgSaveDir;
     var nowImgApi = nowConfig.imgApi;
     var nowCommonBg = nowConfig.isCommonBg;
+    var nowEnableBackgroundForMediaViewer =
+        nowConfig.enableBackgroundForMediaViewer;
     var nowApiJsonPath = nowConfig.imgApiJsonPath;
     var nowApiType = nowConfig.apiType == null ? "img" : nowConfig.apiType;
     var nowImgSource =
         nowConfig.imgSource == null ? "folder" : nowConfig.imageSource;
     var nowImgFile = nowConfig.imgFile;
+    var nNowEnableBackgroundForMediaViewer =
+        nowEnableBackgroundForMediaViewer == null
+            ? true
+            : nowEnableBackgroundForMediaViewer;
     var nNowCommonBg = nowCommonBg == null ? true : nowCommonBg;
     var nNowImgApi = nowImgApi == null ? "" : nowImgApi;
     var nNowApiJsonPath = nowApiJsonPath == null ? "" : nowApiJsonPath;
@@ -124,7 +156,16 @@ export async function onSettingWindowCreated(view) {
                 <input id="apiJsonPath" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="输入 JSON 路径（可选）" value="${nNowApiJsonPath}">
                 <button id="apiJsonPathHelp" class="q-button q-button--small q-button--secondary">查看帮助</button>
               </div>
-            </div> 
+            </div>          
+            <div class="vertical-list-item">
+              <div>
+                <h2>保存背景图的路径</h2>
+              </div>
+              <div style="width: 55%; display: flex;align-items: center;flex-direction: row;margin-left:40px; pointer-events: auto;">
+                <input id="selectImagSaveeDir" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="点击保存按钮后保存到哪" readonly="true" value="${nowImgSaveDir}">
+                <button id="selectImageSaveDirBtn" class="q-button q-button--small q-button--secondary">选择目录</button>
+              </div>
+            </div>
             
           <hr class="horizontal-dividing-line" /> 
             <div class="vertical-list-item">
@@ -151,10 +192,22 @@ export async function onSettingWindowCreated(view) {
 
           <div class="vertical-list-item">
             <div>
-              <h2>是否对所有窗口共用背景</h2>
+              <h2>是否对所有窗口共用同一个背景</h2>
               <span class="secondary-text">修改将自动保存并立即生效</span>
             </div>
             <div id="switchCommonBg" class="q-switch">
+              <span class="q-switch__handle"></span>
+            </div>
+          </div>
+
+          <hr class="horizontal-dividing-line" />          
+
+          <div class="vertical-list-item">
+            <div>
+              <h2>是否对媒体预览器生效背景</h2>
+              <span class="secondary-text">修改将自动保存并在新打开的媒体预览器生效</span>
+            </div>
+            <div id="switchMediaViewer" class="q-switch">
               <span class="q-switch__handle"></span>
             </div>
           </div>
@@ -469,6 +522,18 @@ export async function onSettingWindowCreated(view) {
         alert("成功修改路径为目录：" + realPath);
     };
 
+    var selectImgSaveDir = async () => {
+      var path = await window.background_plugin.showImgSaveFolderSelect();
+
+      if (path == "" || path == null) return;
+
+      var realPath = path[0].replaceAll("\\", "/");
+      node2.querySelector("#selectImageSaveDir").value = realPath;
+
+      alert("成功修改保存图片的路径为：" + realPath);
+  };
+
+
     var selectFile = async () => {
         var path = await window.background_plugin.showFileSelect();
 
@@ -605,6 +670,7 @@ export async function onSettingWindowCreated(view) {
     node2.querySelector("#clearTmpDir").onclick = clearTmpDir;
     node2.querySelector("#refreshBgNow").onclick = refreshBg;
     node2.querySelector("#resetAll").onclick = resetAll;
+    node2.querySelector("#selectImageSaveDirBtn").onclick = selectImgSaveDir;
     node2.querySelector("#selectImageDirBtn").onclick = selectDir;
     node2.querySelector("#selectImageFileBtn").onclick = selectFile;
     node2.querySelector("#selectImageApi").onblur = selectNetwork;
@@ -612,9 +678,26 @@ export async function onSettingWindowCreated(view) {
     node2.querySelector("#testNetworkApi").onclick = testNetworkApi;
     node2.querySelector("#apiJsonPathHelp").onclick = apiJsonPathHelp;
 
+    var q_switch_mediaViewer = node2.querySelector("#switchMediaViewer");
+
+    if (nNowEnableBackgroundForMediaViewer == true) {
+        q_switch_mediaViewer.classList.toggle("is-active");
+    }
+
+    q_switch_mediaViewer.addEventListener("click", async () => {
+        if (q_switch_mediaViewer.classList.contains("is-active")) {
+            //取消
+            window.background_plugin.setEMediaViewer(false);
+        } else {
+            //重新设置
+            window.background_plugin.setEMediaViewer(true);
+        }
+        q_switch_mediaViewer.classList.toggle("is-active");
+    });
+
     var q_switch_commonBg = node2.querySelector("#switchCOmmonBg");
 
-    if (nNowCommonBg) {
+    if (nNowCommonBg == true) {
         q_switch_commonBg.classList.toggle("is-active");
     }
 
@@ -857,15 +940,43 @@ function onLoad() {
 
     var isMainPage = false;
 
+    //来自：https://github.com/qianxuu/LiteLoaderQQNT-Plugin-Demo-mode/blob/main/src/renderer.js
+    //主界面功能菜单添加按钮
+    let findCount = 0;
+    const findFuncMenuInterval = setInterval(() => {
+        if (findCount++ > 30) {
+            clearInterval(findFuncMenuInterval);
+        }
+        // 获取功能菜单
+        const funcMenu = document.querySelector(".func-menu");
+        if (funcMenu) {
+            clearInterval(findFuncMenuInterval);
+            // 插入按钮和悬停样式
+            funcMenu.insertAdjacentHTML("afterbegin", BackgroundSaveBtnHtml);
+            document.head.insertAdjacentHTML(
+                "beforeend",
+                BackgroundSaveBtnStyle
+            );
+            // 监听按钮点击
+            const backgroundSaveBtn = document.querySelector("#backgroundSave");
+            backgroundSaveBtn.addEventListener("click", async () => {
+                await window.background_plugin.saveNowBg();
+            });
+        }
+    }, 100);
+
     const interval3 = setInterval(async () => {
+        var nowConfig = await window.background_plugin.getNowConfig();
         if (
             window.location.href.indexOf("#/main/message") != -1 ||
             window.location.href.indexOf("#/chat") != -1 ||
             window.location.href.indexOf("#/setting") != -1 ||
             window.location.href.indexOf("#/fileManager") != -1 ||
             window.location.href.indexOf("#/file-manager") != -1 ||
-            window.location.href.indexOf("#/imageViewer") != -1 ||
-            window.location.href.indexOf("#/image-viewer") != -1 ||
+            ((nowConfig.enableBackgroundForMediaViewer ||
+                nowConfig.enableBackgroundForMediaViewer == null) &&
+                (window.location.href.indexOf("#/imageViewer") != -1 ||
+                    window.location.href.indexOf("#/image-viewer") != -1)) ||
             window.location.href.indexOf("#/about") != -1
         ) {
             //如果之前已经进过这里，说明是重复进入，直接清除计时器退出即可

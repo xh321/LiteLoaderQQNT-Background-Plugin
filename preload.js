@@ -11,6 +11,8 @@ contextBridge.exposeInMainWorld("background_plugin", {
             "LiteLoader.background_plugin.mainWindow.reloadBg",
             callback
         ),
+    saveNowBg: () =>
+        ipcRenderer.invoke("LiteLoader.background_plugin.saveNowBg"),
     resetTimer: () =>
         ipcRenderer.invoke("LiteLoader.background_plugin.resetTimer"),
     reloadBg: () => ipcRenderer.invoke("LiteLoader.background_plugin.reloadBg"),
@@ -35,12 +37,21 @@ contextBridge.exposeInMainWorld("background_plugin", {
             "LiteLoader.background_plugin.setImageSourceType",
             type
         ),
+    setEMediaViewer: (data) =>
+        ipcRenderer.invoke(
+            "LiteLoader.background_plugin.setEMediaViewer",
+            data
+        ),
     setCommonBg: (data) =>
         ipcRenderer.invoke("LiteLoader.background_plugin.setCommonBg", data),
     setApiType: (type) =>
         ipcRenderer.invoke("LiteLoader.background_plugin.setApiType", type),
     showFolderSelect: () =>
         ipcRenderer.invoke("LiteLoader.background_plugin.showFolderSelect"),
+    showImgSaveFolderSelect: () =>
+        ipcRenderer.invoke(
+            "LiteLoader.background_plugin.showImgSaveFolderSelect"
+        ),
     showFileSelect: () =>
         ipcRenderer.invoke("LiteLoader.background_plugin.showFileSelect"),
     apiJsonPathApply: (jsonPath) =>

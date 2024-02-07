@@ -22,6 +22,7 @@ var pluginTmpDir = path.join(pluginDataDir, "tmp");
 const configFilePath = path.join(pluginDataDir, "config.json");
 const sampleConfig = {
     imgDir: path.join(pluginDataDir, "imgs").replaceAll("\\", "/"),
+    imgSaveDir: path.join(pluginDataDir, "imgs").replaceAll("\\", "/"),
     imgFile: "",
     imgApi: "",
     imgApiJsonPath: "",
@@ -31,6 +32,7 @@ const sampleConfig = {
     isCommonBg: true,
     isAutoRefresh: true,
     overrideImgFile: "",
+    enableBackgroundForMediaViewer: true,
     enableFrostedGlassStyle: true,
     apiOptions: {
         useCache: false
@@ -50,7 +52,7 @@ function isImgOrVideo(src) {
 }
 
 function readFileList(dir, filesList = []) {
-    if(!fs.existsSync(dir)) return [];
+    if (!fs.existsSync(dir)) return [];
 
     const files = fs.readdirSync(dir);
     files.forEach((item, index) => {
@@ -75,7 +77,7 @@ function readFileList(dir, filesList = []) {
 }
 
 function calcDirSize(dir) {
-    if(!fs.existsSync(dir)) return 0;
+    if (!fs.existsSync(dir)) return 0;
 
     const files = fs.readdirSync(dir);
     var total = 0;
@@ -379,21 +381,19 @@ function emptyDir(path) {
     });
 }
 
-
-function rmEmptyDir(path, level=0) {
+function rmEmptyDir(path, level = 0) {
     const files = fs.readdirSync(path);
     if (files.length > 0) {
         let tempFile = 0;
-        files.forEach(file => {
+        files.forEach((file) => {
             tempFile++;
             rmEmptyDir(`${path}/${file}`, 1);
         });
         if (tempFile === files.length && level !== 0) {
             fs.rmdirSync(path);
         }
-    }
-    else {
-        level !==0 && fs.rmdirSync(path);
+    } else {
+        level !== 0 && fs.rmdirSync(path);
     }
 }
 
@@ -634,6 +634,14 @@ function onLoad() {
     );
 
     ipcMain.handle(
+        "LiteLoader.background_plugin.setEMediaViewer",
+        async (event, isEnable) => {
+            nowConfig.enableBackgroundForMediaViewer = isEnable;
+            writeConfig();
+        }
+    );
+
+    ipcMain.handle(
         "LiteLoader.background_plugin.setFrostedGlassStyle",
         (event, isEnable) => {
             nowConfig.enableFrostedGlassStyle = isEnable;
@@ -654,6 +662,21 @@ function onLoad() {
             });
             nowConfig.imgSource = "folder";
             nowConfig.imgDir = filePath.toString().replaceAll("\\", "/");
+            writeConfig();
+            //render层会重载bg
+            return filePath;
+        }
+    );
+
+    ipcMain.handle(
+        "LiteLoader.background_plugin.showImgSaveFolderSelect",
+        (event, message) => {
+            const window = BrowserWindow.fromWebContents(event.sender);
+            let filePath = dialog.showOpenDialogSync(window, {
+                title: "请选择点击按钮后保存当前背景图到哪个文件夹",
+                properties: ["openDirectory"] // 选择文件夹
+            });
+            nowConfig.imgSaveDir = filePath.toString().replaceAll("\\", "/");
             writeConfig();
             //render层会重载bg
             return filePath;
@@ -720,6 +743,61 @@ function onLoad() {
             writeConfig();
 
             await resetTimer();
+        }
+    );
+
+    ipcMain.handle(
+        "LiteLoader.background_plugin.saveNowBg",
+        async (event, message) => {
+            if (nowConfig.imgSaveDir == null) {
+                nowConfig.imgSaveDir = path
+                    .join(pluginDataDir, "imgs")
+                    .replaceAll("\\", "/");
+            }
+            if (!fs.existsSync(nowConfig.imgSaveDir)) {
+                fs.mkdirSync(nowConfig.imgSaveDir, { recursive: true });
+            }
+
+            if (nowConfig.imgSource == "network") {
+                if (!fs.existsSync(cachedApiImg)) {
+                    dialog.showMessageBox({
+                        type: "warning",
+                        title: "警告",
+                        message:
+                            "当前尚未下载到背景文件，无法保存，请等待当前背景加载完毕再试。若长期未加载，请前往设置检查API配置是否正确。",
+                        buttons: ["确定"]
+                    });
+                    return;
+                }
+
+                var targetPath = path.join(
+                    nowConfig.imgSaveDir,
+                    path.basename(cachedApiImg)
+                );
+                fs.copyFileSync(cachedApiImg, targetPath);
+                dialog
+                    .showMessageBox({
+                        type: "info",
+                        title: "提示",
+                        message: "保存背景成功！",
+                        buttons: ["确定", "打开所在文件夹"],
+                        cancelId: 0
+                    })
+                    .then(async (idx) => {
+                        //确定
+                        if (idx.response == 1) {
+                            shell.showItemInFolder(targetPath);
+                        }
+                    });
+            } else {
+                //不支持
+                dialog.showMessageBox({
+                    type: "warning",
+                    title: "警告",
+                    message: "仅支持保存来源为网络图片的背景",
+                    buttons: ["确定"]
+                });
+            }
         }
     );
 
