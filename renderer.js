@@ -2,7 +2,7 @@ const BackgroundSaveBtnHtml = `
 <div
   id="backgroundSave"
   class="customBtn"
-  style="app-region: no-drag; display: flex; height: 24px; justify-content: center; margin-bottom: 16px"
+  style="app-region: no-drag; display: flex; height: 24px; justify-content: center; margin-bottom: 16px;margin-left:2px;"
 >
   <i style="display: inline-flex; justify-content: center; align-items: center; color: var(--icon_primary)">
     <svg width="24" height="24" t="1707242102031" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1469" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -29,7 +29,7 @@ const BackgroundChangeBtnHtml = `
 <div
   id="backgroundChange"
   class="customBtn"
-  style="app-region: no-drag; display: flex; height: 24px; justify-content: center; margin-bottom: 16px"
+  style="app-region: no-drag; display: flex; height: 24px; justify-content: center; margin-bottom: 16px;margin-left:2px;"
 >
   <i style="display: inline-flex; justify-content: center; align-items: center; color: var(--icon_primary)">
     <svg width="24" height="24" t="1707309462760" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6358" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -952,16 +952,12 @@ function isLocalFile(src) {
 
 onLoad();
 
-function onLoad() {
-    console.log("[Background]", "开始检测页面路径", new Date());
-
-    var isMainPage = false;
-
+function insertLeftMenuBtn() {
     //来自：https://github.com/qianxuu/LiteLoaderQQNT-Plugin-Demo-mode/blob/main/src/renderer.js
     //主界面功能菜单添加按钮
     let findCount = 0;
     const findFuncMenuInterval = setInterval(() => {
-        if (findCount++ > 30) {
+        if (findCount++ > 50) {
             clearInterval(findFuncMenuInterval);
         }
         // 获取功能菜单
@@ -989,6 +985,12 @@ function onLoad() {
             });
         }
     }, 100);
+}
+
+function onLoad() {
+    console.log("[Background]", "开始检测页面路径", new Date());
+
+    var isMainPage = false;
 
     const interval3 = setInterval(async () => {
         var nowConfig = await window.background_plugin.getNowConfig();
@@ -1010,12 +1012,19 @@ function onLoad() {
                 clearInterval(interval3);
                 return;
             }
+
             isMainPage = true;
+            clearInterval(interval3);
+            
             console.log(
                 "[Background]",
                 "检测到主页页面或聊天页面，注入背景更新函数",
                 new Date()
             );
+
+            if (window.location.href.indexOf("#/main/message") != -1) {
+                insertLeftMenuBtn();
+            }
 
             //监听任何可能的重载背景的请求
             await window.background_plugin.reloadBgListener(
@@ -1055,7 +1064,6 @@ function onLoad() {
                 setVideoSrc(nowSelect);
             }
 
-            clearInterval(interval3);
         } else if (window.location.href.indexOf("#/blank") == -1) {
             console.log(
                 "[Background]",
