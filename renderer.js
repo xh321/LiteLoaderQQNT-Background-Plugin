@@ -995,6 +995,7 @@ function onLoad() {
         if (
             window.location.href.indexOf("#/main/message") != -1 ||
             window.location.href.indexOf("#/chat") != -1 ||
+            window.location.href.indexOf("#/forward") != -1 ||
             window.location.href.indexOf("#/setting") != -1 ||
             window.location.href.indexOf("#/fileManager") != -1 ||
             window.location.href.indexOf("#/file-manager") != -1 ||
@@ -1289,6 +1290,15 @@ function onLoad() {
           color: white;
           background: rgba(80,80,80,0.8);
           padding-bottom: 8px;
+        }
+
+        
+        /* 合并转发页面 */
+        #app > #ml-root {
+          background-color: rgba(0,0,0,0.7)!important;
+        }
+        #app .title {
+          background-color: rgba(0,0,0,0.85)!important;
         }
 
         .main-area__footer {
@@ -1651,7 +1661,13 @@ function onLoad() {
           padding-bottom: 8px;
         }
 
-
+        /* 合并转发页面 */
+        #app > #ml-root {
+          background-color: rgb(255 255 255  / 50%)!important;
+        }
+        #app .title {
+          background-color: rgb(255 255 255  / 75%)!important;
+        }
 
         .group-notice .content {
           color: #3d3d3d!important;
