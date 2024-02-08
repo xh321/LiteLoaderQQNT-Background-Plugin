@@ -1258,7 +1258,7 @@ function onLoad() {
 
         /* 需要半透明的控件 */
         /* 公共组件 */
-        :has(> .q-switch), :has(> .label), .panel-main, .main-search,
+        :has(> .q-switch), :has(> .label), .panel-main, .main-search, setting-panel, setting-select,setting-option,setting-divider,
         /* 设置页面专用 */
         .add-perm, .other-shortcut, .common-shotcut, .chat-page, .new-msg , .cue-tone, .location-setting, .storage-item, .setting-item-group,
         /* 文件选择器*/
@@ -1269,7 +1269,7 @@ function onLoad() {
 
         /* 需要完全透明的子控件（避免重复透明度不好看） */
         /* 公共组件 */
-        .item-container, .q-collapse-item__header, .q-collapse-item, .q-collapse,
+        .item-container, .q-collapse-item__header, .q-collapse-item, .q-collapse, setting-list, setting-item, setting-text,setting-switch,setting-button,
         /* 设置页面专用 */
         .setting-item, .verify-way, .question-audit, .close-shotcut, .chat-page__item, .new-msg__item, .cue-tone__item, .shortcut-conflict, .vertical-list-item,
         /* 文件选择器 */
@@ -1294,10 +1294,10 @@ function onLoad() {
 
         
         /* 合并转发页面 */
-        #app > #ml-root {
+        .forward > #ml-root {
           background-color: rgba(0,0,0,0.7)!important;
         }
-        #app .title {
+        .forward .draggable-view__container .title {
           background-color: rgba(0,0,0,0.85)!important;
         }
 
@@ -1607,7 +1607,7 @@ function onLoad() {
 
         /* 需要半透明的控件 */
         /* 公共组件 */
-        :has(> .q-switch), :has(> .label), .panel-main, .main-search,
+        :has(> .q-switch), :has(> .label), .panel-main, .main-search, setting-panel, setting-select,setting-option,setting-switch,setting-button,setting-divider,
         /* 设置页面专用 */
         .add-perm, .other-shortcut, .common-shotcut, .chat-page, .new-msg , .cue-tone, .location-setting, .storage-item, .setting-item-group,
         /* 文件选择器*/
@@ -1618,7 +1618,7 @@ function onLoad() {
 
         /* 需要完全透明的子控件（避免重复透明度不好看） */
         /* 公共组件 */
-        .item-container, .q-collapse-item__header, .q-collapse-item, .q-collapse,
+        .item-container, .q-collapse-item__header, .q-collapse-item, .q-collapse, setting-list, setting-item, setting-text,
         /* 设置页面专用 */
         .setting-item, .verify-way, .question-audit, .close-shotcut, .chat-page__item, .new-msg__item, .cue-tone__item, .shortcut-conflict, .group-body .viewport-list__inner, .vertical-list-item,
         /* 文件选择器 */
@@ -1662,10 +1662,10 @@ function onLoad() {
         }
 
         /* 合并转发页面 */
-        #app > #ml-root {
+        .forward > #ml-root {
           background-color: rgb(255 255 255  / 50%)!important;
         }
-        #app .title {
+        .forward .draggable-view__container .title {
           background-color: rgb(255 255 255  / 75%)!important;
         }
 
