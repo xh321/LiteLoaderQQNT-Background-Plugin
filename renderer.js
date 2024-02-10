@@ -1459,7 +1459,7 @@ function onLoad() {
         }
 
         .search-result {
-          background: rgba(30, 30, 30, 0.85)!important;
+          background: rgba(30, 30, 30, 0.92)!important;
         }
 
         .chat-header {
@@ -1835,7 +1835,7 @@ function onLoad() {
         }
 
         .search-result {
-          background: rgba(230, 230, 230, 0.75)!important;
+          background: rgba(230, 230, 230, 0.92)!important;
         }
 
         .chat-header {
