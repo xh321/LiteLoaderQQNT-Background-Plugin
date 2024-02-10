@@ -998,6 +998,7 @@ function onLoad() {
             window.location.href.indexOf("#/main/message") != -1 ||
             window.location.href.indexOf("#/chat") != -1 ||
             window.location.href.indexOf("#/forward") != -1 ||
+            window.location.href.indexOf("#/record") != -1 ||
             window.location.href.indexOf("#/setting") != -1 ||
             window.location.href.indexOf("#/fileManager") != -1 ||
             window.location.href.indexOf("#/file-manager") != -1 ||
@@ -1308,6 +1309,27 @@ function onLoad() {
         .forward .draggable-view__container .title {
           background-color: rgba(0,0,0,0.85)!important;
         }
+
+        /* 聊天记录页面 */
+        .record {
+          background-color: rgba(0,0,0,0.7)!important;
+        }
+        .record-msg-date {
+          background-color: rgba(0,0,0,0.75)!important;
+        }
+
+        .record .msg-content-container {
+          border-radius:8px!important;
+          padding:0!important;
+        }
+        
+        .record .message-content {
+          padding-top: 8px!important;
+          padding-left: 8px!important;
+          padding-right:8px!important;
+          padding-bottom:8px!important;
+        }
+
 
         .main-area__footer {
           box-shadow: rgb(25 25 25) 0px 0px 20px 4px;
@@ -1676,6 +1698,28 @@ function onLoad() {
         .forward .draggable-view__container .title {
           background-color: rgb(255 255 255  / 75%)!important;
         }
+
+        
+        /* 聊天记录页面 */
+        .record {
+          background-color: rgba(255,255,255,0.7)!important;
+        }
+        .record-msg-date {
+          background-color: rgba(255,255,255,0.85)!important;
+        }
+
+        .record .msg-content-container {
+          border-radius:8px!important;
+          padding:0!important;
+        }
+        
+        .record .message-content {
+          padding-top: 8px!important;
+          padding-left: 8px!important;
+          padding-right:8px!important;
+          padding-bottom:8px!important;
+        }
+
 
         .group-notice .content {
           color: #3d3d3d!important;
