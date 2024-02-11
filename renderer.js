@@ -42,41 +42,39 @@ const BackgroundChangeBtnHtml = `
 </div>
 `;
 export async function onSettingWindowCreated(view) {
-    var tmpDirSize = getfilesize(
-        await window.background_plugin.getTmpDirSize()
-    );
-    var nowConfig = await window.background_plugin.getNowConfig();
-    var nowImgDir = nowConfig.imgDir;
-    var nowImgSaveDir = nowConfig.imgSaveDir;
-    var nowImgApi = nowConfig.imgApi;
-    var nowCommonBg = nowConfig.isCommonBg;
-    var nowEnableBackgroundForMediaViewer =
-        nowConfig.enableBackgroundForMediaViewer;
-    var nowApiJsonPath = nowConfig.imgApiJsonPath;
-    var nowApiType = nowConfig.apiType == null ? "img" : nowConfig.apiType;
-    var nowImgSource =
-        nowConfig.imgSource == null ? "folder" : nowConfig.imageSource;
-    var nowImgFile = nowConfig.imgFile;
-    var nNowEnableBackgroundForMediaViewer =
-        nowEnableBackgroundForMediaViewer == null
-            ? true
-            : nowEnableBackgroundForMediaViewer;
-    var nNowCommonBg = nowCommonBg == null ? true : nowCommonBg;
-    var nNowImgApi = nowImgApi == null ? "" : nowImgApi;
-    var nNowApiJsonPath = nowApiJsonPath == null ? "" : nowApiJsonPath;
-    var nNowImgFile = nowImgFile == null ? "" : nowImgFile;
-    let isFrostedGlassStyle =
-        nowConfig.enableFrostedGlassStyle == null ||
-        nowConfig.enableFrostedGlassStyle === true;
-    let isAutoRefresh =
-        nowConfig.isAutoRefresh == null || nowConfig.isAutoRefresh === true;
-    let isUseCache = !(
-        (nowConfig.apiOptions &&
-            (nowConfig.apiOptions.useCache === false ||
-                nowConfig.apiOptions.useCache == null)) ||
-        nowConfig.apiOptions == null
-    );
-    const new_navbar_item = `
+  var tmpDirSize = getfilesize(await window.background_plugin.getTmpDirSize());
+  var nowConfig = await window.background_plugin.getNowConfig();
+  var nowImgDir = nowConfig.imgDir;
+  var nowImgSaveDir = nowConfig.imgSaveDir;
+  var nowImgApi = nowConfig.imgApi;
+  var nowCommonBg = nowConfig.isCommonBg;
+  var nowEnableBackgroundForMediaViewer =
+    nowConfig.enableBackgroundForMediaViewer;
+  var nowApiJsonPath = nowConfig.imgApiJsonPath;
+  var nowApiType = nowConfig.apiType == null ? "img" : nowConfig.apiType;
+  var nowImgSource =
+    nowConfig.imgSource == null ? "folder" : nowConfig.imageSource;
+  var nowImgFile = nowConfig.imgFile;
+  var nNowEnableBackgroundForMediaViewer =
+    nowEnableBackgroundForMediaViewer == null
+      ? true
+      : nowEnableBackgroundForMediaViewer;
+  var nNowCommonBg = nowCommonBg == null ? true : nowCommonBg;
+  var nNowImgApi = nowImgApi == null ? "" : nowImgApi;
+  var nNowApiJsonPath = nowApiJsonPath == null ? "" : nowApiJsonPath;
+  var nNowImgFile = nowImgFile == null ? "" : nowImgFile;
+  let isFrostedGlassStyle =
+    nowConfig.enableFrostedGlassStyle == null ||
+    nowConfig.enableFrostedGlassStyle === true;
+  let isAutoRefresh =
+    nowConfig.isAutoRefresh == null || nowConfig.isAutoRefresh === true;
+  let isUseCache = !(
+    (nowConfig.apiOptions &&
+      (nowConfig.apiOptions.useCache === false ||
+        nowConfig.apiOptions.useCache == null)) ||
+    nowConfig.apiOptions == null
+  );
+  const new_navbar_item = `
     <body>
       <div class="config_view">
         <section class="path">
@@ -241,6 +239,18 @@ export async function onSettingWindowCreated(view) {
                   <span class="q-switch__handle"></span>
                 </div>
               </div>
+
+              
+              <hr class="horizontal-dividing-line" />          
+
+              <div class="vertical-list-item">
+                <div>
+                  <h2>调整主背景图覆盖层透明度</h2>
+                  <span class="secondary-text">修改将自动保存并立即生效（默认中间，也就是不调整）</span>
+                </div>
+                <input type="range" value="0" min="-100" max="100" step="1"
+                class="q-button q-button--small q-button--secondary pick-opacity" style="width: 51%;background:#3b3b3b" />
+              </div>
           </div>
         </section>
 
@@ -330,6 +340,20 @@ export async function onSettingWindowCreated(view) {
               margin: 20px;
           }
           
+          /* 背景颜色透明度滑条 */
+          .config_view input[type='range']::-webkit-slider-thumb {
+              -webkit-appearance: none;
+              height: 16px;
+              width: 16px;
+              border-radius: 8px;
+              background: aqua;
+              cursor: pointer;
+          }
+      
+          .pick-opacity {
+              padding: 4px;
+          }
+
           .config_view h1 {
               color: var(--text_primary);
               font-weight: var(--font-bold);
@@ -515,653 +539,667 @@ export async function onSettingWindowCreated(view) {
     </body>
   `;
 
-    const parser = new DOMParser();
+  const parser = new DOMParser();
 
-    const doc2 = parser.parseFromString(new_navbar_item, "text/html");
-    const node2 = doc2.querySelector("body > div");
+  const doc2 = parser.parseFromString(new_navbar_item, "text/html");
+  const node2 = doc2.querySelector("body > div");
 
-    const setPulldownValue = (id, value) => {
-        const name = node2.querySelector(
-            `.list-ctl .q-pulldown-menu[data-id="${id}"] [data-value="${value}"] .content`
-        );
-        name.parentNode.click();
-    };
-
-    var selectDir = async () => {
-        var path = await window.background_plugin.showFolderSelect();
-
-        if (path == "" || path == null) return;
-
-        var realPath = path[0].replaceAll("\\", "/");
-        node2.querySelector("#selectImageDir").value = realPath;
-        setPulldownValue("image_source", "folder");
-        await window.background_plugin.reloadBg();
-
-        alert("成功修改路径为目录：" + realPath);
-    };
-
-    var selectImgSaveDir = async () => {
-        var path = await window.background_plugin.showImgSaveFolderSelect();
-
-        if (path == "" || path == null) return;
-
-        var realPath = path[0].replaceAll("\\", "/");
-        node2.querySelector("#selectImageSaveDir").value = realPath;
-
-        alert("成功修改保存图片的路径为：" + realPath);
-    };
-
-    var selectFile = async () => {
-        var path = await window.background_plugin.showFileSelect();
-
-        if (path == "" || path == null) return;
-
-        var realPath = path[0].replaceAll("\\", "/");
-        node2.querySelector("#selectImageFile").value = realPath;
-        setPulldownValue("image_source", "file");
-        await window.background_plugin.reloadBg();
-
-        alert("成功修改路径为单个文件：" + realPath);
-    };
-
-    function isUrl(str) {
-        var v = new RegExp(
-            "^(?!mailto:)(?:(?:http|https|ftp)://|//)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$",
-            "i"
-        );
-        return v.test(str);
-    }
-
-    var selectNetwork = async () => {
-        var path = node2.querySelector("#selectImageApi").value;
-        if (path == null || path.trim() == "") return;
-
-        if (!isUrl(path)) {
-            alert("URL不合法，请重新输入！");
-            return;
-        }
-
-        await window.background_plugin.networkImgConfigApply(path);
-    };
-
-    var apiJsonPathChange = async () => {
-        var path = node2.querySelector("#apiJsonPath").value;
-        if (path == null || path.trim() == "") return;
-
-        await window.background_plugin.apiJsonPathApply(path);
-    };
-
-    var clearTmpDir = async () => {
-        await window.background_plugin.clearTmpDir();
-        var tmpDirSize = getfilesize(
-            await window.background_plugin.getTmpDirSize()
-        );
-        node2.querySelector(
-            "#clearTmpDir"
-        ).innerText = `清空缓存文件夹（${tmpDirSize}）`;
-    };
-
-    var refreshBg = async () => {
-        await window.background_plugin.reloadBg();
-    };
-
-    var resetAll = async () => {
-        var result = await window.background_plugin.resetAll();
-        if (result == true) {
-            alert("已重置所有设置，请重新打开设置界面");
-            window.close();
-        }
-    };
-
-    var testNetworkApi = async () => {
-        var nowConfig = await window.background_plugin.getNowConfig();
-        alert("请观察界面最下侧是否能显示，若无任何媒体显示则说明有问题。");
-        if (nowConfig.apiType == "img") {
-            node2.querySelector("#testVideo").classList.add("img-hidden");
-            node2.querySelector("#testImage").classList.remove("img-hidden");
-
-            var videoNode = document.getElementById("test-video");
-            if (videoNode) {
-                videoNode.parentElement.removeChild(videoNode);
-            }
-
-            var imgUrl = node2.querySelector("#selectImageApi").value;
-
-            imgUrl = await window.background_plugin.fetchApi(imgUrl);
-            if (isLocalFile(imgUrl)) {
-                //前面加上协议头
-                imgUrl = `local:///${imgUrl}`;
-            }
-            try {
-                // var url = new URL(imgUrl);
-                // url.searchParams.append("t", new Date().getTime());
-                // imgUrl = url.toString();
-
-                node2.querySelector("#testImage").src = imgUrl;
-            } catch {
-                alert("URL不合法，请重新输入！");
-            }
-        } else if (nowConfig.apiType == "video") {
-            node2.querySelector("#testImage").classList.add("img-hidden");
-            node2.querySelector("#testVideo").classList.remove("img-hidden");
-            var imgUrl = node2.querySelector("#selectImageApi").value;
-
-            imgUrl = await window.background_plugin.fetchApi(imgUrl);
-            if (isLocalFile(imgUrl)) {
-                //前面加上协议头
-                imgUrl = `local:///${imgUrl}`;
-            }
-            try {
-                // var url = new URL(imgUrl);
-                // url.searchParams.append("t", new Date().getTime());
-
-                // imgUrl = url.toString();
-
-                var videoNode = document.getElementById("test-video");
-                if (videoNode) {
-                    videoNode.parentElement.removeChild(videoNode);
-                }
-
-                var video = document.createElement("video");
-                video.autoplay = true;
-                video.muted = true;
-                video.loop = true;
-                video.style = "margin-left:10%;margin-right:10%;width:80%";
-                video.id = "test-video";
-                video.innerHTML = `<source src="${imgUrl}">`;
-                document.getElementById("testVideo").appendChild(video);
-            } catch {
-                alert("URL不合法，请重新输入！");
-            }
-        } else {
-            alert(
-                "请先选择背景来源为网络图片或网络视频，再进行测试（否则插件不知道应该渲染图片还是视频）"
-            );
-        }
-    };
-
-    var apiJsonPathHelp = async () => {
-        await window.background_plugin.showApiPathHelp();
-    };
-
-    node2.querySelector("#clearTmpDir").onclick = clearTmpDir;
-    node2.querySelector("#refreshBgNow").onclick = refreshBg;
-    node2.querySelector("#resetAll").onclick = resetAll;
-    node2.querySelector("#selectImageSaveDirBtn").onclick = selectImgSaveDir;
-    node2.querySelector("#selectImageDirBtn").onclick = selectDir;
-    node2.querySelector("#selectImageFileBtn").onclick = selectFile;
-    node2.querySelector("#selectImageApi").onblur = selectNetwork;
-    node2.querySelector("#apiJsonPath").onblur = apiJsonPathChange;
-    node2.querySelector("#testNetworkApi").onclick = testNetworkApi;
-    node2.querySelector("#apiJsonPathHelp").onclick = apiJsonPathHelp;
-
-    var q_switch_mediaViewer = node2.querySelector("#switchMediaViewer");
-
-    if (nNowEnableBackgroundForMediaViewer == true) {
-        q_switch_mediaViewer.classList.toggle("is-active");
-    }
-
-    q_switch_mediaViewer.addEventListener("click", async () => {
-        if (q_switch_mediaViewer.classList.contains("is-active")) {
-            //取消
-            window.background_plugin.setEMediaViewer(false);
-        } else {
-            //重新设置
-            window.background_plugin.setEMediaViewer(true);
-        }
-        q_switch_mediaViewer.classList.toggle("is-active");
-    });
-
-    var q_switch_commonBg = node2.querySelector("#switchCOmmonBg");
-
-    if (nNowCommonBg == true) {
-        q_switch_commonBg.classList.toggle("is-active");
-    }
-
-    q_switch_commonBg.addEventListener("click", async () => {
-        if (q_switch_commonBg.classList.contains("is-active")) {
-            //取消
-            window.background_plugin.setCommonBg(false);
-        } else {
-            //重新设置
-            window.background_plugin.setCommonBg(true);
-        }
-        q_switch_commonBg.classList.toggle("is-active");
-    });
-
-    var q_switch_fglass = node2.querySelector("#switchFrostedGlassStyle");
-
-    if (isFrostedGlassStyle) {
-        q_switch_fglass.classList.toggle("is-active");
-    }
-
-    q_switch_fglass.addEventListener("click", async () => {
-        if (q_switch_fglass.classList.contains("is-active")) {
-            //取消
-            window.background_plugin.setFrostedGlassStyle(false);
-        } else {
-            //重新设置
-            window.background_plugin.setFrostedGlassStyle(true);
-        }
-        q_switch_fglass.classList.toggle("is-active");
-    });
-
-    var q_switch_autoroll = node2.querySelector("#switchAutoRoll");
-
-    if (isAutoRefresh) {
-        q_switch_autoroll.classList.toggle("is-active");
-    }
-
-    q_switch_autoroll.addEventListener("click", async () => {
-        if (q_switch_autoroll.classList.contains("is-active")) {
-            //取消
-            window.background_plugin.setAutoRefresh(false);
-        } else {
-            //重新设置
-            window.background_plugin.setAutoRefresh(true);
-        }
-        q_switch_autoroll.classList.toggle("is-active");
-    });
-
-    var q_switch_usecache = node2.querySelector("#switchUseCache");
-
-    if (isUseCache) {
-        q_switch_usecache.classList.toggle("is-active");
-    }
-
-    q_switch_usecache.addEventListener("click", async () => {
-        if (q_switch_usecache.classList.contains("is-active")) {
-            //取消
-            window.background_plugin.setUseCache(false);
-        } else {
-            //重新设置
-            window.background_plugin.setUseCache(true);
-        }
-        q_switch_usecache.classList.toggle("is-active");
-    });
-
-    node2.querySelector("#refreshTimeInput").onblur = async () => {
-        var time = parseFloat(node2.querySelector("#refreshTimeInput").value);
-        if (time <= 0 || time > 99999) {
-            alert("你的时间设置有误！将不会保存，请重新输入");
-            return;
-        }
-
-        await window.background_plugin.changeRefreshTime(time);
-    };
-
-    //初始化下拉框
-    const list_ctl = node2.querySelector(".list-ctl");
-    const all_pulldown_menu_button = list_ctl.querySelectorAll(
-        ".q-pulldown-menu-button"
+  const setPulldownValue = (id, value) => {
+    const name = node2.querySelector(
+      `.list-ctl .q-pulldown-menu[data-id="${id}"] [data-value="${value}"] .content`
     );
-    //显示下拉框列表
-    for (const pulldown_menu_button of all_pulldown_menu_button) {
-        pulldown_menu_button.addEventListener("click", (event) => {
-            const context_menu = event.currentTarget.nextElementSibling;
-            context_menu.classList.toggle("hidden");
-        });
+    name.parentNode.click();
+  };
+
+  var selectDir = async () => {
+    var path = await window.background_plugin.showFolderSelect();
+
+    if (path == "" || path == null) return;
+
+    var realPath = path[0].replaceAll("\\", "/");
+    node2.querySelector("#selectImageDir").value = realPath;
+    setPulldownValue("image_source", "folder");
+    await window.background_plugin.reloadBg();
+
+    alert("成功修改路径为目录：" + realPath);
+  };
+
+  var selectImgSaveDir = async () => {
+    var path = await window.background_plugin.showImgSaveFolderSelect();
+
+    if (path == "" || path == null) return;
+
+    var realPath = path[0].replaceAll("\\", "/");
+    node2.querySelector("#selectImageSaveDir").value = realPath;
+
+    alert("成功修改保存图片的路径为：" + realPath);
+  };
+
+  var selectFile = async () => {
+    var path = await window.background_plugin.showFileSelect();
+
+    if (path == "" || path == null) return;
+
+    var realPath = path[0].replaceAll("\\", "/");
+    node2.querySelector("#selectImageFile").value = realPath;
+    setPulldownValue("image_source", "file");
+    await window.background_plugin.reloadBg();
+
+    alert("成功修改路径为单个文件：" + realPath);
+  };
+
+  function isUrl(str) {
+    var v = new RegExp(
+      "^(?!mailto:)(?:(?:http|https|ftp)://|//)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$",
+      "i"
+    );
+    return v.test(str);
+  }
+
+  var selectNetwork = async () => {
+    var path = node2.querySelector("#selectImageApi").value;
+    if (path == null || path.trim() == "") return;
+
+    if (!isUrl(path)) {
+      alert("URL不合法，请重新输入！");
+      return;
     }
 
-    node2.addEventListener("pointerup", (event) => {
-        if (event.target.closest(".q-pulldown-menu-button")) {
-            return;
+    await window.background_plugin.networkImgConfigApply(path);
+  };
+
+  var apiJsonPathChange = async () => {
+    var path = node2.querySelector("#apiJsonPath").value;
+    if (path == null || path.trim() == "") return;
+
+    await window.background_plugin.apiJsonPathApply(path);
+  };
+
+  var clearTmpDir = async () => {
+    await window.background_plugin.clearTmpDir();
+    var tmpDirSize = getfilesize(
+      await window.background_plugin.getTmpDirSize()
+    );
+    node2.querySelector(
+      "#clearTmpDir"
+    ).innerText = `清空缓存文件夹（${tmpDirSize}）`;
+  };
+
+  var refreshBg = async () => {
+    await window.background_plugin.reloadBg();
+  };
+
+  var resetAll = async () => {
+    var result = await window.background_plugin.resetAll();
+    if (result == true) {
+      alert("已重置所有设置，请重新打开设置界面");
+      window.close();
+    }
+  };
+
+  var testNetworkApi = async () => {
+    var nowConfig = await window.background_plugin.getNowConfig();
+    alert("请观察界面最下侧是否能显示，若无任何媒体显示则说明有问题。");
+    if (nowConfig.apiType == "img") {
+      node2.querySelector("#testVideo").classList.add("img-hidden");
+      node2.querySelector("#testImage").classList.remove("img-hidden");
+
+      var videoNode = document.getElementById("test-video");
+      if (videoNode) {
+        videoNode.parentElement.removeChild(videoNode);
+      }
+
+      var imgUrl = node2.querySelector("#selectImageApi").value;
+
+      imgUrl = await window.background_plugin.fetchApi(imgUrl);
+      if (isLocalFile(imgUrl)) {
+        //前面加上协议头
+        imgUrl = `local:///${imgUrl}`;
+      }
+      try {
+        // var url = new URL(imgUrl);
+        // url.searchParams.append("t", new Date().getTime());
+        // imgUrl = url.toString();
+
+        node2.querySelector("#testImage").src = imgUrl;
+      } catch {
+        alert("URL不合法，请重新输入！");
+      }
+    } else if (nowConfig.apiType == "video") {
+      node2.querySelector("#testImage").classList.add("img-hidden");
+      node2.querySelector("#testVideo").classList.remove("img-hidden");
+      var imgUrl = node2.querySelector("#selectImageApi").value;
+
+      imgUrl = await window.background_plugin.fetchApi(imgUrl);
+      if (isLocalFile(imgUrl)) {
+        //前面加上协议头
+        imgUrl = `local:///${imgUrl}`;
+      }
+      try {
+        // var url = new URL(imgUrl);
+        // url.searchParams.append("t", new Date().getTime());
+
+        // imgUrl = url.toString();
+
+        var videoNode = document.getElementById("test-video");
+        if (videoNode) {
+          videoNode.parentElement.removeChild(videoNode);
         }
-        if (!event.target.closest(".q-context-menu")) {
-            const all_context_menu =
-                list_ctl.querySelectorAll(".q-context-menu");
-            for (const context_menu of all_context_menu) {
-                context_menu.classList.add("hidden");
-            }
-        }
+
+        var video = document.createElement("video");
+        video.autoplay = true;
+        video.muted = true;
+        video.loop = true;
+        video.style = "margin-left:10%;margin-right:10%;width:80%";
+        video.id = "test-video";
+        video.innerHTML = `<source src="${imgUrl}">`;
+        document.getElementById("testVideo").appendChild(video);
+      } catch {
+        alert("URL不合法，请重新输入！");
+      }
+    } else {
+      alert(
+        "请先选择背景来源为网络图片或网络视频，再进行测试（否则插件不知道应该渲染图片还是视频）"
+      );
+    }
+  };
+
+  var apiJsonPathHelp = async () => {
+    await window.background_plugin.showApiPathHelp();
+  };
+
+  node2.querySelector("#clearTmpDir").onclick = clearTmpDir;
+  node2.querySelector("#refreshBgNow").onclick = refreshBg;
+  node2.querySelector("#resetAll").onclick = resetAll;
+  node2.querySelector("#selectImageSaveDirBtn").onclick = selectImgSaveDir;
+  node2.querySelector("#selectImageDirBtn").onclick = selectDir;
+  node2.querySelector("#selectImageFileBtn").onclick = selectFile;
+  node2.querySelector("#selectImageApi").onblur = selectNetwork;
+  node2.querySelector("#apiJsonPath").onblur = apiJsonPathChange;
+  node2.querySelector("#testNetworkApi").onclick = testNetworkApi;
+  node2.querySelector("#apiJsonPathHelp").onclick = apiJsonPathHelp;
+
+  // 全局背景透明度偏移
+  const backgroundOpacity = nowConfig.globalTransparentOffset;
+  // 给pick-opacity(input)设置默认值
+  const pickOpacity = node2.querySelector(".pick-opacity");
+  pickOpacity.value = parseInt(backgroundOpacity * 100);
+  // 给pick-opacity(input)添加事件监听
+  pickOpacity.addEventListener("change", async (event) => {
+    var realValue = event.target.value / 100;
+    await window.background_plugin.setBGTransparent(realValue);
+  });
+
+  var q_switch_mediaViewer = node2.querySelector("#switchMediaViewer");
+
+  if (nNowEnableBackgroundForMediaViewer == true) {
+    q_switch_mediaViewer.classList.toggle("is-active");
+  }
+
+  q_switch_mediaViewer.addEventListener("click", async () => {
+    if (q_switch_mediaViewer.classList.contains("is-active")) {
+      //取消
+      window.background_plugin.setEMediaViewer(false);
+    } else {
+      //重新设置
+      window.background_plugin.setEMediaViewer(true);
+    }
+    q_switch_mediaViewer.classList.toggle("is-active");
+  });
+
+  var q_switch_commonBg = node2.querySelector("#switchCOmmonBg");
+
+  if (nNowCommonBg == true) {
+    q_switch_commonBg.classList.toggle("is-active");
+  }
+
+  q_switch_commonBg.addEventListener("click", async () => {
+    if (q_switch_commonBg.classList.contains("is-active")) {
+      //取消
+      window.background_plugin.setCommonBg(false);
+    } else {
+      //重新设置
+      window.background_plugin.setCommonBg(true);
+    }
+    q_switch_commonBg.classList.toggle("is-active");
+  });
+
+  var q_switch_fglass = node2.querySelector("#switchFrostedGlassStyle");
+
+  if (isFrostedGlassStyle) {
+    q_switch_fglass.classList.toggle("is-active");
+  }
+
+  q_switch_fglass.addEventListener("click", async () => {
+    if (q_switch_fglass.classList.contains("is-active")) {
+      //取消
+      window.background_plugin.setFrostedGlassStyle(false);
+    } else {
+      //重新设置
+      window.background_plugin.setFrostedGlassStyle(true);
+    }
+    q_switch_fglass.classList.toggle("is-active");
+  });
+
+  var q_switch_autoroll = node2.querySelector("#switchAutoRoll");
+
+  if (isAutoRefresh) {
+    q_switch_autoroll.classList.toggle("is-active");
+  }
+
+  q_switch_autoroll.addEventListener("click", async () => {
+    if (q_switch_autoroll.classList.contains("is-active")) {
+      //取消
+      window.background_plugin.setAutoRefresh(false);
+    } else {
+      //重新设置
+      window.background_plugin.setAutoRefresh(true);
+    }
+    q_switch_autoroll.classList.toggle("is-active");
+  });
+
+  var q_switch_usecache = node2.querySelector("#switchUseCache");
+
+  if (isUseCache) {
+    q_switch_usecache.classList.toggle("is-active");
+  }
+
+  q_switch_usecache.addEventListener("click", async () => {
+    if (q_switch_usecache.classList.contains("is-active")) {
+      //取消
+      window.background_plugin.setUseCache(false);
+    } else {
+      //重新设置
+      window.background_plugin.setUseCache(true);
+    }
+    q_switch_usecache.classList.toggle("is-active");
+  });
+
+  node2.querySelector("#refreshTimeInput").onblur = async () => {
+    var time = parseFloat(node2.querySelector("#refreshTimeInput").value);
+    if (time <= 0 || time > 99999) {
+      alert("你的时间设置有误！将不会保存，请重新输入");
+      return;
+    }
+
+    await window.background_plugin.changeRefreshTime(time);
+  };
+
+  //初始化下拉框
+  const list_ctl = node2.querySelector(".list-ctl");
+  const all_pulldown_menu_button = list_ctl.querySelectorAll(
+    ".q-pulldown-menu-button"
+  );
+  //显示下拉框列表
+  for (const pulldown_menu_button of all_pulldown_menu_button) {
+    pulldown_menu_button.addEventListener("click", (event) => {
+      const context_menu = event.currentTarget.nextElementSibling;
+      context_menu.classList.toggle("hidden");
     });
-    //下拉框选择
-    const pulldown_menus = list_ctl.querySelectorAll(".q-pulldown-menu");
-    for (const pulldown_menu of pulldown_menus) {
-        const content = pulldown_menu.querySelector(
-            ".q-pulldown-menu-button .content"
-        );
-        const pulldown_menu_list = pulldown_menu.querySelector(
-            ".q-pulldown-menu-list"
-        );
-        const pulldown_menu_list_items = pulldown_menu_list.querySelectorAll(
-            ".q-pulldown-menu-list-item"
-        );
+  }
 
-        // 初始化选择框按钮显示内容
-        const setValueAndAddSelectedClass = (value) => {
-            if (value == null) value = "folder";
-            const name = pulldown_menu.querySelector(
-                `[data-value="${value}"] .content`
-            );
-            name.parentNode.classList.add("selected");
-            content.value = name.textContent;
-        };
+  node2.addEventListener("pointerup", (event) => {
+    if (event.target.closest(".q-pulldown-menu-button")) {
+      return;
+    }
+    if (!event.target.closest(".q-context-menu")) {
+      const all_context_menu = list_ctl.querySelectorAll(".q-context-menu");
+      for (const context_menu of all_context_menu) {
+        context_menu.classList.add("hidden");
+      }
+    }
+  });
+  //下拉框选择
+  const pulldown_menus = list_ctl.querySelectorAll(".q-pulldown-menu");
+  for (const pulldown_menu of pulldown_menus) {
+    const content = pulldown_menu.querySelector(
+      ".q-pulldown-menu-button .content"
+    );
+    const pulldown_menu_list = pulldown_menu.querySelector(
+      ".q-pulldown-menu-list"
+    );
+    const pulldown_menu_list_items = pulldown_menu_list.querySelectorAll(
+      ".q-pulldown-menu-list-item"
+    );
 
-        switch (pulldown_menu.dataset.id) {
-            case "image_source":
-                {
-                    const value = nowConfig.imgSource;
-                    setValueAndAddSelectedClass(value);
-                }
-                break;
+    // 初始化选择框按钮显示内容
+    const setValueAndAddSelectedClass = (value) => {
+      if (value == null) value = "folder";
+      const name = pulldown_menu.querySelector(
+        `[data-value="${value}"] .content`
+      );
+      name.parentNode.classList.add("selected");
+      content.value = name.textContent;
+    };
+
+    switch (pulldown_menu.dataset.id) {
+      case "image_source":
+        {
+          const value = nowConfig.imgSource;
+          setValueAndAddSelectedClass(value);
         }
-
-        // 选择框条目点击
-        pulldown_menu_list.addEventListener("click", async (event) => {
-            const target = event.target.closest(".q-pulldown-menu-list-item");
-            if (target == null) return;
-
-            const item_value = target.dataset.value;
-
-            // 判断是哪个选择框的，单独设置
-            switch (pulldown_menu.dataset.id) {
-                case "image_source":
-                    switch (item_value) {
-                        case "folder":
-                            var path =
-                                node2.querySelector("#selectImageDir").value;
-                            if (path == null || path.trim() == "") {
-                                alert(
-                                    "请先在下方选择文件夹路径，再选中背景来源为目录"
-                                );
-                                return;
-                            }
-                            break;
-                        case "file":
-                            var path =
-                                node2.querySelector("#selectImageFile").value;
-                            if (path == null || path.trim() == "") {
-                                alert(
-                                    "请先在下方选择文件路径，再选中背景来源为单个文件"
-                                );
-                                return;
-                            }
-                            break;
-                        case "network":
-                            var path =
-                                node2.querySelector("#selectImageApi").value;
-                            if (path == null || path.trim() == "") {
-                                alert(
-                                    "请先在下方输入背景链接地址，再选中背景来源为网络图片"
-                                );
-                                return;
-                            } else {
-                                window.background_plugin.setApiType("img");
-                            }
-                            break;
-                        case "network_video":
-                            var path =
-                                node2.querySelector("#selectImageApi").value;
-                            if (path == null || path.trim() == "") {
-                                alert(
-                                    "请先在下方输入背景链接地址，再选中背景来源为网络视频"
-                                );
-                                return;
-                            } else {
-                                window.background_plugin.setApiType("video");
-                            }
-                            break;
-                    }
-                    window.background_plugin.setImageSourceType(item_value);
-                    break;
-            }
-
-            if (target && !target.classList.contains("selected")) {
-                // 移除所有条目的选择状态
-                for (const pulldown_menu_list_item of pulldown_menu_list_items) {
-                    pulldown_menu_list_item.classList.remove("selected");
-                }
-
-                // 添加选择状态
-                target.classList.add("selected");
-
-                // 获取选中的选项文本
-                const text_content =
-                    target.querySelector(".content").textContent;
-                content.value = text_content;
-
-                const all_context_menu =
-                    list_ctl.querySelectorAll(".q-context-menu");
-                for (const context_menu of all_context_menu) {
-                    context_menu.classList.add("hidden");
-                }
-            }
-        });
+        break;
     }
 
-    view.appendChild(node2);
+    // 选择框条目点击
+    pulldown_menu_list.addEventListener("click", async (event) => {
+      const target = event.target.closest(".q-pulldown-menu-list-item");
+      if (target == null) return;
+
+      const item_value = target.dataset.value;
+
+      // 判断是哪个选择框的，单独设置
+      switch (pulldown_menu.dataset.id) {
+        case "image_source":
+          switch (item_value) {
+            case "folder":
+              var path = node2.querySelector("#selectImageDir").value;
+              if (path == null || path.trim() == "") {
+                alert("请先在下方选择文件夹路径，再选中背景来源为目录");
+                return;
+              }
+              break;
+            case "file":
+              var path = node2.querySelector("#selectImageFile").value;
+              if (path == null || path.trim() == "") {
+                alert("请先在下方选择文件路径，再选中背景来源为单个文件");
+                return;
+              }
+              break;
+            case "network":
+              var path = node2.querySelector("#selectImageApi").value;
+              if (path == null || path.trim() == "") {
+                alert("请先在下方输入背景链接地址，再选中背景来源为网络图片");
+                return;
+              } else {
+                window.background_plugin.setApiType("img");
+              }
+              break;
+            case "network_video":
+              var path = node2.querySelector("#selectImageApi").value;
+              if (path == null || path.trim() == "") {
+                alert("请先在下方输入背景链接地址，再选中背景来源为网络视频");
+                return;
+              } else {
+                window.background_plugin.setApiType("video");
+              }
+              break;
+          }
+          window.background_plugin.setImageSourceType(item_value);
+          break;
+      }
+
+      if (target && !target.classList.contains("selected")) {
+        // 移除所有条目的选择状态
+        for (const pulldown_menu_list_item of pulldown_menu_list_items) {
+          pulldown_menu_list_item.classList.remove("selected");
+        }
+
+        // 添加选择状态
+        target.classList.add("selected");
+
+        // 获取选中的选项文本
+        const text_content = target.querySelector(".content").textContent;
+        content.value = text_content;
+
+        const all_context_menu = list_ctl.querySelectorAll(".q-context-menu");
+        for (const context_menu of all_context_menu) {
+          context_menu.classList.add("hidden");
+        }
+      }
+    });
+  }
+
+  view.appendChild(node2);
 }
 
 function getfilesize(size) {
-    //把字节转换成正常文件大小
-    if (!size) return "0B";
-    var num = 1024.0; //byte
-    if (size < num) return size + "B";
-    if (size < Math.pow(num, 2)) return (size / num).toFixed(2) + "KB"; //kb
-    if (size < Math.pow(num, 3))
-        return (size / Math.pow(num, 2)).toFixed(2) + "MB"; //M
-    if (size < Math.pow(num, 4))
-        return (size / Math.pow(num, 3)).toFixed(2) + "G"; //G
-    return (size / Math.pow(num, 4)).toFixed(2) + "T"; //T
+  //把字节转换成正常文件大小
+  if (!size) return "0B";
+  var num = 1024.0; //byte
+  if (size < num) return size + "B";
+  if (size < Math.pow(num, 2)) return (size / num).toFixed(2) + "KB"; //kb
+  if (size < Math.pow(num, 3))
+    return (size / Math.pow(num, 2)).toFixed(2) + "MB"; //M
+  if (size < Math.pow(num, 4))
+    return (size / Math.pow(num, 3)).toFixed(2) + "G"; //G
+  return (size / Math.pow(num, 4)).toFixed(2) + "T"; //T
 }
 
 function isLocalFile(src) {
-    return /(^[A-Za-z]{1}:[/\\]{1,2}.*)|(^[/\\]{1,2}.*)/.test(src);
+  return /(^[A-Za-z]{1}:[/\\]{1,2}.*)|(^[/\\]{1,2}.*)/.test(src);
 }
 
 onLoad();
 
 function insertLeftMenuBtn() {
-    //来自：https://github.com/qianxuu/LiteLoaderQQNT-Plugin-Demo-mode/blob/main/src/renderer.js
-    //主界面功能菜单添加按钮
-    let findCount = 0;
-    const findFuncMenuInterval = setInterval(() => {
-        if (findCount++ > 50) {
-            clearInterval(findFuncMenuInterval);
-        }
-        // 获取功能菜单
-        const funcMenu = document.querySelector(".func-menu");
-        if (funcMenu) {
-            clearInterval(findFuncMenuInterval);
-            // 插入按钮和悬停样式
-            funcMenu.insertAdjacentHTML("afterbegin", BackgroundSaveBtnHtml);
-            funcMenu.insertAdjacentHTML("afterbegin", BackgroundChangeBtnHtml);
-            document.head.insertAdjacentHTML(
-                "beforeend",
-                BackgroundCustomBtnStyle
-            );
-            // 下载背景图按钮
-            const backgroundSaveBtn = document.querySelector("#backgroundSave");
-            backgroundSaveBtn.addEventListener("click", async () => {
-                await window.background_plugin.saveNowBg();
-            });
+  //来自：https://github.com/qianxuu/LiteLoaderQQNT-Plugin-Demo-mode/blob/main/src/renderer.js
+  //主界面功能菜单添加按钮
+  let findCount = 0;
+  const findFuncMenuInterval = setInterval(() => {
+    if (findCount++ > 50) {
+      clearInterval(findFuncMenuInterval);
+    }
+    // 获取功能菜单
+    const funcMenu = document.querySelector(".func-menu");
+    if (funcMenu) {
+      clearInterval(findFuncMenuInterval);
+      // 插入按钮和悬停样式
+      funcMenu.insertAdjacentHTML("afterbegin", BackgroundSaveBtnHtml);
+      funcMenu.insertAdjacentHTML("afterbegin", BackgroundChangeBtnHtml);
+      document.head.insertAdjacentHTML("beforeend", BackgroundCustomBtnStyle);
+      // 下载背景图按钮
+      const backgroundSaveBtn = document.querySelector("#backgroundSave");
+      backgroundSaveBtn.addEventListener("click", async () => {
+        await window.background_plugin.saveNowBg();
+      });
 
-            // 更新背景图按钮
-            const backgroundChangeBtn =
-                document.querySelector("#backgroundChange");
-            backgroundChangeBtn.addEventListener("click", async () => {
-                await window.background_plugin.reloadBg();
-            });
-        }
-    }, 100);
+      // 更新背景图按钮
+      const backgroundChangeBtn = document.querySelector("#backgroundChange");
+      backgroundChangeBtn.addEventListener("click", async () => {
+        await window.background_plugin.reloadBg();
+      });
+    }
+  }, 100);
 }
 
 function onLoad() {
-    console.log("[Background]", "开始检测页面路径", new Date());
+  console.log("[Background]", "开始检测页面路径", new Date());
 
-    var isMainPage = false;
+  var isMainPage = false;
 
-    const interval3 = setInterval(async () => {
-        var nowConfig = await window.background_plugin.getNowConfig();
-        if (
-            window.location.href.indexOf("#/main/message") != -1 ||
-            window.location.href.indexOf("#/chat") != -1 ||
-            window.location.href.indexOf("#/forward") != -1 ||
-            window.location.href.indexOf("#/record") != -1 ||
-            window.location.href.indexOf("#/setting") != -1 ||
-            window.location.href.indexOf("#/fileManager") != -1 ||
-            window.location.href.indexOf("#/file-manager") != -1 ||
-            ((nowConfig.enableBackgroundForMediaViewer ||
-                nowConfig.enableBackgroundForMediaViewer == null) &&
-                (window.location.href.indexOf("#/imageViewer") != -1 ||
-                    window.location.href.indexOf("#/image-viewer") != -1)) ||
-            window.location.href.indexOf("#/about") != -1
-        ) {
-            //如果之前已经进过这里，说明是重复进入，直接清除计时器退出即可
-            if (isMainPage) {
-                clearInterval(interval3);
-                return;
-            }
+  const interval3 = setInterval(async () => {
+    var nowConfig = await window.background_plugin.getNowConfig();
+    if (
+      window.location.href.indexOf("#/main/message") != -1 ||
+      window.location.href.indexOf("#/chat") != -1 ||
+      window.location.href.indexOf("#/forward") != -1 ||
+      window.location.href.indexOf("#/record") != -1 ||
+      window.location.href.indexOf("#/setting") != -1 ||
+      window.location.href.indexOf("#/fileManager") != -1 ||
+      window.location.href.indexOf("#/file-manager") != -1 ||
+      ((nowConfig.enableBackgroundForMediaViewer ||
+        nowConfig.enableBackgroundForMediaViewer == null) &&
+        (window.location.href.indexOf("#/imageViewer") != -1 ||
+          window.location.href.indexOf("#/image-viewer") != -1)) ||
+      window.location.href.indexOf("#/about") != -1
+    ) {
+      //如果之前已经进过这里，说明是重复进入，直接清除计时器退出即可
+      if (isMainPage) {
+        clearInterval(interval3);
+        return;
+      }
 
-            isMainPage = true;
-            clearInterval(interval3);
-            
-            console.log(
-                "[Background]",
-                "检测到主页页面或聊天页面，注入背景更新函数",
-                new Date()
-            );
+      isMainPage = true;
+      clearInterval(interval3);
 
-            if (window.location.href.indexOf("#/main/message") != -1) {
-                insertLeftMenuBtn();
-            }
+      console.log(
+        "[Background]",
+        "检测到主页页面或聊天页面，注入背景更新函数",
+        new Date()
+      );
 
-            //监听任何可能的重载背景的请求
-            await window.background_plugin.reloadBgListener(
-                async (event, selectedImg) => {
-                    var nowSelect = selectedImg;
-                    if (nowSelect == "" || nowSelect == null) {
-                        nowSelect = await window.background_plugin.randomSelect(
-                            true
-                        );
-                    }
+      if (window.location.href.indexOf("#/main/message") != -1) {
+        insertLeftMenuBtn();
+      }
 
-                    await reloadBg(nowSelect);
+      //监听任何可能的重载背景的请求
+      await window.background_plugin.reloadBgListener(
+        async (event, selectedImg) => {
+          var nowSelect = selectedImg;
+          if (nowSelect == "" || nowSelect == null) {
+            nowSelect = await window.background_plugin.randomSelect(true);
+          }
 
-                    if (await getNowIsVideo(nowSelect)) {
-                        //如果是视频，需要设置一下视频地址
-                        setVideoSrc(nowSelect);
-                    }
-                }
-            );
+          await reloadBg(nowSelect);
 
-            await window.background_plugin.repatchFrostedGlassStyleListener(
-                async (event, message) => {
-                    await patchFrostedGlassStyle();
-                }
-            );
-
-            patchCss();
-
-            await patchFrostedGlassStyle();
-
-            var nowSelect = await window.background_plugin.randomSelect(false);
-
-            await reloadBg(nowSelect);
-
-            if (await getNowIsVideo(nowSelect)) {
-                //如果是视频，需要设置一下视频地址
-                setVideoSrc(nowSelect);
-            }
-
-        } else if (window.location.href.indexOf("#/blank") == -1) {
-            console.log(
-                "[Background]",
-                "非主页或聊天页面，停止注入",
-                new Date()
-            );
-            clearInterval(interval3);
+          if (await getNowIsVideo(nowSelect)) {
+            //如果是视频，需要设置一下视频地址
+            setVideoSrc(nowSelect);
+          }
         }
-    }, 100);
+      );
 
-    async function getNowIsVideo(src) {
-        var nowConfig = await window.background_plugin.getNowConfig();
+      await window.background_plugin.repatchFrostedGlassStyleListener(
+        async (event, message) => {
+          await patchFrostedGlassStyle();
+        }
+      );
 
-        var isVideo =
-            //要么是视频后缀名
-            (await window.background_plugin.isImgOrVideo(src ?? "")) ==
-                "video" ||
-            //要么不是本地文件，且是视频API
-            (!isLocalFile(src) && nowConfig.apiType == "video");
+      await window.background_plugin.reloadBgTransparentListener(
+        async (event, message) => {
+          await reloadBackgroundTransparent();
+        }
+      );
 
-        return isVideo;
+      patchCss();
+
+      await patchFrostedGlassStyle();
+
+      var nowSelect = await window.background_plugin.randomSelect(false);
+
+      await reloadBg(nowSelect);
+
+      if (await getNowIsVideo(nowSelect)) {
+        //如果是视频，需要设置一下视频地址
+        setVideoSrc(nowSelect);
+      }
+    } else if (window.location.href.indexOf("#/blank") == -1) {
+      console.log("[Background]", "非主页或聊天页面，停止注入", new Date());
+      clearInterval(interval3);
+    }
+  }, 100);
+
+  async function getNowIsVideo(src) {
+    var nowConfig = await window.background_plugin.getNowConfig();
+
+    var isVideo =
+      //要么是视频后缀名
+      (await window.background_plugin.isImgOrVideo(src ?? "")) == "video" ||
+      //要么不是本地文件，且是视频API
+      (!isLocalFile(src) && nowConfig.apiType == "video");
+
+    return isVideo;
+  }
+
+  async function reloadBackgroundTransparent(value = null) {
+    var globalTransparentOffset = value;
+    if (globalTransparentOffset == null) {
+      var nowConfig = await window.background_plugin.getNowConfig();
+      var globalTransparentOffset = nowConfig.globalTransparentOffset;
+      if (globalTransparentOffset == null) {
+        globalTransparentOffset = 0;
+      }
     }
 
-    async function reloadBg(imgUrl) {
-        if (imgUrl == "" || imgUrl == null || (await getNowIsVideo(imgUrl))) {
-            //地址为空，说明没获取到图片，直接置空背景图
-            //视频的话也不需要背景图
-            document.documentElement.style.removeProperty(
-                "--background-image-url"
-            );
-            return;
-        }
+    document.documentElement.style.setProperty(
+      "--background-image-transparent-offset",
+      globalTransparentOffset
+    );
+  }
 
-        // 清理视频节点
-        var thisNode = document
-            .evaluate(
-                "/html/body/div[@id='app']/video[@id='background-video']",
-                document
-            )
-            .iterateNext();
-        if (thisNode) {
-            thisNode.parentElement.removeChild(thisNode);
-        }
-
-        var nowConfig = await window.background_plugin.getNowConfig();
-        var realUrl = encodeURI(imgUrl);
-        //如果是本地路径
-        if (isLocalFile(imgUrl)) {
-            //前面加上协议头
-            realUrl = `local:///${realUrl}`;
-        } else if (
-            imgUrl.indexOf("http") == 0 &&
-            //确定不开启缓存，再加时间戳避免缓存
-            ((nowConfig.apiOptions &&
-                (nowConfig.apiOptions.useCache === false ||
-                    nowConfig.apiOptions.useCache == null)) ||
-                nowConfig.apiOptions == null)
-        ) {
-            //加上时间戳，防止缓存
-            var url = new URL(imgUrl);
-            url.searchParams.append("t", new Date().getTime());
-            realUrl = url.toString();
-        }
-
-        //图片预载，加载完毕后再更新属性
-        var img = new Image();
-        img.src = realUrl;
-        img.onload = function () {
-            document.documentElement.style.setProperty(
-                "--background-image-url",
-                `url("${realUrl}")`
-            );
-        };
-        console.log("[Background]", "加载图片：" + imgUrl);
+  async function reloadBg(imgUrl) {
+    if (imgUrl == "" || imgUrl == null || (await getNowIsVideo(imgUrl))) {
+      //地址为空，说明没获取到图片，直接置空背景图
+      //视频的话也不需要背景图
+      document.documentElement.style.removeProperty("--background-image-url");
+      return;
     }
 
-    async function patchFrostedGlassStyle() {
-        var nowConfig = await window.background_plugin.getNowConfig();
+    // 清理视频节点
+    var thisNode = document
+      .evaluate(
+        "/html/body/div[@id='app']/video[@id='background-video']",
+        document
+      )
+      .iterateNext();
+    if (thisNode) {
+      thisNode.parentElement.removeChild(thisNode);
+    }
 
-        var thisNode = document
-            .evaluate(
-                "/html/head/style[@id='background-plugin-frostedglass-css']",
-                document
-            )
-            .iterateNext();
-        if (thisNode) {
-            thisNode.parentElement.removeChild(thisNode);
-        }
+    var nowConfig = await window.background_plugin.getNowConfig();
+    var realUrl = encodeURI(imgUrl);
+    //如果是本地路径
+    if (isLocalFile(imgUrl)) {
+      //前面加上协议头
+      realUrl = `local:///${realUrl}`;
+    } else if (
+      imgUrl.indexOf("http") == 0 &&
+      //确定不开启缓存，再加时间戳避免缓存
+      ((nowConfig.apiOptions &&
+        (nowConfig.apiOptions.useCache === false ||
+          nowConfig.apiOptions.useCache == null)) ||
+        nowConfig.apiOptions == null)
+    ) {
+      //加上时间戳，防止缓存
+      var url = new URL(imgUrl);
+      url.searchParams.append("t", new Date().getTime());
+      realUrl = url.toString();
+    }
 
-        if (
-            nowConfig.enableFrostedGlassStyle == null ||
-            nowConfig.enableFrostedGlassStyle == true
-        ) {
-            var stylee = document.createElement("style");
-            stylee.type = "text/css";
-            stylee.id = "background-plugin-frostedglass-css";
-            var sHtml = `
+    //图片预载，加载完毕后再更新属性
+    var img = new Image();
+    img.src = realUrl;
+    img.onload = function () {
+      var globalTransparentOffset = nowConfig.globalTransparentOffset;
+      if (globalTransparentOffset == null) {
+        globalTransparentOffset = 0;
+      }
+
+      document.documentElement.style.setProperty(
+        "--background-image-url",
+        `url("${realUrl}")`
+      );
+
+      document.documentElement.style.setProperty(
+        "--background-image-transparent-offset",
+        globalTransparentOffset
+      );
+    };
+    console.log("[Background]", "加载图片：" + imgUrl);
+  }
+
+  async function patchFrostedGlassStyle() {
+    var nowConfig = await window.background_plugin.getNowConfig();
+
+    var thisNode = document
+      .evaluate(
+        "/html/head/style[@id='background-plugin-frostedglass-css']",
+        document
+      )
+      .iterateNext();
+    if (thisNode) {
+      thisNode.parentElement.removeChild(thisNode);
+    }
+
+    if (
+      nowConfig.enableFrostedGlassStyle == null ||
+      nowConfig.enableFrostedGlassStyle == true
+    ) {
+      var stylee = document.createElement("style");
+      stylee.type = "text/css";
+      stylee.id = "background-plugin-frostedglass-css";
+      var sHtml = `
       @media (prefers-color-scheme: dark) {
         /* 添加模糊 */
         .favorites-layout__left-area,
@@ -1203,47 +1241,47 @@ function onLoad() {
       }
       `;
 
-            stylee.innerHTML = sHtml;
-            document.getElementsByTagName("head").item(0).appendChild(stylee);
-        }
+      stylee.innerHTML = sHtml;
+      document.getElementsByTagName("head").item(0).appendChild(stylee);
+    }
+  }
+
+  function setVideoSrc(videoSrc) {
+    var thisNode = document
+      .evaluate(
+        "/html/body/div[@id='app']/video[@id='background-video']",
+        document
+      )
+      .iterateNext();
+    if (thisNode) {
+      thisNode.parentElement.removeChild(thisNode);
     }
 
-    function setVideoSrc(videoSrc) {
-        var thisNode = document
-            .evaluate(
-                "/html/body/div[@id='app']/video[@id='background-video']",
-                document
-            )
-            .iterateNext();
-        if (thisNode) {
-            thisNode.parentElement.removeChild(thisNode);
-        }
-
-        if (isLocalFile(videoSrc)) {
-            videoSrc = "local:///" + encodeURI(videoSrc);
-        }
-
-        var video = document.createElement("video");
-        video.autoplay = true;
-        video.muted = true;
-        video.loop = true;
-        video.id = "background-video";
-        video.innerHTML = `<source src="${videoSrc}">`;
-        document.getElementById("app").appendChild(video);
+    if (isLocalFile(videoSrc)) {
+      videoSrc = "local:///" + encodeURI(videoSrc);
     }
 
-    async function patchCss() {
-        var thisNode = document
-            .evaluate("/html/head/style[@id='background-plugin-css']", document)
-            .iterateNext();
-        if (thisNode) {
-            thisNode.parentElement.removeChild(thisNode);
-        }
+    var video = document.createElement("video");
+    video.autoplay = true;
+    video.muted = true;
+    video.loop = true;
+    video.id = "background-video";
+    video.innerHTML = `<source src="${videoSrc}">`;
+    document.getElementById("app").appendChild(video);
+  }
 
-        var stylee = document.createElement("style");
-        stylee.type = "text/css";
-        stylee.id = "background-plugin-css";
-        var sHtml = `
+  async function patchCss() {
+    var thisNode = document
+      .evaluate("/html/head/style[@id='background-plugin-css']", document)
+      .iterateNext();
+    if (thisNode) {
+      thisNode.parentElement.removeChild(thisNode);
+    }
+
+    var stylee = document.createElement("style");
+    stylee.type = "text/css";
+    stylee.id = "background-plugin-css";
+    var sHtml = `
         #background-video {
           position: fixed;
           top: 0;
@@ -1617,7 +1655,7 @@ function onLoad() {
         }
 
         .aio{
-          background-color: rgb(0 0 0  / 70%)!important;
+          background-color: rgba(0,0,0,calc(0.7 + var(--background-image-transparent-offset)))!important;
         }
         .group-member-list > div.viewport-list > div.viewport-list__inner{
           background-color: rgb(0 0 0 / 0%)!important;
@@ -2010,7 +2048,7 @@ function onLoad() {
         }
   
         .aio{
-          background-color: rgb(255 255 255  / 50%)!important;
+          background-color: rgba(255,255,255,calc(0.5 + var(--background-image-transparent-offset)))!important;
         }
 
         .group-member-list > div.viewport-list > div.viewport-list__inner{
@@ -2018,7 +2056,7 @@ function onLoad() {
         }
       }
       `;
-        stylee.innerHTML = sHtml;
-        document.getElementsByTagName("head").item(0).appendChild(stylee);
-    }
+    stylee.innerHTML = sHtml;
+    document.getElementsByTagName("head").item(0).appendChild(stylee);
+  }
 }
