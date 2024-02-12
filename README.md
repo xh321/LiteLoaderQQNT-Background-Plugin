@@ -8,6 +8,7 @@ LiteLoaderQQNT插件，用于自动轮换QQNT的背景图片或者视频，并�
 ## 使用方法
 
 *建议从`LiteLoaderQQNT`应用商店中直接下载安装，方便快捷。*（新版本1.0`LiteLoaderQQNT`没有插件商店了，请遵循[手动安装方法](https://liteloaderqqnt.github.io/guide/plugins.html)）
+也可以clone（记得执行`npm i`）或下载zip文件解压，保留文件夹结构（文件夹名称为`插件名`，内容为github上的内容），将文件夹移动至`LiteLoaderQQNT数据目录/plugins/`下面，重启QQNT即可。
 
 **版本不兼容提示**：从0.1.18起，插件已适配1.0版本以上`LiteLoaderQQNT`框架，同时不再兼容旧版框架，请遵循[安装方法](https://liteloaderqqnt.github.io/guide/install.html)更新框架。
 
@@ -17,16 +18,14 @@ LiteLoaderQQNT插件，用于自动轮换QQNT的背景图片或者视频，并�
 
 **版本提示**：自0.1.29起，网络图片会自动保存到**插件数据目录（`LiteLoaderQQNT数据目录\background`）**下面的tmp文件夹，这样在开启多窗体共用背景的情况下可以避免多个窗体重复请求同样的图片。并且如果你随机到了你喜欢的图片，可以前往文件夹里手动复制，后期版本会提供保存到指定目录按钮。
 
-
-
-也可以clone（记得执行`npm i`）或下载zip文件解压，保留文件夹结构（文件夹名称为`插件名`，内容为github上的内容），将文件夹移动至`LiteLoaderQQNT数据目录/plugins/`下面，重启QQNT即可。
-
-- 启动QQ后会自动写入默认配置文件到**插件数据目录（`LiteLoaderQQNT数据目录\background`）下面的`config.json`**，然后你对配置文件做的任何修改都会被插件实时应用（详见后文）。若无必要，不建议手动修改`config.json`；
-- 你还可以通过QQ设置里的背景插件设置界面对插件进行设置（推荐这种方法，更方便，也能实时应用）。
-
-**如果出现错乱、设置修改后无法应用或无法加载背景的情况，请确认`config.json`是否被正确配置；若不能确定，可先前往设置界面恢复默认设置；如果连设置界面也进不去，那就手动删除`config.json`后重启NTQQ再试（恢复默认后无背景，请去设置背景后再看看有没有问题），若还有问题请发ISSUE。**
+**插件兼容提示**： [MSpring主题](https://github.com/MUKAPP/LiteLoaderQQNT-MSpring-Theme)与本插件一起使用时，建议设置`MSpring主题`背景透明度为最低（全透明），否则可能会和本插件提供的透明度重叠导致出现显示问题。
 
 可搭配[MSpring主题](https://github.com/MUKAPP/LiteLoaderQQNT-MSpring-Theme)实现更佳效果哦~
+
+- 启动QQ后会自动写入默认配置文件到**插件数据目录（`LiteLoaderQQNT数据目录\background`）下面的`config.json`**，然后你对配置文件做的任何修改都会被插件实时应用（详见后文）。若无必要，不建议手动修改`config.json`；
+- 你可以通过QQ设置里的背景插件设置界面对插件进行设置（推荐这种方法，更方便，也能实时应用）。
+
+**如果出现错乱、设置修改后无法应用或无法加载背景的情况，请确认`config.json`是否被正确配置；若不能确定，可先前往设置界面恢复默认设置；如果连设置界面也进不去，那就手动删除`config.json`后重启NTQQ再试（恢复默认后无背景，请去设置背景后再看看有没有问题），若还有问题请发ISSUE。**
 
 默认加载背景的路径是**插件数据目录（`LiteLoaderQQNT数据目录\background`）**下面的imgs文件夹，在QQ的设置里可以切换背景的目录，保存后立刻生效，目前会读取目录里（包含子文件夹）的一些常见格式的图片或视频文件，如下：
 
