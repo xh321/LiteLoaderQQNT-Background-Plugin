@@ -18,7 +18,7 @@ const BackgroundSaveBtnHtml = `
 `;
 
 const BackgroundCustomBtnStyle = `
-<style>
+<style id="backgroundBtnStyle">
   .customBtn i:hover {
     color: var(--brand_standard) !important;
   }
@@ -972,10 +972,11 @@ function isLocalFile(src) {
 
 onLoad();
 
-function insertLeftMenuBtn() {
+async function insertLeftMenuBtn() {
   //来自：https://github.com/qianxuu/LiteLoaderQQNT-Plugin-Demo-mode/blob/main/src/renderer.js
   //主界面功能菜单添加按钮
   let findCount = 0;
+  var nowConfig = await window.background_plugin.getNowConfig();
   const findFuncMenuInterval = setInterval(() => {
     if (findCount++ > 50) {
       clearInterval(findFuncMenuInterval);
@@ -984,21 +985,40 @@ function insertLeftMenuBtn() {
     const funcMenu = document.querySelector(".func-menu");
     if (funcMenu) {
       clearInterval(findFuncMenuInterval);
-      // 插入按钮和悬停样式
-      funcMenu.insertAdjacentHTML("afterbegin", BackgroundSaveBtnHtml);
-      funcMenu.insertAdjacentHTML("afterbegin", BackgroundChangeBtnHtml);
-      document.head.insertAdjacentHTML("beforeend", BackgroundCustomBtnStyle);
-      // 下载背景图按钮
-      const backgroundSaveBtn = document.querySelector("#backgroundSave");
-      backgroundSaveBtn.addEventListener("click", async () => {
-        await window.background_plugin.saveNowBg();
-      });
 
-      // 更新背景图按钮
-      const backgroundChangeBtn = document.querySelector("#backgroundChange");
-      backgroundChangeBtn.addEventListener("click", async () => {
-        await window.background_plugin.reloadBg();
-      });
+      var saveBtn = document.getElementById("backgroundSave");
+      if (saveBtn) {
+        saveBtn.parentElement.removeChild(saveBtn);
+      }
+
+      var changeBtn = document.getElementById("backgroundChange");
+      if (changeBtn) {
+        changeBtn.parentElement.removeChild(changeBtn);
+      }
+
+      var style = document.getElementById("backgroundBtnStyle");
+      if (style) {
+        style.parentNode.removeChild(style);
+      }
+
+      // 插入按钮和悬停样式
+      if (nowConfig.imgSource == "network" && nowConfig.apiType == "img") {
+        funcMenu.insertAdjacentHTML("afterbegin", BackgroundSaveBtnHtml);
+        // 下载背景图按钮
+        const backgroundSaveBtn = document.querySelector("#backgroundSave");
+        backgroundSaveBtn.addEventListener("click", async () => {
+          await window.background_plugin.saveNowBg();
+        });
+      }
+      if (nowConfig.imgSource == "network" || nowConfig.imgSource == "folder") {
+        funcMenu.insertAdjacentHTML("afterbegin", BackgroundChangeBtnHtml);
+        // 更新背景图按钮
+        const backgroundChangeBtn = document.querySelector("#backgroundChange");
+        backgroundChangeBtn.addEventListener("click", async () => {
+          await window.background_plugin.reloadBg();
+        });
+      }
+      document.head.insertAdjacentHTML("beforeend", BackgroundCustomBtnStyle);
     }
   }, 100);
 }
@@ -1040,7 +1060,7 @@ function onLoad() {
       );
 
       if (window.location.href.indexOf("#/main/message") != -1) {
-        insertLeftMenuBtn();
+        await insertLeftMenuBtn();
       }
 
       //监听任何可能的重载背景的请求
@@ -1056,6 +1076,10 @@ function onLoad() {
           if (await getNowIsVideo(nowSelect)) {
             //如果是视频，需要设置一下视频地址
             setVideoSrc(nowSelect);
+          }
+
+          if (window.location.href.indexOf("#/main/message") != -1) {
+            await insertLeftMenuBtn();
           }
         }
       );
