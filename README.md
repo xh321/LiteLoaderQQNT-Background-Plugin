@@ -12,7 +12,7 @@ LiteLoaderQQNT插件，用于自动轮换QQNT的背景图片或者视频，并�
 
 **版本不兼容提示**：从0.1.18起，插件已适配1.0版本以上`LiteLoaderQQNT`框架，同时不再兼容旧版框架，请遵循[安装方法](https://liteloaderqqnt.github.io/guide/install.html)更新框架。
 
-**版本不兼容提示**：从0.1.24起，插件的背景视频功能需要1.0.3及以上`LiteLoaderQQNT`框架才支持，请遵循[安装方法](https://liteloaderqqnt.github.io/guide/install.html)更新框架。
+**版本不兼容提示**：从0.1.24起，插件的背景视频功能建议使用1.0.3及以上`LiteLoaderQQNT`框架，请遵循[安装方法](https://liteloaderqqnt.github.io/guide/install.html)更新框架。
 
 **版本提示**：自0.1.25起，配置文件和默认的图片文件夹从插件根目录移动至`LiteLoaderQQNT数据目录`中的background文件夹中，更新此版本后请手动移动config.json（和图片文件夹，如果你往里面存了图片）到对应路径。仅从低版本升级上来的用户需要操作，首次安装本版本不需要。
 

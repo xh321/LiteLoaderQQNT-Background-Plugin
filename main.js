@@ -5,6 +5,9 @@ const https = require("https");
 var objectPath = require("object-path");
 const { shell, net, BrowserWindow, ipcMain, dialog } = require("electron");
 
+const RangesServer = require("./rangesServer.js");
+const videoServer = new RangesServer();
+
 const allowedImgExt = [
   "JPG",
   "BMP",
@@ -112,6 +115,24 @@ function getRdFolderImg(folder) {
   }
 }
 
+async function initVideoServer(src) {
+  if (isImgOrVideo(src) == "video") {
+    videoServer.setFilePath(src);
+    return videoServer
+      .startServer()
+      .then((port) => {
+        return `http://localhost:${port}/${path.basename(src)}`;
+      })
+      .catch((err) => {
+        output("Start video server errror,", err);
+        return "";
+      });
+  } else {
+    videoServer.stopServer();
+    return src;
+  }
+}
+
 // 随机获取一张图片路径
 async function rdpic(isForce) {
   if (
@@ -124,13 +145,13 @@ async function rdpic(isForce) {
   if (nowConfig.imgSource == null || nowConfig.imgSource == "folder") {
     if (isForce || nowConfig.isCommonBg === false) {
       output("从本地文件夹更新背景");
-      cacheFolderImg = getRdFolderImg(nowConfig.imgDir);
+      cacheFolderImg = initVideoServer(getRdFolderImg(nowConfig.imgDir));
       return cacheFolderImg;
     } else {
       //否则，使用缓存的值
       if (cacheFolderImg == "") {
         output("从本地文件夹更新背景");
-        cacheFolderImg = getRdFolderImg(nowConfig.imgDir);
+        cacheFolderImg = initVideoServer(getRdFolderImg(nowConfig.imgDir));
       }
       return cacheFolderImg;
     }
