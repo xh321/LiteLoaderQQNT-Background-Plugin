@@ -690,6 +690,7 @@ export async function onSettingWindowCreated(view) {
         video.autoplay = true;
         video.muted = true;
         video.loop = true;
+        video.volume = 0;
         video.style = "margin-left:10%;margin-right:10%;width:80%";
         video.id = "test-video";
         video.innerHTML = `<source src="${imgUrl}">`;
@@ -1271,27 +1272,31 @@ function onLoad() {
   }
 
   function setVideoSrc(videoSrc) {
-    var thisNode = document
-      .evaluate(
-        "/html/body/div[@id='app']/video[@id='background-video']",
-        document
-      )
-      .iterateNext();
-    if (thisNode) {
-      thisNode.parentElement.removeChild(thisNode);
-    }
-
     if (isLocalFile(videoSrc)) {
       videoSrc = "local:///" + encodeURI(videoSrc);
     }
 
-    var video = document.createElement("video");
-    video.autoplay = true;
-    video.muted = true;
-    video.loop = true;
-    video.id = "background-video";
-    video.innerHTML = `<source src="${videoSrc}">`;
-    document.getElementById("app").appendChild(video);
+    var thisNode = document.getElementById("background-video");
+    if (thisNode) {
+      videoEl.setAttribute("src", videoSrc);
+    } else {
+      var video = document.createElement("video");
+      video.autoplay = true;
+      video.muted = true;
+      video.loop = true;
+      video.volume = 0;
+      video.src = videoSrc;
+      video.id = "background-video";
+      if (document.querySelector(".tab-container")) {
+        document.querySelector(".tab-container").appendChild(video);
+      } else if (document.querySelector(".container")) {
+        document.querySelector(".container").appendChild(video);
+      } else if (document.querySelector("#app.forward")) {
+        document.querySelector("#app.forward").appendChild(video);
+      } else if (document.querySelector("#app")) {
+        document.querySelector("#app").appendChild(video);
+      }
+    }
   }
 
   async function patchCss() {
