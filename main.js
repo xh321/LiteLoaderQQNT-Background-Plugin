@@ -3,7 +3,7 @@ const path = require("path");
 const http = require("http");
 const https = require("https");
 var objectPath = require("object-path");
-const { shell, net, BrowserWindow, ipcMain, dialog } = require("electron");
+const { app, shell, net, BrowserWindow, ipcMain, dialog } = require("electron");
 
 const RangesServer = require("./rangesServer.js");
 const videoServer = new RangesServer();
@@ -208,6 +208,13 @@ function request(url) {
       if (res.statusCode >= 300 && res.statusCode <= 399) {
         return resolve(request(res.headers.location));
       }
+      if (res.statusCode == 404) {
+        return reject("404 Error");
+      }
+      if (!res.headers["content-type"].includes("image")) {
+        return reject("Not a image");
+      }
+
       const chunks = [];
       res.on("error", (error) => reject(error));
       res.on("data", (chunk) => chunks.push(chunk));
@@ -217,11 +224,17 @@ function request(url) {
 }
 
 async function savePic(url, localPath) {
-  const body = await request(url);
-  if (!fs.existsSync(localPath) || !fs.statSync(localPath).isDirectory) {
-    fs.mkdirSync(path.dirname(localPath), { recursive: true });
+  try {
+    const body = await request(url);
+    if (!fs.existsSync(localPath) || !fs.statSync(localPath).isDirectory) {
+      fs.mkdirSync(path.dirname(localPath), { recursive: true });
+    }
+    fs.writeFileSync(localPath, body);
+    return true;
+  } catch (e) {
+    output("Download pic error:" + e);
+    return false;
   }
-  fs.writeFileSync(localPath, body);
 }
 
 function uuid() {
@@ -255,7 +268,11 @@ async function fetchApi(api) {
         var fileName = getImgFileNameFromUrl(apiUrl);
 
         var localPic = path.join(pluginTmpDir, fileName);
-        await savePic(apiUrl, localPic);
+        var result = await savePic(apiUrl, localPic);
+        if (!result) {
+          //更换下一张图片
+          return await fetchApi(api);
+        }
         return localPic;
       }
     } else if (isImage) {
@@ -266,7 +283,16 @@ async function fetchApi(api) {
       var fileName = getImgFileNameFromUrl(api, fileExt);
 
       var localPic = path.join(pluginTmpDir, fileName);
-      await savePic(api, localPic);
+      var result = await savePic(api, localPic);
+      if (!result) {
+        dialog.showMessageBox({
+          type: "error",
+          title: "错误",
+          message:
+            "背景图下载失败，请检查你的网络后重新进设置页面更新一次背景图。",
+          buttons: ["确定"],
+        });
+      }
       return localPic;
     } else {
       return api;
@@ -298,36 +324,30 @@ function debounce(fn, time) {
   };
 }
 
-var isSelfWrite = false;
-// 监听配置文件修改
-function watchConfigChange() {
-  if (!fs.existsSync(configFilePath)) {
-    initConfig();
-  }
-  fs.watch(
-    configFilePath,
-    "utf-8",
-    debounce(async () => {
-      if (isSelfWrite) {
-        //因为fs.watch可能会触发多次，所以延迟
-        setTimeout(() => {
-          isSelfWrite = false;
-        }, 500);
-        return;
-      }
-      nowConfig = loadConfig();
+// 没必要监听配置文件修改了
+// var isSelfWrite = false;
+// // 监听配置文件修改
+// function watchConfigChange() {
+//   if (!fs.existsSync(configFilePath)) {
+//     initConfig();
+//   }
+//   fs.watch(
+//     configFilePath,
+//     "utf-8",
+//     debounce(async () => {
+//       if (isSelfWrite) {
+//         //因为fs.watch可能会触发多次，所以延迟
+//         setTimeout(() => {
+//           isSelfWrite = false;
+//         }, 500);
+//         return;
+//       }
+//       nowConfig = loadConfig();
 
-      await resetTimer();
-
-      sendChatWindowsMessage(
-        "LiteLoader.background_plugin.mainWindow.reloadBg",
-        nowConfig.isCommonBg === true || nowConfig.isCommonBg == null
-          ? await rdpic(true)
-          : ""
-      );
-    }, 100)
-  );
-}
+//       await resetTimer();
+//     }, 100)
+//   );
+// }
 
 function loadConfig() {
   if (!fs.existsSync(configFilePath)) {
@@ -376,15 +396,19 @@ async function resetTimer() {
 
   if (bgUpdateTimer != null) {
     clearInterval(bgUpdateTimer);
+    bgUpdateTimer = null;
   }
+
+  output("重置背景图定时器");
 
   let isAutoRefresh =
     nowConfig.isAutoRefresh == null || nowConfig.isAutoRefresh === true;
 
   if (isAutoRefresh) {
-    output(`当前背景更新间隔：${nowConfig.refreshTime}秒`, new Date());
-    bgUpdateTimer = setInterval(async () => {
-      output("[Background]", "更新背景", new Date());
+    output(`当前背景更新间隔：${nowConfig.refreshTime}秒`);
+
+    var updateBg = async () => {
+      output("更新背景");
 
       sendChatWindowsMessage(
         "LiteLoader.background_plugin.mainWindow.reloadBg",
@@ -392,12 +416,20 @@ async function resetTimer() {
           ? await rdpic(true)
           : ""
       );
-    }, nowConfig.refreshTime * 1000);
+    };
+
+    await updateBg();
+    bgUpdateTimer = setInterval(
+      async () => await updateBg(),
+      nowConfig.refreshTime * 1000
+    );
   } else {
-    output("用户设置了不自动更新，仅更新一次", new Date());
+    output("用户设置了不自动更新，仅更新一次");
   }
 
-  resetTimerFlag = false;
+  setTimeout(() => {
+    resetTimerFlag = false;
+  }, 500);
 }
 
 function emptyDir(path) {
@@ -430,7 +462,7 @@ function rmEmptyDir(path, level = 0) {
 }
 
 function onLoad() {
-  resetTimer();
+  app.whenReady().then(resetTimer);
 
   ipcMain.handle(
     "LiteLoader.background_plugin.clearTmpDir",
@@ -453,13 +485,9 @@ function onLoad() {
 
               nowConfig = loadConfig();
 
+              output("已清空背景文件夹");
+
               await resetTimer();
-              sendChatWindowsMessage(
-                "LiteLoader.background_plugin.mainWindow.reloadBg",
-                nowConfig.isCommonBg === true || nowConfig.isCommonBg == null
-                  ? await rdpic(true)
-                  : ""
-              );
               accept(true);
             }
             //取消
@@ -522,12 +550,6 @@ function onLoad() {
               accept(true);
 
               await resetTimer();
-              sendChatWindowsMessage(
-                "LiteLoader.background_plugin.mainWindow.reloadBg",
-                nowConfig.isCommonBg === true || nowConfig.isCommonBg == null
-                  ? await rdpic(true)
-                  : ""
-              );
             }
             //取消
             else if (idx.response == 1) {
@@ -860,13 +882,17 @@ function onLoad() {
 }
 
 function output(...args) {
-  console.log("\x1b[32m%s\x1b[0m", "Background:", ...args);
+  console.log(
+    "\x1b[32m%s\x1b[0m",
+    "Background:",
+    ...args,
+    " @ ",
+    new Date().toLocaleString()
+  );
 }
 
 var mainWindowObjs = [];
 function onBrowserWindowCreated(window) {
-  watchConfigChange();
-
   window.webContents.on("did-stop-loading", () => {
     if (
       window.webContents.getURL().indexOf("#/main/message") != -1 ||

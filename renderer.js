@@ -249,7 +249,7 @@ export async function onSettingWindowCreated(view) {
                   <span class="secondary-text">修改将自动保存并立即生效（默认中间，也就是不调整）</span>
                 </div>
                 <input type="range" value="0" min="-100" max="100" step="1"
-                class="q-button q-button--small q-button--secondary pick-opacity" style="width: 51%;background:#3b3b3b" />
+                class="q-button q-button--small q-button--secondary pick-opacity" style="width: 51%;" />
               </div>
           </div>
         </section>
