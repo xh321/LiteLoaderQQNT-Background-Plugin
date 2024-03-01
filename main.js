@@ -145,13 +145,15 @@ async function rdpic(isForce) {
   if (nowConfig.imgSource == null || nowConfig.imgSource == "folder") {
     if (isForce || nowConfig.isCommonBg === false) {
       output("从本地文件夹更新背景");
-      cacheFolderImg = initVideoServer(getRdFolderImg(nowConfig.imgDir));
+      cacheFolderImg = await initVideoServer(getRdFolderImg(nowConfig.imgDir));
       return cacheFolderImg;
     } else {
       //否则，使用缓存的值
       if (cacheFolderImg == "") {
         output("从本地文件夹更新背景");
-        cacheFolderImg = initVideoServer(getRdFolderImg(nowConfig.imgDir));
+        cacheFolderImg = await initVideoServer(
+          getRdFolderImg(nowConfig.imgDir)
+        );
       }
       return cacheFolderImg;
     }
@@ -177,7 +179,7 @@ async function rdpic(isForce) {
   }
   //文件
   else if (nowConfig.imgSource == "file") {
-    return nowConfig.imgFile;
+    return await initVideoServer(nowConfig.imgFile);
   }
   //不要背景图
   else if (nowConfig.imgSource == "none") {

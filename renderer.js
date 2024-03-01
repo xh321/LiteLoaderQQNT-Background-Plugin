@@ -265,8 +265,8 @@ export async function onSettingWindowCreated(view) {
                   <h2>背景更新间隔</h2>
                   <span class="secondary-text">修改将自动保存并立即生效；为了最佳体验，请勿设置过短哦~</span>
                 </div>
-                <div style="width:80px;pointer-events: auto;">
-                  <input id="refreshTimeInput" min="1" max="999" maxlength="5" class="text_color path-input" style="width:45px;" type="number" value="${nowConfig.refreshTime}"/>秒
+                <div style="width:105px;pointer-events: auto;">
+                  <input id="refreshTimeInput" min="1" max="99999" maxlength="5" class="text_color path-input" style="width:75px;" type="number" value="${nowConfig.refreshTime}"/>秒
                 </div>
               </div>
 
@@ -1278,7 +1278,7 @@ function onLoad() {
 
     var thisNode = document.getElementById("background-video");
     if (thisNode) {
-      videoEl.setAttribute("src", videoSrc);
+      thisNode.setAttribute("src", videoSrc);
     } else {
       var video = document.createElement("video");
       video.autoplay = true;
