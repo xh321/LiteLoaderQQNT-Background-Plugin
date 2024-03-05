@@ -1625,12 +1625,12 @@ function onLoad() {
           backdrop-filter: brightness(120%) saturate(120%) blur(8px);
         }
 
-        .viewport-list__inner{
-          background-color: rgb( 0 0 0  / 70%)!important;
+        .recent-contact .viewport-list__inner{
+          background-color: rgb( 0 0 0  / 0%)!important;
         }
 
         .recent-contact{
-          background-color: rgb(0 0 0  / 10%)!important;
+          background-color: rgb(0 0 0  / 70%)!important;
         }
 
         .ad-wrapper{
@@ -2003,12 +2003,12 @@ function onLoad() {
           background: rgba(255,255,255,0.2)!important;
         }
   
-        .viewport-list__inner{
-          background-color: rgb( 255 255 255  / 70%)!important;
+        .recent-contact .viewport-list__inner{
+          background-color: rgb( 255 255 255  / 20%)!important;
         }
   
         .recent-contact{
-          background-color: rgb(255 255 255  / 20%)!important;
+          background-color: rgb(255 255 255  / 80%)!important;
         }
   
         .ad-wrapper{
@@ -2052,7 +2052,7 @@ function onLoad() {
         }
   
         .recent-contact .contact-top-bar{
-          background-color: rgb(255 255 255  / 70%)!important;
+          background-color: rgb(255 255 255  / 40%)!important;
         }
   
         .group-notice{
