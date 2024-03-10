@@ -1680,7 +1680,7 @@ function onLoad() {
         }
 
         .sidebar{
-          background-color: rgb(0 0 0  / 80%)!important;
+          background-color: rgb(0 0 0  / 50%)!important;
         }
 
         .aio{
@@ -2073,7 +2073,7 @@ function onLoad() {
         }
   
         .sidebar{
-          background-color: rgb(255 255 255  / 80%)!important;
+          background-color: rgb(255 255 255  / 50%)!important;
         }
   
         .aio{
