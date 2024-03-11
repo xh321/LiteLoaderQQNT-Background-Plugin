@@ -89,6 +89,14 @@ export async function onSettingWindowCreated(view) {
               </div>
             </div>
             <hr class="horizontal-dividing-line" />
+            <div class="vertical-list-item top-box">
+            <h2>复制当然背景图路径</h2>
+            <div>
+              <button id="copyNowApiBg" class="q-button q-button--small q-button--secondary">复制最近一次API背景图</button>
+              <button id="copyNowFolderBg" class="q-button q-button--small q-button--secondary">复制最近一次文件夹背景图</button>
+            </div>
+          </div>
+          <hr class="horizontal-dividing-line" />
             <div class="vertical-list-item">
               <div>
                 <h2>修改背景来源</h2>
@@ -709,6 +717,18 @@ export async function onSettingWindowCreated(view) {
     await window.background_plugin.showApiPathHelp();
   };
 
+  var copyNowApiBg = async () => {
+    var nowBg = await window.background_plugin.getNowBg();
+    await navigator.clipboard.writeText(nowBg.api);
+  };
+
+  var copyNowFolderBg = async () => {
+    var nowBg = await window.background_plugin.getNowBg();
+    await navigator.clipboard.writeText(nowBg.folder);
+  };
+
+  node2.querySelector("#copyNowApiBg").onclick = copyNowApiBg;
+  node2.querySelector("#copyNowFolderBg").onclick = copyNowFolderBg;
   node2.querySelector("#clearTmpDir").onclick = clearTmpDir;
   node2.querySelector("#refreshBgNow").onclick = refreshBg;
   node2.querySelector("#resetAll").onclick = resetAll;
@@ -1659,7 +1679,7 @@ function onLoad() {
         }
 
         .recent-contact .contact-top-bar{
-          background-color: rgb(0 0 0  / 70%)!important;
+          background-color: rgb(0 0 0  / 0%)!important;
         }
 
         .group-notice{
@@ -2052,7 +2072,7 @@ function onLoad() {
         }
   
         .recent-contact .contact-top-bar{
-          background-color: rgb(255 255 255  / 40%)!important;
+          background-color: rgb(255 255 255  / 20%)!important;
         }
   
         .group-notice{

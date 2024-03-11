@@ -101,6 +101,7 @@ function rd(n) {
   return Math.floor(Math.random() * (n + 1));
 }
 
+let cachedApiUrl = "";
 let cachedApiImg = "";
 let cacheFolderImg = "";
 
@@ -270,6 +271,7 @@ async function fetchApi(api) {
         var fileName = getImgFileNameFromUrl(apiUrl);
 
         var localPic = path.join(pluginTmpDir, fileName);
+        cachedApiUrl = apiUrl;
         var result = await savePic(apiUrl, localPic);
         if (!result) {
           //更换下一张图片
@@ -285,6 +287,8 @@ async function fetchApi(api) {
       var fileName = getImgFileNameFromUrl(api, fileExt);
 
       var localPic = path.join(pluginTmpDir, fileName);
+
+      cachedApiUrl = apiUrl;
       var result = await savePic(api, localPic);
       if (!result) {
         dialog.showMessageBox({
@@ -803,6 +807,13 @@ function onLoad() {
       writeConfig();
 
       await resetTimer();
+    }
+  );
+
+  ipcMain.handle(
+    "LiteLoader.background_plugin.getNowBg",
+    async (event, message) => {
+      return { folder: cacheFolderImg, api: cachedApiUrl };
     }
   );
 

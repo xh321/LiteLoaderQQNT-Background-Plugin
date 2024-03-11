@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld("background_plugin", {
       "LiteLoader.background_plugin.mainWindow.reloadGlobalTransparentOffset",
       callback
     ),
+  getNowBg: () => ipcRenderer.invoke("LiteLoader.background_plugin.getNowBg"),
   saveNowBg: () => ipcRenderer.invoke("LiteLoader.background_plugin.saveNowBg"),
   resetTimer: () =>
     ipcRenderer.invoke("LiteLoader.background_plugin.resetTimer"),
