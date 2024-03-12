@@ -1658,7 +1658,7 @@ function onLoad() {
         }
 
         .group-assistent-list__top{
-          background-color: rgb(0 0 0  / 70%)!important;
+          background-color: rgb(0 0 0  / 0%)!important;
         }
 
         .q-context-sub-menu__container , .q-context-menu{
@@ -2036,7 +2036,7 @@ function onLoad() {
         }
   
         .group-assistent-list__top{
-          background-color: rgb(255 255 255  / 70%)!important;
+          background-color: rgb(255 255 255  / 20%)!important;
         }
   
         .q-context-sub-menu__container , .q-context-menu{
