@@ -204,7 +204,12 @@ function isValidUrl(str) {
 function request(url) {
   return new Promise((resolve, reject) => {
     const protocol = url.startsWith("https") ? https : http;
-    const req = protocol.get(url);
+    const req = protocol.get(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0",
+      },
+    });
     req.on("error", (error) => reject(error));
     req.on("response", (res) => {
       // 发生跳转就继续请求
