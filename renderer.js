@@ -1143,7 +1143,7 @@ function onLoad() {
       (await window.background_plugin.isImgOrVideo(src ?? "")) == "video" ||
       //要么不是本地文件，且是视频API
       (!isLocalFile(src) && nowConfig.apiType == "video");
-
+    await reloadBackgroundTransparent();
     return isVideo;
   }
 
