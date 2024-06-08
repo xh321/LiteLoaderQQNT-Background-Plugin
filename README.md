@@ -5,6 +5,9 @@ LiteLoaderQQNT插件，用于自动轮换QQNT的背景图片或者视频，并�
 
 建议加入更新日志频道，接收最新更新和使用提示[https://t.me/llqqnt_xh](https://t.me/llqqnt_xh)。
 
+因工作原因暂无时间更新，如有能帮忙更新的欢迎提交PR。
+目前支持的版本：小于等于9.9.7-21453，大于这个版本未经测试不做任何保证，如升级QQ后遇到问题建议降级，感谢理解。
+
 ## 使用方法
 
 *建议从`LiteLoaderQQNT`应用商店中直接下载安装，方便快捷。*（新版本1.0`LiteLoaderQQNT`没有插件商店了，请遵循[手动安装方法](https://liteloaderqqnt.github.io/guide/plugins.html)）
