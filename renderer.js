@@ -1373,6 +1373,10 @@ function onLoad() {
         {
           background: rgba(255,255,255,0)!important;
         }
+        /* 聊天窗口背景透明 (#65)*/
+        .q-miracle-background{
+          display: none;
+        }
 
         /* 关于页 */
         .version {
