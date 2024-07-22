@@ -1340,6 +1340,12 @@ function onLoad() {
           object-fit: cover;
           z-index: -999;
         }
+      #app {
+        /* 聊天窗口背景透明 (#65)*/
+        .q-miracle-background{
+          display: none;
+        }
+      }
       @media (prefers-color-scheme: dark) {
 
         /* 非主界面半透明（左侧） */
