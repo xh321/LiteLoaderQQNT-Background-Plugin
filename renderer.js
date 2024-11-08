@@ -90,10 +90,10 @@ export async function onSettingWindowCreated(view) {
             </div>
             <hr class="horizontal-dividing-line" />
             <div class="vertical-list-item top-box">
-            <h2>复制当然背景图路径</h2>
+            <h2>复制当前背景图路径</h2>
             <div>
-              <button id="copyNowApiBg" class="q-button q-button--small q-button--secondary">复制最近一次API背景图</button>
-              <button id="copyNowFolderBg" class="q-button q-button--small q-button--secondary">复制最近一次文件夹背景图</button>
+              <button id="copyNowApiBg" class="q-button q-button--small q-button--secondary">复制最近一次API背景图URL</button>
+              <button id="copyNowFolderBg" class="q-button q-button--small q-button--secondary">复制最近一次文件夹背景图路径</button>
             </div>
           </div>
           <hr class="horizontal-dividing-line" />
@@ -719,11 +719,21 @@ export async function onSettingWindowCreated(view) {
 
   var copyNowApiBg = async () => {
     var nowBg = await window.background_plugin.getNowBg();
+    if (nowBg == undefined || nowBg == "") {
+      alert("最近未用到API，结果为空");
+      return;
+    }
     await navigator.clipboard.writeText(nowBg.api);
   };
 
   var copyNowFolderBg = async () => {
     var nowBg = await window.background_plugin.getNowBg();
+
+    if (nowBg == undefined || nowBg == "") {
+      alert("最近未用到文件夹背景图，结果为空");
+      return;
+    }
+
     await navigator.clipboard.writeText(nowBg.folder);
   };
 

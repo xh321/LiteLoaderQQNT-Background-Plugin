@@ -203,6 +203,7 @@ function isValidUrl(str) {
 }
 
 function request(url) {
+  var finalApiUrl = url;
   return new Promise((resolve, reject) => {
     const protocol = url.startsWith("https") ? https : http;
     const req = protocol.get(url, {
@@ -221,6 +222,7 @@ function request(url) {
             new URL(url).origin +
             encodeURI(iconv.decode(realLocation, "utf-8"));
         }
+        finalApiUrl = realLocation;
         return resolve(request(realLocation));
       }
       if (res.statusCode == 404) {
@@ -233,18 +235,21 @@ function request(url) {
       const chunks = [];
       res.on("error", (error) => reject(error));
       res.on("data", (chunk) => chunks.push(chunk));
-      res.on("end", () => resolve(Buffer.concat(chunks)));
+      res.on("end", () =>
+        resolve({ url: finalApiUrl, data: Buffer.concat(chunks) })
+      );
     });
   });
 }
 
 async function savePic(url, localPath) {
   try {
-    const body = await request(url);
+    const req = await request(url);
+    cachedApiUrl = req.url;
     if (!fs.existsSync(localPath) || !fs.statSync(localPath).isDirectory) {
       fs.mkdirSync(path.dirname(localPath), { recursive: true });
     }
-    fs.writeFileSync(localPath, body);
+    fs.writeFileSync(localPath, req.data);
     return true;
   } catch (e) {
     output("Download pic error:" + e, "url=", url);
@@ -300,7 +305,8 @@ async function fetchApi(api) {
 
       var localPic = path.join(pluginTmpDir, fileName);
 
-      cachedApiUrl = apiUrl;
+      cachedApiUrl = api;
+
       var result = await savePic(api, localPic);
       if (!result) {
         dialog.showMessageBox({
