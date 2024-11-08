@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const http = require("http");
 const https = require("https");
+const iconv = require("iconv-lite");
 var objectPath = require("object-path");
 const { app, shell, net, BrowserWindow, ipcMain, dialog } = require("electron");
 
@@ -214,7 +215,13 @@ function request(url) {
     req.on("response", (res) => {
       // 发生跳转就继续请求
       if (res.statusCode >= 300 && res.statusCode <= 399) {
-        return resolve(request(res.headers.location));
+        var realLocation = res.headers.location;
+        if (!realLocation.startsWith("http")) {
+          realLocation =
+            new URL(url).origin +
+            encodeURI(iconv.decode(realLocation, "utf-8"));
+        }
+        return resolve(request(realLocation));
       }
       if (res.statusCode == 404) {
         return reject("404 Error");
@@ -240,7 +247,7 @@ async function savePic(url, localPath) {
     fs.writeFileSync(localPath, body);
     return true;
   } catch (e) {
-    output("Download pic error:" + e);
+    output("Download pic error:" + e, "url=", url);
     return false;
   }
 }

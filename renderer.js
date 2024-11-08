@@ -164,7 +164,7 @@ export async function onSettingWindowCreated(view) {
             <div class="vertical-list-item">
               <div>
                 <h2>网络背景API链接</h2>
-                <span class="secondary-text">目前仅支持GET请求，请确保直接访问链接能查看到图片/视频且未设置防盗链~</span>
+                <span class="secondary-text">目前仅支持GET请求，请确保直接访问链接能查看到图片/视频且未设置防盗链~如有URL含中文请URL编码。</span>
               </div>
               <div style="width: 95%;display: flex;align-items: center;flex-direction: row; margin-left:20px; pointer-events: auto;">
                 <input id="selectImageApi" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="输入API地址（可选）" value="${nNowImgApi}">
@@ -174,7 +174,7 @@ export async function onSettingWindowCreated(view) {
             <div class="vertical-list-item bottom-box">
               <div>
                 <h2>网络背景API JSON路径</h2>
-                <span class="secondary-text">若API返回的是JSON，请填写图片直链对应的 JSON 路径。</span>
+                <span class="secondary-text">若API返回的是JSON，请填写图片直链对应的 JSON 路径（会自动判断返回内容是不是JSON）。</span>
               </div>
               <div style="width: 72%;display: flex;align-items: center;flex-direction: row; margin-left:20px; pointer-events: auto;">
                 <input id="apiJsonPath" style="width:70%" class="path-input text_color" type="text" spellcheck="false" placeholder="输入 JSON 路径（可选）" value="${nNowApiJsonPath}">
