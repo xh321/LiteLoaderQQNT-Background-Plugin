@@ -108,7 +108,12 @@ export async function onSettingWindowCreated(view) {
                   <div class="q-pulldown-menu small-size" data-id="image_source">
                       <div class="q-pulldown-menu-button">
                           <input class="content" type="text" readonly spellcheck="false">
-                          <svg class="icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <svg class="icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" 
+                            style="
+                              max-width: 20px;
+                              max-height: 20px;
+                              margin-bottom: 5%;
+                          ">
                               <path d="M12 6.0001L8.00004 10L4 6" stroke="currentColor" stroke-linejoin="round"></path>
                           </svg>
                       </div>
