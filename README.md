@@ -3,7 +3,7 @@
 LiteLoaderQQNT插件，用于自动轮换QQNT的背景图片或者视频，并自带一些CSS透明度优化（参考自[LiteLoaderQQNT-Test-Theme](https://github.com/mo-jinran/test-theme)）。
 使用前需要安装[LiteLoaderQQNT](https://github.com/mo-jinran/LiteLoaderQQNT)，并在QQNT新版上使用。
 
-建议加入更新日志频道，接收最新更新和使用提示[https://t.me/llqqnt_xh](https://t.me/llqqnt_xh)。
+强烈建议加TG频道 https://t.me/+UwFw2Ff-8scyOWY1 来蹲更新/公告（老频道被爆破了，请加新频道）
 
 目前测试版本：9.9.19-35469可用（侧边栏和图标颜色不太对，修复优先级不高）
 
